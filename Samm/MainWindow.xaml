@@ -14,8 +14,8 @@
             </MenuItem>
             <MenuItem Header="_Data">
                 <MenuItem Header="Add _Data Source">
+                    <MenuItem Name="accessDataSourceMenu" Header="Access Database" Click="accessDataSourceMenu_Click"/>
                     <MenuItem Name="sqlServerDataSourceMenu" Header="SQL Server" Click="sqlServerDataSourceMenu_Click"/>
-                    <MenuItem Name="accessDataSourceMenu" Header="Access Database"/>
                 </MenuItem>
                 <MenuItem Header="Remove Data Source"/>
                 <MenuItem Header="Add _Table"/>

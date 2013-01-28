@@ -99,7 +99,7 @@ namespace Microsoft.Data.ConnectionUI
 			string dpName = this.GetSelectedProvider();
 			if (!String.IsNullOrEmpty(dpName) && this.dataProviders.TryGetValue(dpName, out dp))
 			{
-				dialog.SelectedDataProvider = dp;
+//				dialog.SelectedDataProvider = dp; // Worked before, but then this lined started to produce an error
 			}
 		}
 
