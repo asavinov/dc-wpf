@@ -96,12 +96,67 @@ namespace Samm
                     string tableName = row["TABLE_NAME"].ToString();
                     Console.WriteLine(tableName);
 
+                    //
+                    // Create a COM concept for this table
+                    //
+
                     // Read column info
                     DataTable columns = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Columns, new object[] { null, null, tableName, null });
+
                     foreach (DataRow col in columns.Rows)
                     {
                         string columnName = col["COLUMN_NAME"].ToString();
                         Console.WriteLine("   "+columnName);
+
+                        // Find column type and define the dimension type
+                        System.Data.OleDb.OleDbType columnType = (System.Data.OleDb.OleDbType) col["DATA_TYPE"];
+                        switch (columnType)
+                        {
+                            case System.Data.OleDb.OleDbType.Double:
+                                break;
+                            case System.Data.OleDb.OleDbType.Integer: 
+                                break;
+                            case System.Data.OleDb.OleDbType.Char:
+                            case System.Data.OleDb.OleDbType.VarChar:
+                            case System.Data.OleDb.OleDbType.VarWChar:
+                            case System.Data.OleDb.OleDbType.WChar:
+                                break;
+                            default:
+                                // All the rest of types or error in the case we have enumerated all of them
+                                break;
+                        }
+
+                        //
+                        // Create a new COM dimension of this type
+                        //
+                    }
+
+                    // Read PKs: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.primary_keys.aspx
+                    DataTable pks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Primary_Keys, new object[] { null, null, tableName });
+                    foreach (DataRow pk in pks.Rows)
+                    {
+                        // One PK is identified by its name and its columns can be represented by several rows
+                        // We need to somehow identify such compund PKs by creating a list of complex PKs rather than a flat list of their columns
+                        string Name = (string)pk["PK_NAME"];
+                        string PrimaryField = (string)pk["COLUMN_NAME"];
+                    }
+
+                    // Read FKs: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.foreign_keys.aspx
+                    DataTable fks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Foreign_Keys, new object[] { null, null, null, null, null, tableName });
+                    foreach (DataRow fk in fks.Rows)
+                    {
+                        // Columns belonging to one FK should by identifed by one FK or PK name
+                        // We need to create a list of complex FKs rather than a flat list of FK columns
+                        // The structure of a complex FK is defined either explicitly by the columns or (later, derived) by referencing the corresponding PK
+                        // Our task is to collect all schema information for creationg a new COM schema
+                        string Name = (string)fk["FK_NAME"];
+                        string PrimaryTable = (string)fk["PK_TABLE_NAME"];
+                        string PrimaryField = (string)fk["PK_COLUMN_NAME"];
+                        string PrimaryIndex = (string)fk["PK_NAME"];
+                        string ForeignTable = (string)fk["FK_TABLE_NAME"];
+                        string ForeignField = (string)fk["FK_COLUMN_NAME"];
+                        string OnUpdate = (string)fk["UPDATE_RULE"];
+                        string OnDelete = (string)fk["DELETE_RULE"];
                     }
 
                 }
