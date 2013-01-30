@@ -97,12 +97,11 @@ namespace Samm
                     Console.WriteLine(tableName);
 
                     //
-                    // Create a COM concept for this table
+                    // TODO: Create a COM concept for this table
                     //
 
                     // Read column info
                     DataTable columns = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Columns, new object[] { null, null, tableName, null });
-
                     foreach (DataRow col in columns.Rows)
                     {
                         string columnName = col["COLUMN_NAME"].ToString();
@@ -127,22 +126,36 @@ namespace Samm
                         }
 
                         //
-                        // Create a new COM dimension of this type
+                        // TODO: Create a new COM dimension of this type
                         //
                     }
 
-                    // Read PKs: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.primary_keys.aspx
+                    // Read and grouping PK attributes: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.primary_keys.aspx
                     DataTable pks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Primary_Keys, new object[] { null, null, tableName });
+                    Dictionary<string, List<string>> pkNames = new Dictionary<string, List<string>>();
                     foreach (DataRow pk in pks.Rows)
                     {
-                        // One PK is identified by its name and its columns can be represented by several rows
-                        // We need to somehow identify such compund PKs by creating a list of complex PKs rather than a flat list of their columns
                         string Name = (string)pk["PK_NAME"];
                         string PrimaryField = (string)pk["COLUMN_NAME"];
+
+                        // One PK contains several columns. And we also assume that there can be many PKs.
+                        if (pkNames.ContainsKey(Name))
+                        {
+                            pkNames[Name].Add(PrimaryField);
+                        }
+                        else
+                        {
+                            pkNames.Add(Name, new List<string>() { PrimaryField } );
+                        }
+                    }
+                    foreach (var entry in pkNames)
+                    {
+                        Console.WriteLine("   " + tableName + " PK {0}: {1}", entry.Key, entry.Value);
                     }
 
-                    // Read FKs: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.foreign_keys.aspx
+                    // Read and grouping FK attributes: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.foreign_keys.aspx
                     DataTable fks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Foreign_Keys, new object[] { null, null, null, null, null, tableName });
+                    Dictionary<string, List<Tuple<string, string, string>>> fkNames = new Dictionary<string, List<Tuple<string, string, string>>>();
                     foreach (DataRow fk in fks.Rows)
                     {
                         // Columns belonging to one FK should by identifed by one FK or PK name
@@ -157,6 +170,19 @@ namespace Samm
                         string ForeignField = (string)fk["FK_COLUMN_NAME"];
                         string OnUpdate = (string)fk["UPDATE_RULE"];
                         string OnDelete = (string)fk["DELETE_RULE"];
+
+                        if (fkNames.ContainsKey(Name))
+                        {
+                            fkNames[Name].Add(Tuple.Create(ForeignField, PrimaryTable, PrimaryField));
+                        }
+                        else
+                        {
+                            fkNames.Add(Name, new List<Tuple<string, string, string>>() { Tuple.Create(ForeignField, PrimaryTable, PrimaryField) });
+                        }
+                    }
+                    foreach (var entry in fkNames)
+                    {
+                        Console.WriteLine("   " + tableName + " FK {0}: {1}", entry.Key, entry.Value);
                     }
 
                 }
