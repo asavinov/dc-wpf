@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -13,5 +14,14 @@ namespace Samm
     /// </summary>
     public partial class App : Application
     {
+        public ObservableCollection<string> MyList { get; set; }
+
+        public App()
+        {
+            MyList = new ObservableCollection<string>();
+            MyList.Add("aaa");
+            MyList.Add("bbb");
+            MyList.Add("ccc");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -17,6 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Data.ConnectionUI;
 
+using Com.Model;
+
 namespace Samm
 {
     /// <summary>
@@ -24,8 +27,54 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<Set> DsModel { get; set; }
+        public ObservableCollection<string> StringList { get; set; }
+
         public MainWindow()
         {
+            DsModel = new ObservableCollection<Set>();
+
+            SetRoot root = new  SetRoot("My Data Source");
+
+            DsModel.Add(root);
+
+            Set departments = new Set("Departments");
+            departments.SuperDim = new DimSuper("super", departments, root);
+            departments.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments));
+            departments.GetGreaterDim("name").IsIdentity = true;
+            departments.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments));
+
+            Set employees = new Set("Employees");
+            employees.SuperDim = new DimSuper("super", employees, root);
+            employees.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees));
+            employees.GetGreaterDim("name").IsIdentity = true;
+            employees.AddGreaterDim(root.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees));
+            employees.AddGreaterDim(root.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees));
+            employees.AddGreaterDim(departments.CreateDefaultLesserDimension("dept", employees));
+
+            Set managers = new Set("Managers");
+            managers.SuperDim = new DimSuper("super", managers, employees);
+            managers.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
+            managers.AddGreaterDim(root.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
+
+            // Criteria to the tree view: 
+            // - we might need either code for visualization or dedicated class (referenced in XAML)
+            // - Conditional visualization (item rendering):
+            //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
+            //   - Dimension structure visualized (so we need to anayze the identity tree) --> Use multibinding
+            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
+            //   - Item visualization structure can depend on either properties or class. How to implement it?
+            //   - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
+            //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
+            //   - TreeView header (it is probably needed only if we have allignment).
+            //   - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
+            // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
+            // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
+            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
+            // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
+            // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
+
+//            this.DataContext = this;
             InitializeComponent();
         }
 

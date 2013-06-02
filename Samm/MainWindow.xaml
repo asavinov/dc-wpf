@@ -1,7 +1,12 @@
 ﻿<Window x:Class="Samm.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="coViz Application">
+        xmlns:com="clr-namespace:Com.Model;assembly=Com"
+        xmlns:local="clr-namespace:Samm"
+        Title="ConceptMix Application" 
+        x:Name="UI"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
     <DockPanel LastChildFill="False">
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
@@ -45,5 +50,58 @@
             <MenuItem Header="_Help" />
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">Status Bar</StatusBar>
+        <!--
+        Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
+        -->
+        <TreeView Name="DsView" DockPanel.Dock="Left" Height="Auto" Width="200" ItemsSource="{Binding DsModel}">
+<!--
+            <TreeView.ItemsSource>
+                <MultiBinding>
+                    <MultiBinding.Converter>
+                        <local:CompositeCollectionConverter />
+                        </MultiBinding.Converter>
+                        <Binding Path="ViewModel.Instructions" />
+                        <Binding Path="ViewModel.Children" />
+                        <Binding Path="ViewModel.Review" />
+                </MultiBinding>
+            </TreeView.ItemsSource>
+-->
+            <TreeView.Resources>
+                <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+
+                <HierarchicalDataTemplate DataType="{x:Type com:Set}">
+                    <HierarchicalDataTemplate.ItemsSource>
+                        <MultiBinding  Converter="{StaticResource SubConv}">
+                            <Binding Path="SubSets"/>
+                            <Binding Path="GreaterDims"/>
+                        </MultiBinding>
+                    </HierarchicalDataTemplate.ItemsSource>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
+                        <TextBlock Text=" : " Width="10"/>
+                        <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                        <TextBlock Text=" : " Width="10"/>
+                        <TextBlock Text="{Binding Path=IsIdentity}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+<!--
+
+ItemsSource="{Binding GreaterDimensions}"
+Source={x:Static Application.Current}
+DataContext="{Binding ElementName=UI}" 
+            <TreeViewItem Header="Data source 1">
+                <TreeViewItem Header="Table 1">
+                    <TreeViewItem Header="Attribute 1">
+                    </TreeViewItem>
+                </TreeViewItem>
+            </TreeViewItem>
+-->
+        </TreeView>
     </DockPanel>
 </Window>
