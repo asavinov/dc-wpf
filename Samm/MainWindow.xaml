@@ -78,6 +78,30 @@ DataContext="{Binding ElementName=UI}"
             // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
             // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
 -->
+
+        <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="ReadOnlyGridStyle" TargetType="{x:Type DataGrid}" >
+            <Setter Property="AutoGenerateColumns" Value="False" />
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="GridLinesVisibility" Value="None" />
+            <Setter Property="CanUserAddRows" Value="False" />
+            <Setter Property="CanUserDeleteRows" Value="False" />
+            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="CanUserResizeRows" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource GridHeaderStyle}" />
+        </Style>
+
+        <DataTemplate x:Key="CellTemplate">
+            <Border Padding="3" Background="Purple">
+                <TextBox Text="{Binding Path=Value}" />
+            </Border>
+        </DataTemplate>
+
     </Window.Resources>
 
     <DockPanel LastChildFill="False">
@@ -161,6 +185,7 @@ DataContext="{Binding ElementName=UI}"
                 </TreeView>
             </StackPanel>
 
+            <!-- Mashup panel -->
             <StackPanel Grid.Column="4" VerticalAlignment="Stretch">
                 <Label Name="lblMashup" FontSize="16" Margin="10,10,0,0" >MASHUP</Label>
 
@@ -177,16 +202,6 @@ DataContext="{Binding ElementName=UI}"
             <StackPanel Grid.Column="2" >
                 <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
             </StackPanel>
-            <!-- 
-            There are many open sets each showing a DataGrid. We need a global list of all open sets. 
-            When a set is open we need to dynamically create a DataGrid with dynamic list of columns corresponding to its dimensions.
-            Here we need to dynamically show the currently active grid.
-
-            http://stackoverflow.com/questions/16120010/how-to-dynamically-create-a-datagrid-in-wpf
-            Dynamic grid: http://paulstovell.com/blog/dynamic-datagrid
-            -->
-
-            <!-- Mashup panel -->
 
         </Grid>
 
