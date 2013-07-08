@@ -28,7 +28,9 @@ namespace Samm
     public partial class MainWindow : Window
     {
         public ObservableCollection<Set> DsModel { get; set; }
-        public ObservableCollection<string> StringList { get; set; }
+        public ObservableCollection<Set> MashupModel { get; set; }
+
+        List<object> windows = new List<object>();
 
         public MainWindow()
         {
@@ -57,22 +59,12 @@ namespace Samm
             managers.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
             managers.AddGreaterDim(root.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
 
-            // Criteria to the tree view: 
-            // - we might need either code for visualization or dedicated class (referenced in XAML)
-            // - Conditional visualization (item rendering):
-            //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
-            //   - Dimension structure visualized (so we need to anayze the identity tree) --> Use multibinding
-            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
-            //   - Item visualization structure can depend on either properties or class. How to implement it?
-            //   - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
-            //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
-            //   - TreeView header (it is probably needed only if we have allignment).
-            //   - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
-            // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
-            // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
-            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
-            // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
-            // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
+            MashupModel = new ObservableCollection<Set>();
+
+            SetRoot muRoot = new SetRoot("My Mashup");
+
+            MashupModel.Add(muRoot);
+
 
 //            this.DataContext = this;
             InitializeComponent();

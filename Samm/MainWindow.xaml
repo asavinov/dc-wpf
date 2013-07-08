@@ -7,6 +7,79 @@
         x:Name="UI"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
+
+    <Window.Resources>
+        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+
+        <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=IsIdentity}"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type com:Set}" >
+            <HierarchicalDataTemplate.ItemsSource>
+                <MultiBinding  Converter="{StaticResource SubConv}">
+                    <Binding Path="SubSets"/>
+                    <Binding Path="GreaterDims"/>
+                </MultiBinding>
+            </HierarchicalDataTemplate.ItemsSource>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!--
+        Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
+        -->
+        <!--
+            <TreeView.ItemsSource>
+                <MultiBinding>
+                    <MultiBinding.Converter>
+                        <local:CompositeCollectionConverter />
+                        </MultiBinding.Converter>
+                        <Binding Path="ViewModel.Instructions" />
+                        <Binding Path="ViewModel.Children" />
+                        <Binding Path="ViewModel.Review" />
+                </MultiBinding>
+            </TreeView.ItemsSource>
+-->
+        <!--
+
+ItemsSource="{Binding GreaterDimensions}"
+Source={x:Static Application.Current}
+DataContext="{Binding ElementName=UI}" 
+            <TreeViewItem Header="Data source 1">
+                <TreeViewItem Header="Table 1">
+                    <TreeViewItem Header="Attribute 1">
+                    </TreeViewItem>
+                </TreeViewItem>
+            </TreeViewItem>
+-->
+        <!--
+            // Criteria to the tree view: 
+            // - we might need either code for visualization or dedicated class (referenced in XAML)
+            // - Conditional visualization (item rendering):
+            //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
+            //   - Dimension structure visualized (so we need to anayze the identity tree) -> Use multibinding
+            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
+            //   - Item visualization structure can depend on either properties or class. How to implement it?
+            //   - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
+            //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
+            //   - TreeView header (it is probably needed only if we have allignment).
+            //   - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
+            // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
+            // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
+            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
+            // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
+            // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
+-->
+    </Window.Resources>
+
     <DockPanel LastChildFill="False">
         <Menu DockPanel.Dock="Top" IsMainMenu="True">
             <MenuItem Header="_File">
@@ -68,10 +141,13 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="600" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+            <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
             <StackPanel Grid.Column="0" VerticalAlignment="Stretch">
                 <Label Name="lblDatasources" FontSize="16" Margin="10,10,0,0" >Data sources</Label>
@@ -80,58 +156,20 @@
                 <TreeView Name="DsView" 
                           BorderThickness="0" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
-                          ItemsSource="{Binding DsModel}">
-                    <!--
-        Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
-        -->
-                    <!--
-            <TreeView.ItemsSource>
-                <MultiBinding>
-                    <MultiBinding.Converter>
-                        <local:CompositeCollectionConverter />
-                        </MultiBinding.Converter>
-                        <Binding Path="ViewModel.Instructions" />
-                        <Binding Path="ViewModel.Children" />
-                        <Binding Path="ViewModel.Review" />
-                </MultiBinding>
-            </TreeView.ItemsSource>
--->
-                    <TreeView.Resources>
-                        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+                          ItemsSource="{Binding DsModel}"
+                          >
+                </TreeView>
+            </StackPanel>
 
-                        <HierarchicalDataTemplate DataType="{x:Type com:Set}">
-                            <HierarchicalDataTemplate.ItemsSource>
-                                <MultiBinding  Converter="{StaticResource SubConv}">
-                                    <Binding Path="SubSets"/>
-                                    <Binding Path="GreaterDims"/>
-                                </MultiBinding>
-                            </HierarchicalDataTemplate.ItemsSource>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
-                            </StackPanel>
-                        </HierarchicalDataTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
-                                <TextBlock Text=" : " Width="10"/>
-                                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
-                                <TextBlock Text=" : " Width="10"/>
-                                <TextBlock Text="{Binding Path=IsIdentity}"/>
-                            </StackPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.Resources>
-                    <!--
+            <StackPanel Grid.Column="4" VerticalAlignment="Stretch">
+                <Label Name="lblMashup" FontSize="16" Margin="10,10,0,0" >MASHUP</Label>
 
-ItemsSource="{Binding GreaterDimensions}"
-Source={x:Static Application.Current}
-DataContext="{Binding ElementName=UI}" 
-            <TreeViewItem Header="Data source 1">
-                <TreeViewItem Header="Table 1">
-                    <TreeViewItem Header="Attribute 1">
-                    </TreeViewItem>
-                </TreeViewItem>
-            </TreeViewItem>
--->
+                <!-- Data source panel -->
+                <TreeView Name="MashupView" 
+                          BorderThickness="0" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                          ItemsSource="{Binding MashupModel}"
+                          >
                 </TreeView>
             </StackPanel>
 
@@ -139,7 +177,6 @@ DataContext="{Binding ElementName=UI}"
             <StackPanel Grid.Column="2" >
                 <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
             </StackPanel>
-
             <!-- 
             There are many open sets each showing a DataGrid. We need a global list of all open sets. 
             When a set is open we need to dynamically create a DataGrid with dynamic list of columns corresponding to its dimensions.
@@ -148,6 +185,8 @@ DataContext="{Binding ElementName=UI}"
             http://stackoverflow.com/questions/16120010/how-to-dynamically-create-a-datagrid-in-wpf
             Dynamic grid: http://paulstovell.com/blog/dynamic-datagrid
             -->
+
+            <!-- Mashup panel -->
 
         </Grid>
 
