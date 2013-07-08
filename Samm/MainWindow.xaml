@@ -49,12 +49,42 @@
             <MenuItem Header="_Window" />
             <MenuItem Header="_Help" />
         </Menu>
-        <StatusBar DockPanel.Dock="Bottom">Status Bar</StatusBar>
-        <!--
+
+        <!-- Toolbar. See also <ToolBarTray> -->
+        <ToolBar DockPanel.Dock ="Top" >
+            <Button Content ="Exit" />
+            <Separator/>
+            <Button Content ="Help" Cursor="Help" />
+        </ToolBar>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="statBarText" Text="Ready"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <Grid>
+            <!-- Define the rows and columns -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+
+            <StackPanel Grid.Column="0" VerticalAlignment="Stretch">
+                <Label Name="lblDatasources" FontSize="16" Margin="10,10,0,0" >Data sources</Label>
+
+                <!-- Data source panel -->
+                <TreeView Name="DsView" 
+                          BorderThickness="0" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                          ItemsSource="{Binding DsModel}">
+                    <!--
         Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
         -->
-        <TreeView Name="DsView" DockPanel.Dock="Left" Height="Auto" Width="200" ItemsSource="{Binding DsModel}">
-<!--
+                    <!--
             <TreeView.ItemsSource>
                 <MultiBinding>
                     <MultiBinding.Converter>
@@ -66,31 +96,31 @@
                 </MultiBinding>
             </TreeView.ItemsSource>
 -->
-            <TreeView.Resources>
-                <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+                    <TreeView.Resources>
+                        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
-                <HierarchicalDataTemplate DataType="{x:Type com:Set}">
-                    <HierarchicalDataTemplate.ItemsSource>
-                        <MultiBinding  Converter="{StaticResource SubConv}">
-                            <Binding Path="SubSets"/>
-                            <Binding Path="GreaterDims"/>
-                        </MultiBinding>
-                    </HierarchicalDataTemplate.ItemsSource>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
-                        <TextBlock Text=" : " Width="10"/>
-                        <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
-                        <TextBlock Text=" : " Width="10"/>
-                        <TextBlock Text="{Binding Path=IsIdentity}"/>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
-<!--
+                        <HierarchicalDataTemplate DataType="{x:Type com:Set}">
+                            <HierarchicalDataTemplate.ItemsSource>
+                                <MultiBinding  Converter="{StaticResource SubConv}">
+                                    <Binding Path="SubSets"/>
+                                    <Binding Path="GreaterDims"/>
+                                </MultiBinding>
+                            </HierarchicalDataTemplate.ItemsSource>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
+                                <TextBlock Text=" : " Width="10"/>
+                                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                                <TextBlock Text=" : " Width="10"/>
+                                <TextBlock Text="{Binding Path=IsIdentity}"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                    <!--
 
 ItemsSource="{Binding GreaterDimensions}"
 Source={x:Static Application.Current}
@@ -102,6 +132,24 @@ DataContext="{Binding ElementName=UI}"
                 </TreeViewItem>
             </TreeViewItem>
 -->
-        </TreeView>
+                </TreeView>
+            </StackPanel>
+
+            <!-- Workspace panel -->
+            <StackPanel Grid.Column="2" >
+                <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
+            </StackPanel>
+
+            <!-- 
+            There are many open sets each showing a DataGrid. We need a global list of all open sets. 
+            When a set is open we need to dynamically create a DataGrid with dynamic list of columns corresponding to its dimensions.
+            Here we need to dynamically show the currently active grid.
+
+            http://stackoverflow.com/questions/16120010/how-to-dynamically-create-a-datagrid-in-wpf
+            Dynamic grid: http://paulstovell.com/blog/dynamic-datagrid
+            -->
+
+        </Grid>
+
     </DockPanel>
 </Window>
