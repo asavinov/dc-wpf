@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -261,6 +260,27 @@ namespace Samm
                         }
                     }
 */
+        }
+
+        private void MashupView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var tv = (TreeView)sender;
+
+            var item = tv.SelectedItem; // tv.SelectedValue
+
+            if (item is Set)
+            {
+                Set set = (Set)item;
+                lblWorkspace.Content = set.Name;
+            }
+            else if (item is Dim)
+            {
+                Dim dim = (Dim)item;
+                Set set = dim.LesserSet;
+                lblWorkspace.Content = set.Name + " : " + dim.Name;
+            }
+
+            e.Handled = true;
         }
     }
 }

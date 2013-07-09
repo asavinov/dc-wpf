@@ -194,6 +194,7 @@ DataContext="{Binding ElementName=UI}"
                           BorderThickness="0" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
                           ItemsSource="{Binding MashupModel}"
+                          MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
             </StackPanel>
