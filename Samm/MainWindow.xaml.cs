@@ -45,6 +45,13 @@ namespace Samm
             departments.GetGreaterDim("name").IsIdentity = true;
             departments.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments));
 
+            departments.Append();
+            departments.SetValue("name", 0, "SALES");
+            departments.SetValue("location", 0, "Dresden");
+            departments.Append();
+            departments.SetValue("name", 1, "HR");
+            departments.SetValue("location", 1, "Walldorf");
+
             Set employees = new Set("Employees");
             employees.SuperDim = new DimSuper("super", employees, root);
             employees.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees));
@@ -272,12 +279,24 @@ namespace Samm
             {
                 Set set = (Set)item;
                 lblWorkspace.Content = set.Name;
+
+                GridPanel.Children.Clear();
+
+                Label lbl = new Label();
+                lbl.Content = "Content";
+                // GridPanel.Children.Add(lbl);
+
+                var gridView = new SetGridView(set);
+                GridPanel.Children.Add(gridView.Grid);
+
             }
             else if (item is Dim)
             {
                 Dim dim = (Dim)item;
                 Set set = dim.LesserSet;
                 lblWorkspace.Content = set.Name + " : " + dim.Name;
+
+                GridPanel.Children.Clear();
             }
 
             e.Handled = true;

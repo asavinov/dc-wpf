@@ -90,15 +90,15 @@ DataContext="{Binding ElementName=UI}"
             <Setter Property="GridLinesVisibility" Value="None" />
             <Setter Property="CanUserAddRows" Value="False" />
             <Setter Property="CanUserDeleteRows" Value="False" />
-            <Setter Property="CanUserResizeColumns" Value="False" />
+            <Setter Property="CanUserResizeColumns" Value="True" />
             <Setter Property="CanUserResizeRows" Value="False" />
-            <Setter Property="CanUserReorderColumns" Value="False" />
+            <Setter Property="CanUserReorderColumns" Value="True" />
             <Setter Property="ColumnHeaderStyle" Value="{StaticResource GridHeaderStyle}" />
         </Style>
 
         <DataTemplate x:Key="CellTemplate">
             <Border Padding="3" Background="Purple">
-                <TextBox Text="{Binding Path=Value}" />
+                <TextBox Text="{Binding Path=.}" />
             </Border>
         </DataTemplate>
 
@@ -173,7 +173,7 @@ DataContext="{Binding ElementName=UI}"
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
             <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
-            <StackPanel Grid.Column="0" VerticalAlignment="Stretch">
+            <StackPanel Name="DsPanel" Grid.Column="0" VerticalAlignment="Stretch">
                 <Label Name="lblDatasources" FontSize="16" Margin="10,10,0,0" >Data sources</Label>
 
                 <!-- Data source panel -->
@@ -181,12 +181,13 @@ DataContext="{Binding ElementName=UI}"
                           BorderThickness="0" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
                           ItemsSource="{Binding DsModel}"
+                          MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
             </StackPanel>
 
             <!-- Mashup panel -->
-            <StackPanel Grid.Column="4" VerticalAlignment="Stretch">
+            <StackPanel Name="MashupPanel" Grid.Column="4" VerticalAlignment="Stretch">
                 <Label Name="lblMashup" FontSize="16" Margin="10,10,0,0" >MASHUP</Label>
 
                 <!-- Data source panel -->
@@ -194,14 +195,15 @@ DataContext="{Binding ElementName=UI}"
                           BorderThickness="0" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
                           ItemsSource="{Binding MashupModel}"
-                          MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
             </StackPanel>
 
             <!-- Workspace panel -->
-            <StackPanel Grid.Column="2" >
+            <StackPanel Name="WorkspacePanel" Grid.Column="2" >
                 <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
+                <StackPanel Name="GridPanel">
+                </StackPanel>
             </StackPanel>
 
         </Grid>
