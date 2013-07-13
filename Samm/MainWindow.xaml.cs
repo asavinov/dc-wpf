@@ -301,5 +301,12 @@ namespace Samm
 
             e.Handled = true;
         }
+
+        private void aboutMenu_Click(object sender, RoutedEventArgs e)
+        {
+            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+        }
     }
 }

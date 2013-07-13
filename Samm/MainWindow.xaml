@@ -144,7 +144,9 @@ DataContext="{Binding ElementName=UI}"
             </MenuItem>
             <MenuItem Header="_View" />
             <MenuItem Header="_Window" />
-            <MenuItem Header="_Help" />
+            <MenuItem Header="_Help">
+                <MenuItem Name="aboutMenu" Header="_About" Click="aboutMenu_Click"/>
+            </MenuItem>
         </Menu>
 
         <!-- Toolbar. See also <ToolBarTray> -->
