@@ -122,7 +122,10 @@ DataContext="{Binding ElementName=UI}"
                 <MenuItem Header="Remove Data Source"/>
                 <MenuItem Header="Add _Table"/>
                 <MenuItem Header="Remove Table"/>
-                <MenuItem Header="Add _Attribute"/>
+                <MenuItem Header="Add _Attribute">
+                    <MenuItem Name="addAggregationAttributeMenu" Header="Add Aggregation Attribute" Click="addAggregationAttributeMenu_Click" />
+                    <MenuItem Name="addSomeOtherAttributeMenu" Header="Add Some Other Attribute" />
+                </MenuItem>
                 <MenuItem Header="Remove Attribute"/>
             </MenuItem>
             <MenuItem Header="_Edit">

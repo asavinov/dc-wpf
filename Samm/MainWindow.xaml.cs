@@ -308,5 +308,12 @@ namespace Samm
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
         }
+
+        private void addAggregationAttributeMenu_Click(object sender, RoutedEventArgs e)
+        {
+            AggregationBox dlg = new AggregationBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+        }
     }
 }
