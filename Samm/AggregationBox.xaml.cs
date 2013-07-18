@@ -21,15 +21,27 @@ namespace Samm
     /// </summary>
     public partial class AggregationBox : Window
     {
-        public Set GroupingPath { get; set; }
-        public Set MeasurePath { get; set; }
+        public Segments GroupingPath { get; set; }
+        public Segments MeasurePath { get; set; }
 
         public AggregationBox()
         {
-            GroupingPath = new Set("Grouping");
-            MeasurePath = new Set("Measure");
+            var gExpr = new Com.Model.Expression("Group Root");
+            gExpr.OutputSetName = "Output Set Name";
+            gExpr.Operation = Com.Model.Operation.FUNCTION;
+            GroupingPath = new Segments(gExpr);
+
+            var mExpr = new Com.Model.Expression("Measure Root");
+            mExpr.OutputSetName = "Measure Set Name";
+            mExpr.Operation = Com.Model.Operation.FUNCTION;
+            var mExpr2 = new Com.Model.Expression("Second Segment");
+            mExpr2.Operation = Com.Model.Operation.FUNCTION;
+            mExpr2.OutputSetName = "Measure 2 Set Name";
+            mExpr.Input = mExpr2; mExpr2.ParentExpression = mExpr;
+            MeasurePath = new Segments(mExpr);
 
             InitializeComponent();
         }
     }
+
 }

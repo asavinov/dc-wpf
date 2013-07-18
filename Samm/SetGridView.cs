@@ -133,8 +133,10 @@ namespace Samm
 
         public bool MoveNext()
         {
-            if (Offset < Set.Length) Offset++;
+            if (Offset < Set.Length) Offset++; // Increement if possible
+
             if (Offset >= Set.Length) return false; // Cannot move
+
             return true;
         }
 

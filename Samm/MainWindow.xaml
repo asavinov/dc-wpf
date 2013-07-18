@@ -11,6 +11,10 @@
     <Window.Resources>
         <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
+        <!-- Butons in toolbar -->
+        <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
+
+        <!-- TreeView -->
         <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
@@ -79,6 +83,7 @@ DataContext="{Binding ElementName=UI}"
             // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
 -->
 
+        <!-- Grid for visualizing a set -->
         <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="FontSize" Value="12" />
@@ -152,9 +157,9 @@ DataContext="{Binding ElementName=UI}"
             </MenuItem>
         </Menu>
 
-        <!-- Toolbar. See also <ToolBarTray> -->
-        <ToolBar DockPanel.Dock ="Top" >
-            <Button Content ="Exit" />
+        <!-- Toolbar. See also <ToolBarTray>  -->
+        <ToolBar DockPanel.Dock ="Top" Margin="5, 5, 5, 5" >
+            <Button Content ="Exit" Height="40" Width="40" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
             <Separator/>
             <Button Content ="Help" Cursor="Help" />
         </ToolBar>

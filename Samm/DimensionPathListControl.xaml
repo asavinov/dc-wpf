@@ -16,18 +16,18 @@
             <RowDefinition Height="20*"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <ListView Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,5,5,5" >
+        <ListView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,5,5,5" >
             <ListView.View>
                 <GridView ColumnHeaderContainerStyle="{StaticResource DimensionPathListHeaderStyle}">
-                    <GridViewColumn Header="From Name" DisplayMemberBinding="{Binding Path=LesserTableName}" />
-                    <GridViewColumn Header="Column Name" DisplayMemberBinding="{Binding Path=Id}" />
-                    <GridViewColumn Header="To Name" DisplayMemberBinding="{Binding Path=GreaterTableName}" />
+                    <GridViewColumn Header="From Name" DisplayMemberBinding="{Binding Path=FromName}" />
+                    <GridViewColumn Header="Column Name" DisplayMemberBinding="{Binding Path=SegmentName}" />
+                    <GridViewColumn Header="To Name" DisplayMemberBinding="{Binding Path=ToName}" />
                 </GridView>
             </ListView.View>
         </ListView>
         <StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="_Add..." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
-            <Button Content="{Binding Path=Name}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
+            <Button Content="Remove" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
         </StackPanel>
     </Grid>
 </UserControl>
