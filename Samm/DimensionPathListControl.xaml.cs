@@ -45,6 +45,35 @@ namespace Samm
             _current = null;
         }
 
+        public Com.Model.Expression FirstSegment
+        {
+            get
+            {
+                if (Root == null) return null;
+
+                Com.Model.Expression seg = Root;
+                while (seg.Input != null)
+                {
+                    if (seg.Input.Operation != Com.Model.Operation.FUNCTION && seg.Input.Operation != Com.Model.Operation.INVERSE_FUNCTION)
+                        break; // Nest node is non-function node
+                    seg = seg.Input;
+                }
+                return seg; 
+            }
+        }
+        public Com.Model.Expression LastSegment
+        {
+            get
+            {
+                if (Root == null) return null;
+
+                if (Root.Operation != Com.Model.Operation.FUNCTION && Root.Operation != Com.Model.Operation.INVERSE_FUNCTION)
+                    return null;
+                    
+                return Root; 
+            }
+        }
+
         // IEnumerable Members 
 
         public IEnumerator<Segment> GetEnumerator()
@@ -82,14 +111,13 @@ namespace Samm
         {
             if (_current == null) // Before start
             {
-                _current = Root;
+                _current = FirstSegment;
             }
             else
             {
-                _current = _current.Input;
+                _current = _current.ParentExpression;
             }
 
-            // We need only function segments - so check the operation
             if (_current == null || (_current.Operation != Com.Model.Operation.FUNCTION && _current.Operation != Com.Model.Operation.INVERSE_FUNCTION)) 
                 return false; // After end - non-function segment was reached
 
