@@ -1,4 +1,4 @@
-﻿<Window x:Class="Samm.MainWindow"
+﻿<RibbonWindow x:Class="Samm.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:com="clr-namespace:Com.Model;assembly=Com"
@@ -8,7 +8,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
 
-    <Window.Resources>
+    <RibbonWindow.Resources>
         <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
         <!-- Butons in toolbar -->
@@ -107,62 +107,88 @@ DataContext="{Binding ElementName=UI}"
             </Border>
         </DataTemplate>
 
-    </Window.Resources>
+    </RibbonWindow.Resources>
 
     <DockPanel LastChildFill="False">
-        <Menu DockPanel.Dock="Top" IsMainMenu="True">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="New"/>
-                <MenuItem Header="_Open" Command="Open"/>
-                <MenuItem Header="_Close" Command="Close"/>
-                <MenuItem Header="_Save" Command="Save"/>
-                <MenuItem Header="_Save As..." Command="SaveAs"/>
-                <MenuItem Header="_Exit"/>
-            </MenuItem>
-            <MenuItem Header="_Data">
-                <MenuItem Header="Add _Data Source">
-                    <MenuItem Name="accessDataSourceMenu" Header="Access Database" Click="accessDataSourceMenu_Click"/>
-                    <MenuItem Name="sqlServerDataSourceMenu" Header="SQL Server" Click="sqlServerDataSourceMenu_Click"/>
-                </MenuItem>
-                <MenuItem Header="Remove Data Source"/>
-                <MenuItem Header="Add _Table"/>
-                <MenuItem Header="Remove Table"/>
-                <MenuItem Header="Add _Attribute">
-                    <MenuItem Name="addAggregationAttributeMenu" Header="Add Aggregation Attribute" Click="addAggregationAttributeMenu_Click" />
-                    <MenuItem Name="addSomeOtherAttributeMenu" Header="Add Some Other Attribute" />
-                </MenuItem>
-                <MenuItem Header="Remove Attribute"/>
-            </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Cut" Command="Cut">
-                    <MenuItem.Icon>
-                        <Image Source="Images/cut.png" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="_Copy" Command="Copy">
-                    <MenuItem.Icon>
-                        <Image Source="Images/copy.png" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="_Paste" Command="Paste">
-                    <MenuItem.Icon>
-                        <Image Source="Images/paste.png" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="_View" />
-            <MenuItem Header="_Window" />
-            <MenuItem Header="_Help">
-                <MenuItem Name="aboutMenu" Header="_About" Click="aboutMenu_Click"/>
-            </MenuItem>
-        </Menu>
 
-        <!-- Toolbar. See also <ToolBarTray>  -->
-        <ToolBar DockPanel.Dock ="Top" Margin="5, 5, 5, 5" >
-            <Button Content ="Exit" Height="40" Width="40" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" />
-            <Separator/>
-            <Button Content ="Help" Cursor="Help" />
-        </ToolBar>
+        <Ribbon x:Name="RibbonWin" DockPanel.Dock="Top" SelectedIndex="0">
+
+            <!-- Help Pane, located at the right-hand side -->
+            <Ribbon.HelpPaneContent>
+                <RibbonButton SmallImageSource="Images\help.png" />
+            </Ribbon.HelpPaneContent>
+
+            <!-- Quick Access Toolbar - located at the upper-left corner -->
+            <Ribbon.QuickAccessToolBar>
+                <RibbonQuickAccessToolBar>
+                    <RibbonButton x:Name ="Save" SmallImageSource="Images\default.png" />
+                    <RibbonSplitButton x:Name ="Undo" SmallImageSource="Images\default.png">
+                        <RibbonSplitMenuItem Header="Undo 1" />
+                        <RibbonSplitMenuItem Header="Undo 2" />
+                        <RibbonSplitMenuItem Header="Undo 3" />
+                    </RibbonSplitButton>
+                    <RibbonSplitButton x:Name="Redo" SmallImageSource="Images\default.png" >
+                        <RibbonSplitMenuItem Header="Redo 1" />
+                        <RibbonSplitMenuItem Header="Redo 2" />
+                    </RibbonSplitButton>
+                </RibbonQuickAccessToolBar>
+            </Ribbon.QuickAccessToolBar>
+
+            <!-- Application Menu, located at the left-hand side (down arrow) -->
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu KeyTip="F">
+                    <RibbonApplicationMenuItem Header="New" ImageSource="Images\default.png" Command="New"/>
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.png" Command="Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.png" Command="Close"/>
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.png" Command="Save"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.png" Command="SaveAs"/>
+                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\default.png" />
+                    <RibbonApplicationMenuItem Name="aboutMenu" Header="About" ImageSource="Images\default.png" Click="aboutMenu_Click" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\default.png" />
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+
+            <!-- Ribbon Tab Home/File -->
+            <RibbonTab Header="Home" KeyTip="H" >
+                <!-- Home  group-->
+                <RibbonGroup x:Name="ClipboardGroup" Header="Home">
+                    <RibbonMenuButton LargeImageSource="Images\paste.png" Label="Paste" KeyTip="V">
+                        <RibbonMenuItem ImageSource="Images\paste.png" Header="Keep Text Only" KeyTip="T"/>
+                        <RibbonMenuItem ImageSource="Images\paste.png" Header="Paste Special..." KeyTip="S"/>
+                    </RibbonMenuButton>
+                    <RibbonButton SmallImageSource="Images\cut.png" Label="Cut" KeyTip="X" />
+                    <RibbonButton SmallImageSource="Images\copy.png" Label="Copy" KeyTip="C" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Format Painter" KeyTip="FP" />
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!-- Ribbon Tab View -->
+            <RibbonTab Header="View" KeyTip="V">
+                <RibbonButton SmallImageSource="Images\default.png" Label="Window" KeyTip="W" />
+            </RibbonTab>
+
+            <!-- Ribbon Tab Data Source -->
+            <RibbonTab Header="Data Source" KeyTip="D">
+                <RibbonButton Name="accessDataSourceMenu" SmallImageSource="Images\default.png" Label="Access Database" KeyTip="A" Click="accessDataSourceMenu_Click"/>
+                <RibbonButton Name="sqlServerDataSourceMenu" SmallImageSource="Images\default.png" Label="SQL Server" KeyTip="X"  Click="sqlServerDataSourceMenu_Click"/>
+                <RibbonButton Name="removeDataSource" SmallImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
+                <RibbonButton Name="searchDataSource" SmallImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
+            </RibbonTab>
+
+            <!-- Ribbon Tab Insert -->
+            <RibbonTab Header="Insert" KeyTip="W">
+                <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
+                </RibbonGroup>
+                <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
+                    <RibbonButton Name="addAggregationAttributeMenu" SmallImageSource="Images\default.png" Label="Add Aggregation Column" KeyTip="A" Click="addAggregationAttributeMenu_Click" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
+                </RibbonGroup>
+            </RibbonTab>
+
+        </Ribbon>
 
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -219,4 +245,4 @@ DataContext="{Binding ElementName=UI}"
         </Grid>
 
     </DockPanel>
-</Window>
+</RibbonWindow>
