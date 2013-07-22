@@ -27,14 +27,14 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
-        public ObservableCollection<Set> DsModel { get; set; }
-        public ObservableCollection<Set> MashupModel { get; set; }
+        public ObservableCollection<SetRoot> DsModel { get; set; }
+        public ObservableCollection<SetRoot> MashupModel { get; set; }
 
         List<object> windows = new List<object>();
 
         public MainWindow()
         {
-            DsModel = new ObservableCollection<Set>();
+            DsModel = new ObservableCollection<SetRoot>();
 
             SetRoot root = new  SetRoot("My Data Source");
 
@@ -66,7 +66,7 @@ namespace Samm
             managers.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
             managers.AddGreaterDim(root.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
 
-            MashupModel = new ObservableCollection<Set>();
+            MashupModel = new ObservableCollection<SetRoot>();
 
             SetRoot muRoot = new SetRoot("My Mashup");
 
@@ -79,6 +79,7 @@ namespace Samm
 
         private void accessDataSourceMenu_Click(object sender, RoutedEventArgs e)
         {
+
             /*
                         //
                         // OLEDB Connection string dialog: http://support.microsoft.com/default.aspx?scid=kb;EN-US;310083
@@ -128,11 +129,31 @@ namespace Samm
             }
 
             string connectionString = dcd.ConnectionString; // Example: "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\savinov\\git\\samm\\Northwind.accdb"
+
+            //readOledbSchema(connectionString); //For testing purposes
+
+            dcs.SaveConfiguration(dcd);
+
+            // Initialize the data suorce
+            if (DsModel == null) DsModel = new ObservableCollection<SetRoot>();
+            else DsModel.Clear();
+
+            SetRootOledb root = new SetRootOledb("My Data Source");
+
+            root.ConnectionString = connectionString;
+
+            root.Open();
+            root.ImportSchema();
+
+            DsModel.Add(root);
+        }
+
+        private void readOledbSchema(string connectionString)
+        {
             using (/*SqlConnection*/ System.Data.OleDb.OleDbConnection connection = new System.Data.OleDb.OleDbConnection(connectionString))
             {
                 // For oledb: http://www.c-sharpcorner.com/UploadFile/Suprotim/OledbSchema09032005054630AM/OledbSchema.aspx
                     
-
                 connection.Open();
 
                 // Read a table with schema information
@@ -235,8 +256,6 @@ namespace Samm
 
                 }
             }
-
-            dcs.SaveConfiguration(dcd);
         }
 
         private void sqlServerDataSourceMenu_Click(object sender, RoutedEventArgs e)
@@ -303,11 +322,28 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void aboutMenu_Click(object sender, RoutedEventArgs e)
+        private void importTableInsertMenu_Click(object sender, RoutedEventArgs e)
         {
-            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
+            var item = DsView.SelectedItem;
+
+            if (item is Set && ((Set)item).Root == DsModel[0])
+            {
+                Set set = (Set)item;
+
+                DimExport dimExp = new DimExport("Import " + set.Name, set, MashupModel[0]);
+                dimExp.BuildExpression();
+                dimExp.ExportDimensions();
+
+                // HACK: refresh the view
+                SetRoot mashup = MashupModel[0];
+                MashupModel.RemoveAt(0);
+                MashupModel.Add(mashup);
+
+                // Load data (in fact, it is a separate action with a separate button)
+                dimExp.Populate();
+            }
+
+            e.Handled = true;
         }
 
         private void addAggregationAttributeMenu_Click(object sender, RoutedEventArgs e)
@@ -316,5 +352,13 @@ namespace Samm
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
         }
+
+        private void aboutMenu_Click(object sender, RoutedEventArgs e)
+        {
+            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+        }
+
     }
 }

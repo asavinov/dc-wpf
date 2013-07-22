@@ -45,7 +45,6 @@ namespace Samm
 
             Grid = new DataGrid();
             Grid.Style = Application.Current.MainWindow.FindResource("ReadOnlyGridStyle") as Style;
-            Grid.Name = Set.Name;
             Grid.AutoGenerateColumns = false;
             Grid.ItemsSource = new Elements(_set);
 
@@ -172,7 +171,9 @@ namespace Samm
                 if (index < 0 || index >= dimCount) return null;
                 Dim dim = Set.GreaterDims[index];
 
-                return (string)dim.GetValue(Offset);
+                object cell = dim.GetValue(Offset);
+
+                return Convert.ToString(cell);
             }
         }
 

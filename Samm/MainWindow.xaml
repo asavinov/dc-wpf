@@ -178,7 +178,7 @@ DataContext="{Binding ElementName=UI}"
             <!-- Ribbon Tab Insert -->
             <RibbonTab Header="Insert" KeyTip="W">
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" />
+                    <RibbonButton Name="importTableInsertMenu" SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" Click="importTableInsertMenu_Click" />
                     <RibbonButton SmallImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
                     <RibbonButton SmallImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
@@ -231,6 +231,7 @@ DataContext="{Binding ElementName=UI}"
                           BorderThickness="0" 
                           ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
                           ItemsSource="{Binding MashupModel}"
+                          MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
             </StackPanel>
