@@ -88,21 +88,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddTableBox.xaml.cs">
+      <DependentUpon>AddTableBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AggregationBox.xaml.cs">
       <DependentUpon>AggregationBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DimensionPathListControl.xaml.cs">
-      <DependentUpon>DimensionPathListControl.xaml</DependentUpon>
+    <Compile Include="PathListControl.xaml.cs">
+      <DependentUpon>PathListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SetGridView.cs" />
     <Compile Include="AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
-    <Page Include="AggregationBox.xaml">
+    <Compile Include="TupleTreeControl.xaml.cs">
+      <DependentUpon>TupleTreeControl.xaml</DependentUpon>
+    </Compile>
+    <Page Include="AddTableBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DimensionPathListControl.xaml">
+    <Page Include="AggregationBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -122,6 +128,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PathListControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TupleTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -16,14 +16,23 @@ using System.Windows.Shapes;
 namespace Samm
 {
     /// <summary>
-    /// Interaction logic for DimensionPathListControl.xaml
+    /// Interaction logic for PathListControl.xaml
     /// 
     /// Interesting article on how to pass data into a user control using both DataContext and parameter binding: 
     /// http://www.codeproject.com/Articles/137288/WPF-Passing-Data-to-Sub-Views-via-DataContext-Caus
+    /// 
+    /// Visualization options:
+    /// - Possible segment directions: up, down, both
+    /// - Editable or constant segments. Segments can be added and removed.
+    /// - Editable or constant sets. Only existing sets can be used or sets can be added (for future creation).
+    /// - The path can be temporarily in inconsistent state. Missing intermediate segments or empty segments with no initialized parameters. For example, if a segment is deleted.
+    /// - Validate expression method.
+    /// - Recommendation of paths/segments/sets method and its use when proposing segments
+    /// 
     /// </summary>
-    public partial class DimensionPathListControl : UserControl
+    public partial class PathListControl : UserControl
     {
-        public DimensionPathListControl()
+        public PathListControl()
         {
             InitializeComponent();
         }

@@ -37,33 +37,7 @@
             </StackPanel>
         </HierarchicalDataTemplate>
 
-        <!--
-        Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
-        -->
-        <!--
-            <TreeView.ItemsSource>
-                <MultiBinding>
-                    <MultiBinding.Converter>
-                        <local:CompositeCollectionConverter />
-                        </MultiBinding.Converter>
-                        <Binding Path="ViewModel.Instructions" />
-                        <Binding Path="ViewModel.Children" />
-                        <Binding Path="ViewModel.Review" />
-                </MultiBinding>
-            </TreeView.ItemsSource>
--->
-        <!--
-
-ItemsSource="{Binding GreaterDimensions}"
-Source={x:Static Application.Current}
-DataContext="{Binding ElementName=UI}" 
-            <TreeViewItem Header="Data source 1">
-                <TreeViewItem Header="Table 1">
-                    <TreeViewItem Header="Attribute 1">
-                    </TreeViewItem>
-                </TreeViewItem>
-            </TreeViewItem>
--->
+        <!-- Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select -->
         <!--
             // Criteria to the tree view: 
             // - we might need either code for visualization or dedicated class (referenced in XAML)
