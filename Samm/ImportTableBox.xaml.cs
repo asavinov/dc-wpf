@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,10 +18,14 @@ namespace Samm
     /// <summary>
     /// Interaction logic for AddTableBox.xaml
     /// </summary>
-    public partial class AddTableBox : Window
+    public partial class ImportTableBox : Window
     {
-        public AddTableBox()
+        public ObservableCollection<Com.Model.Expression> TupleExpressionModel { get; set; }
+
+        public ImportTableBox()
         {
+            TupleExpressionModel = new ObservableCollection<Com.Model.Expression>();
+
             InitializeComponent();
         }
     }

@@ -13,7 +13,11 @@
         <!-- TreeView -->
         <HierarchicalDataTemplate DataType="{x:Type com:Expression}" ItemsSource="{Binding Path=Operands}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
+                <TextBlock Text="{Binding Path=Operation}" Foreground="Blue"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=ParentExpression.OutputSetName}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=Name}"/>
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=OutputSetName}"/>
                 <TextBlock Text=" : " Width="10"/>
@@ -22,13 +26,14 @@
         </HierarchicalDataTemplate>
 
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <TreeView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding MashupModel}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <TreeView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
         </TreeView>
 
         <StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">

@@ -88,11 +88,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AddTableBox.xaml.cs">
-      <DependentUpon>AddTableBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="AggregationBox.xaml.cs">
       <DependentUpon>AggregationBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportTableBox.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>ImportTableBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="PathListControl.xaml.cs">
       <DependentUpon>PathListControl.xaml</DependentUpon>
@@ -104,13 +105,13 @@
     <Compile Include="TupleTreeControl.xaml.cs">
       <DependentUpon>TupleTreeControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="AddTableBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="AggregationBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportTableBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

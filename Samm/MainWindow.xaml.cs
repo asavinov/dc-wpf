@@ -332,15 +332,20 @@ namespace Samm
 
                 DimExport dimExp = new DimExport("Import " + set.Name, set, MashupModel[0]);
                 dimExp.BuildExpression();
-                dimExp.ExportDimensions();
+
+                // Show dialog for editing import
+                ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
+                dlg.Owner = this;
+                dlg.TupleExpressionModel.Add(dimExp.SelectExpression);
+                dlg.ShowDialog();
+
+                dimExp.ExportDimensions(); // Load structure
+                dimExp.Populate(); // Load data (it should be a separate action with a separate button)
 
                 // HACK: refresh the view
                 SetRoot mashup = MashupModel[0];
                 MashupModel.RemoveAt(0);
                 MashupModel.Add(mashup);
-
-                // Load data (in fact, it is a separate action with a separate button)
-                dimExp.Populate();
             }
 
             e.Handled = true;
