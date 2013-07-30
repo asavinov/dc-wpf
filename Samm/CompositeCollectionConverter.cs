@@ -18,7 +18,8 @@ namespace Samm
         {
             var res = new CompositeCollection();
             foreach (var item in values)
-                if (item is IEnumerable)
+                if (item == null) continue;
+                else if (item is IEnumerable)
                     res.Add(new CollectionContainer()
                     {
                         Collection = item as IEnumerable

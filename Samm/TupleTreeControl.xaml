@@ -9,13 +9,32 @@
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
+        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
         <!-- TreeView -->
-        <HierarchicalDataTemplate DataType="{x:Type com:Expression}" ItemsSource="{Binding Path=Operands}">
+        <!--
+        Criteria for the template:
+        - root is a special ImportDim expression from the SOURCE set to the new set. Its source set name and dim name are not relevant.
+        - For tuple we show Operands (although theoretically Input should contain super element which is Root if null - so it is a problem how to show/hide it)
+          But for PRIMITIVE (tuple leaves) we need to show Input because it contains the expression returning the primitive value (like DOT function, which in turn has Input containing a VARIABLE but which can be either hidden or automatically set and non-editable)
+          So we probably need multi-binding with one item from Input and many items from Operands.
+        - different icons for different operation/expression types
+        - From-set and To-set depend on operation/expression type
+          - FromSet = Parent.OutputSet (TUPLE), Input.OutputSet (DOT, PROJECTION, all other), NA (PRIMITIVE)
+          - ToSet = OutputSet (TUPLE), OutputSet (DOT, PROJECTION, VALUE, all other)
+        - Set (from or to) name can be computed differently using SetName or Set.Name
+        - Possible actions (add, delete etc.) depend on the operation/expression type
+          - Primitive expressions (primitive dim & ToSet) cannot be expanded (we cannot add new child tuple/values) - only a primitive value
+        -->
+        <HierarchicalDataTemplate DataType="{x:Type com:Expression}">
+            <HierarchicalDataTemplate.ItemsSource>
+                <MultiBinding  Converter="{StaticResource SubConv}">
+                    <Binding Path="Input"/>
+                    <Binding Path="Operands"/>
+                </MultiBinding>
+            </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Path=Operation}" Foreground="Blue"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=ParentExpression.OutputSetName}"/>
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=Name}"/>
                 <TextBlock Text=" : " Width="10"/>

@@ -9,23 +9,50 @@
         >
 
     <RibbonWindow.Resources>
+        <!--
+        - Multi-selection in tree view: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
+        - p675. Modify visual reprsentation of an item depending on property including data properties and visual properties (e.g., selected dim/set can show more information)
+          - Use a data trigger. Set a property in a template depending on a property in the data object. 
+            The object (like Set) has to implement INotifyPropertyChanged if the property can change and it is necessary to update the view.
+            http://stackoverflow.com/questions/5010511/wpf-datatemplate-binding-depending-on-the-type-of-a-property
+          - Specify value converter as a parameter of binding by implementing IValueConverter or IMultiValueConverter (for converting from multiple properties):
+            <Image Source="{Binding Path=ProductImagePath, Converter={StaticResource ImagePathConverter}}"/>
+            Background="{Binding Path=CategoryName, Converter={StaticResource CategoryToColorConverter}"
+            This approach is good when converters are reused with other templates (say, colors, images etc.)
+            http://stackoverflow.com/questions/790896/selecting-datatemplate-based-on-sub-object-type
+          - p676. Use a template selector which examines the bound data object and chooses among several templates (works precisely as style selectors). 
+            Derive the selector from DataTemplateSelector: http://stackoverflow.com/questions/790896/selecting-datatemplate-based-on-sub-object-type
+            Can be used, for instance, to display more information for selected items like Set or Dim. 
+          - p.683 Changing visual properties depending on selection property of the whole item (for expanding selected items)
+        
+        - How to add artificial folder by grouping special items? For example, primitive sets (in the root), identity dimensions, entity dimensions etc.
+        - p.691 (ch.21) Data views for sorting, filtering items. Data source has to implement IList (e.g. ObservableCollection), IBindingList or IEnumerable (bad, low performance).
+          - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
+          - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
+        
+            // Criteria to the tree view: 
+            // - Conditional visualization (item rendering):
+            //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
+            //   - Dimension structure visualized (so we need to anayze the identity tree) -> Use multibinding by expanding dimension items (only identities up to the primitive sets)
+            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
+            //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
+            //   - TreeView header (it is probably needed only if we have allignment).
+            // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
+            // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
+            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
+            // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
+            // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
+-->
+
         <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
-        <!-- Butons in toolbar -->
-        <Style BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" TargetType="Button"></Style>
-
-        <!-- TreeView -->
-        <HierarchicalDataTemplate DataType="{x:Type com:Dim}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Name}" Foreground="Red"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=IsIdentity}"/>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <HierarchicalDataTemplate DataType="{x:Type com:Set}" >
+        <!-- Data template to display items of class Set (no matter where they appear in this window) -->
+        <HierarchicalDataTemplate DataType="{x:Type com:Set}">
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=IsPrimitive}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                </DataTrigger>
+            </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
                 <MultiBinding  Converter="{StaticResource SubConv}">
                     <Binding Path="SubSets"/>
@@ -33,29 +60,25 @@
                 </MultiBinding>
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+                <TextBlock Text="{Binding Path=Name}" />
             </StackPanel>
         </HierarchicalDataTemplate>
 
-        <!-- Customizing the TreeView to allow multi select: http://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select -->
-        <!--
-            // Criteria to the tree view: 
-            // - we might need either code for visualization or dedicated class (referenced in XAML)
-            // - Conditional visualization (item rendering):
-            //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
-            //   - Dimension structure visualized (so we need to anayze the identity tree) -> Use multibinding
-            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
-            //   - Item visualization structure can depend on either properties or class. How to implement it?
-            //   - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
-            //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
-            //   - TreeView header (it is probably needed only if we have allignment).
-            //   - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
-            // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
-            // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
-            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
-            // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
-            // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
--->
+        <!-- Data template to display items of class Dim (no matter where they appear in this window) -->
+        <DataTemplate DataType="{x:Type com:Dim}">
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=IsIdentity}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=IsIdentity}"/>
+            </StackPanel>
+        </DataTemplate>
 
         <!-- Grid for visualizing a set -->
         <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
