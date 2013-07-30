@@ -37,32 +37,32 @@ namespace Samm
             // Prepare test aggregation expressions
             var gExpr = new Com.Model.Expression("Root (last)"); // Root of expression is that last computed element along a path (so it has to be the last in the list)
             gExpr.OutputSetName = "Last set (root expr)";
-            gExpr.Operation = Com.Model.Operation.INVERSE_FUNCTION;
+            gExpr.Operation = Com.Model.Operation.DEPROJECTION;
 
             var gExpr2 = new Com.Model.Expression("Before last");
             gExpr2.OutputSetName = "Before last";
-            gExpr2.Operation = Com.Model.Operation.INVERSE_FUNCTION;
+            gExpr2.Operation = Com.Model.Operation.DEPROJECTION;
             gExpr.SetInput(gExpr2);
 
             var gExpr3 = new Com.Model.Expression("Group OFFSET");
-            gExpr3.OutputSetName = "First (offset)";
-            gExpr3.Operation = Com.Model.Operation.OFFSET;
+            gExpr3.OutputSetName = "this";
+            gExpr3.Operation = Com.Model.Operation.VARIABLE;
             gExpr2.SetInput(gExpr3);
 
             GroupingPath = new Segments(gExpr);
 
             var mExpr = new Com.Model.Expression("Measure Root");
             mExpr.OutputSetName = "Measure Set Name";
-            mExpr.Operation = Com.Model.Operation.FUNCTION;
+            mExpr.Operation = Com.Model.Operation.DOT;
 
             var mExpr2 = new Com.Model.Expression("Second Segment");
-            mExpr2.Operation = Com.Model.Operation.FUNCTION;
+            mExpr2.Operation = Com.Model.Operation.DOT;
             mExpr2.OutputSetName = "Measure 2 Set Name";
             mExpr.SetInput(mExpr2);
 
             var mExpr3 = new Com.Model.Expression("Measure OFFSET");
-            mExpr3.Operation = Com.Model.Operation.OFFSET;
-            mExpr3.OutputSetName = "Offset Name";
+            mExpr3.Operation = Com.Model.Operation.VARIABLE;
+            mExpr3.OutputSetName = "group";
             mExpr2.SetInput(mExpr3);
 
             MeasurePath = new Segments(mExpr);

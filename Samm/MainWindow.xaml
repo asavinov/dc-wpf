@@ -29,12 +29,16 @@
         - p.691 (ch.21) Data views for sorting, filtering items. Data source has to implement IList (e.g. ObservableCollection), IBindingList or IEnumerable (bad, low performance).
           - Using flags/properties for choosing what to visualize: visualize also lesser (incoming) dimensions, visualize also dimension expansion (expand dimension range set), show only identity dims or only entity dims etc.
           - Custom sorting. One general way is to implement binding properties specially for visualization purposes which will return what is needed for the tree view (and other controls) taking into account flags, filters, properties, dedicated folders for special elements etc.
+        - Putting nodes of one kind in a separate folder (say, primitive sets, subsets, identity/entity dimensions etc.)
+          - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
+          Solution: http://www.codeproject.com/Articles/36451/Organizing-Heterogeneous-Data-on-a-WPF-TreeView
+          http://stackoverflow.com/questions/2248346/grouping-child-objects-in-wpf-treeview
+          Alternative solution: http://www.zagstudio.com/blog/365#.Ufgt3W1Enmg  http://www.zagstudio.com/blog/367#.UfguTm1Enmg
         
             // Criteria to the tree view: 
             // - Conditional visualization (item rendering):
             //   - Primitive concepts either not visualized or visualized in a separate folder (also other kinds of folders either with special class or with special properties)
             //   - Dimension structure visualized (so we need to anayze the identity tree) -> Use multibinding by expanding dimension items (only identities up to the primitive sets)
-            //   - Different types of dimensions (identity/entiy/greater/lesser etc.) either hide or in separate folders 
             //   - Alligning various elements of items across the whole tree like in a table, say, names could be alligned (although it might not be possible for deep children)
             //   - TreeView header (it is probably needed only if we have allignment).
             // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
@@ -200,6 +204,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="600" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -219,6 +224,13 @@
                 </TreeView>
             </StackPanel>
 
+            <!-- Workspace panel -->
+            <StackPanel Name="WorkspacePanel" Grid.Column="2" >
+                <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
+                <StackPanel Name="GridPanel">
+                </StackPanel>
+            </StackPanel>
+
             <!-- Mashup panel -->
             <StackPanel Name="MashupPanel" Grid.Column="4" VerticalAlignment="Stretch">
                 <Label Name="lblMashup" FontSize="16" Margin="10,10,0,0" >MASHUP</Label>
@@ -231,13 +243,6 @@
                           MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
-            </StackPanel>
-
-            <!-- Workspace panel -->
-            <StackPanel Name="WorkspacePanel" Grid.Column="2" >
-                <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
-                <StackPanel Name="GridPanel">
-                </StackPanel>
             </StackPanel>
 
         </Grid>

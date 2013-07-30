@@ -346,6 +346,8 @@ namespace Samm
                 SetRoot mashup = MashupModel[0];
                 MashupModel.RemoveAt(0);
                 MashupModel.Add(mashup);
+                // ListCollectionView view = (ListCollectionView)CollectionViewSource.GetDefaultView(MashupView.DataContext);
+                // view.Refresh();
             }
 
             e.Handled = true;

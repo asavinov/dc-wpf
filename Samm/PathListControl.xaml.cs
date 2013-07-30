@@ -63,7 +63,7 @@ namespace Samm
                 Com.Model.Expression seg = Root;
                 while (seg.Input != null)
                 {
-                    if (seg.Input.Operation != Com.Model.Operation.FUNCTION && seg.Input.Operation != Com.Model.Operation.INVERSE_FUNCTION)
+                    if (seg.Input.Operation != Com.Model.Operation.DOT && seg.Input.Operation != Com.Model.Operation.PROJECTION && seg.Input.Operation != Com.Model.Operation.DEPROJECTION)
                         break; // Nest node is non-function node
                     seg = seg.Input;
                 }
@@ -76,7 +76,7 @@ namespace Samm
             {
                 if (Root == null) return null;
 
-                if (Root.Operation != Com.Model.Operation.FUNCTION && Root.Operation != Com.Model.Operation.INVERSE_FUNCTION)
+                if (Root.Operation != Com.Model.Operation.DOT && Root.Operation != Com.Model.Operation.PROJECTION && Root.Operation != Com.Model.Operation.DEPROJECTION)
                     return null;
                     
                 return Root; 
@@ -127,7 +127,7 @@ namespace Samm
                 _current = _current.ParentExpression;
             }
 
-            if (_current == null || (_current.Operation != Com.Model.Operation.FUNCTION && _current.Operation != Com.Model.Operation.INVERSE_FUNCTION)) 
+            if (_current == null || (_current.Operation != Com.Model.Operation.DOT && _current.Operation != Com.Model.Operation.PROJECTION && _current.Operation != Com.Model.Operation.DEPROJECTION)) 
                 return false; // After end - non-function segment was reached
 
             return true;
@@ -154,9 +154,9 @@ namespace Samm
 
         public string ToName { get { return Expression.OutputSetName; } }
 
-        public bool IsDirect { get { return Expression.Operation == Com.Model.Operation.FUNCTION; } }
+        public bool IsDirect { get { return Expression.Operation == Com.Model.Operation.DOT && Expression.Operation == Com.Model.Operation.PROJECTION; } }
 
-        public bool IsInverse { get { return Expression.Operation == Com.Model.Operation.INVERSE_FUNCTION; } }
+        public bool IsInverse { get { return Expression.Operation == Com.Model.Operation.DEPROJECTION; } }
     }
 
 }
