@@ -77,77 +77,6 @@ namespace Samm
             InitializeComponent();
         }
 
-        private void accessDataSourceMenu_Click(object sender, RoutedEventArgs e)
-        {
-
-            /*
-                        //
-                        // OLEDB Connection string dialog: http://support.microsoft.com/default.aspx?scid=kb;EN-US;310083
-                        //
-                        // References (COM):
-                        // MSDASC: Microsoft OLEDB Service Component 1.0 Type Library
-                        MSDASC.DataLinks mydlg = new MSDASC.DataLinks();
-                        // ADODB: Microsoft ActiveX Data Objects 2.7
-                        ADODB._Connection ADOcon;
-                        //Cast the generic object that PromptNew returns to an ADODB._Connection.
-                        ADOcon = (ADODB._Connection) mydlg.PromptNew();
-                        ADOcon.Open("", "", "", 0);
-                        if (ADOcon.State == 1)
-                        {
-                            MessageBox.Show("Connection Opened");
-                            ADOcon.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Connection Failed");
-                        }
-            */
-            /*
-                        //
-                        // Custom dialog
-                        //
-                        // Instantiate the dialog box
-                        Connections.SqlServerDialog dlg = new Connections.SqlServerDialog();
-                        // Configure the dialog box
-                        dlg.Owner = this;
-                        // Open the dialog box modally 
-                        dlg.ShowDialog();
-            */
-            //
-            // http://archive.msdn.microsoft.com/Connection
-            // http://www.mztools.com/articles/2007/mz2007011.aspx
-            // authorized for redistribution since Feb 2010: http://connect.microsoft.com/VisualStudio/feedback/details/423104/redistributable-microsoft-data-connectionui-dll-and-microsoft-data-connectionui-dialog-dll
-            //
-            // Assemblies: Microsoft.Data.ConnectionUI.dll, Microsoft.Data.ConnectionUI.Dialog.dll
-            DataConnectionDialog dcd = new DataConnectionDialog();
-            DataConnectionConfiguration dcs = new DataConnectionConfiguration(null);
-            dcs.LoadConfiguration(dcd);
-
-            if (DataConnectionDialog.Show(dcd) != System.Windows.Forms.DialogResult.OK)
-            {
-                return;
-            }
-
-            string connectionString = dcd.ConnectionString; // Example: "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\savinov\\git\\samm\\Northwind.accdb"
-
-            //readOledbSchema(connectionString); //For testing purposes
-
-            dcs.SaveConfiguration(dcd);
-
-            // Initialize the data suorce
-            if (DsModel == null) DsModel = new ObservableCollection<SetRoot>();
-            else DsModel.Clear();
-
-            SetRootOledb root = new SetRootOledb("My Data Source");
-
-            root.ConnectionString = connectionString;
-
-            root.Open();
-            root.ImportSchema();
-
-            DsModel.Add(root);
-        }
-
         private void readOledbSchema(string connectionString)
         {
             using (/*SqlConnection*/ System.Data.OleDb.OleDbConnection connection = new System.Data.OleDb.OleDbConnection(connectionString))
@@ -258,40 +187,19 @@ namespace Samm
             }
         }
 
-        private void sqlServerDataSourceMenu_Click(object sender, RoutedEventArgs e)
-        {
-
-/*
-                    // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
-
-//                    DataTable schema = connection.GetSchema();
-//                    DataTable schema = connection.GetSchema("Databases", new string[] { "Northwind" });
-//                    DataTable schema = connection.GetSchema("Databases");
-//                    DataTable schema = connection.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Databases);
-
-                    using (DataTableReader tableReader = schema.CreateDataReader())
-                    {
-                        while (tableReader.Read())
-                        {
-                            Console.WriteLine(tableReader.ToString());
-                        }
-                    }
-
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM sys.Tables", connection);
-
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Console.WriteLine(reader.HasRows);
-                        }
-                    }
-*/
-        }
-
         private void MashupView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var tv = (TreeView)sender;
+            ICommand cmd = this.Resources["OpenTableCommand"] as ICommand;
+
+            if (cmd.CanExecute(null))
+            {
+                cmd.Execute(null);
+            }
+        }
+
+        private void OpenTableCommand_Executed(object sender, RoutedEventArgs e)
+        {
+            var tv = (TreeView)e.Source;
 
             var item = tv.SelectedItem; // tv.SelectedValue
 
@@ -322,7 +230,124 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void importTableInsertMenu_Click(object sender, RoutedEventArgs e)
+        private void AccessDatasourceCommand_Executed(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm";
+            ofd.Filter = "Access Files (*.ACCDB)|*.ACCDB|All files (*.*)|*.*";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.Multiselect = false;
+
+            if (ofd.ShowDialog() != true) return;
+
+            string filePath = ofd.FileName;
+            string safeFilePath = ofd.SafeFileName;
+
+            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath;
+
+            // Initialize the data suorce
+            if (DsModel == null) DsModel = new ObservableCollection<SetRoot>();
+            else DsModel.Clear();
+
+            SetRootOledb root = new SetRootOledb("My Data Source");
+
+            root.ConnectionString = connectionString;
+
+            root.Open();
+            root.ImportSchema();
+
+            DsModel.Add(root);
+        }
+
+        private void SqlserverDatasourceCommand_Executed(object sender, RoutedEventArgs e)
+        {
+
+            /*
+                                // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
+
+            //                    DataTable schema = connection.GetSchema();
+            //                    DataTable schema = connection.GetSchema("Databases", new string[] { "Northwind" });
+            //                    DataTable schema = connection.GetSchema("Databases");
+            //                    DataTable schema = connection.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Databases);
+
+                                using (DataTableReader tableReader = schema.CreateDataReader())
+                                {
+                                    while (tableReader.Read())
+                                    {
+                                        Console.WriteLine(tableReader.ToString());
+                                    }
+                                }
+
+                                SqlCommand cmd = new SqlCommand("SELECT * FROM sys.Tables", connection);
+
+                                using (SqlDataReader reader = cmd.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        Console.WriteLine(reader.HasRows);
+                                    }
+                                }
+            */
+
+
+            /*
+                        //
+                        // OLEDB Connection string dialog: http://support.microsoft.com/default.aspx?scid=kb;EN-US;310083
+                        //
+                        // References (COM):
+                        // MSDASC: Microsoft OLEDB Service Component 1.0 Type Library
+                        MSDASC.DataLinks mydlg = new MSDASC.DataLinks();
+                        // ADODB: Microsoft ActiveX Data Objects 2.7
+                        ADODB._Connection ADOcon;
+                        //Cast the generic object that PromptNew returns to an ADODB._Connection.
+                        ADOcon = (ADODB._Connection) mydlg.PromptNew();
+                        ADOcon.Open("", "", "", 0);
+                        if (ADOcon.State == 1)
+                        {
+                            MessageBox.Show("Connection Opened");
+                            ADOcon.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Connection Failed");
+                        }
+            */
+            /*
+                        //
+                        // Custom dialog
+                        //
+                        // Instantiate the dialog box
+                        Connections.SqlServerDialog dlg = new Connections.SqlServerDialog();
+                        // Configure the dialog box
+                        dlg.Owner = this;
+                        // Open the dialog box modally 
+                        dlg.ShowDialog();
+            */
+            //
+            // http://archive.msdn.microsoft.com/Connection
+            // http://www.mztools.com/articles/2007/mz2007011.aspx
+            // authorized for redistribution since Feb 2010: http://connect.microsoft.com/VisualStudio/feedback/details/423104/redistributable-microsoft-data-connectionui-dll-and-microsoft-data-connectionui-dialog-dll
+            //
+            // Assemblies: Microsoft.Data.ConnectionUI.dll, Microsoft.Data.ConnectionUI.Dialog.dll
+            DataConnectionDialog dcd = new DataConnectionDialog();
+            DataConnectionConfiguration dcs = new DataConnectionConfiguration(null);
+            dcs.LoadConfiguration(dcd);
+
+            if (DataConnectionDialog.Show(dcd) != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+
+            string connectionString = dcd.ConnectionString; // Example: "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\\Users\\savinov\\git\\samm\\Northwind.accdb"
+
+            //readOledbSchema(connectionString); //For testing purposes
+
+            dcs.SaveConfiguration(dcd);
+
+        }
+
+        private void ImportTableCommand_Executed(object sender, RoutedEventArgs e)
         {
             var item = DsView.SelectedItem;
 
@@ -353,14 +378,14 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void addAggregationAttributeMenu_Click(object sender, RoutedEventArgs e)
+        private void AddAggregationCommand_Executed(object sender, RoutedEventArgs e)
         {
             AggregationBox dlg = new AggregationBox(); // Instantiate the dialog box
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
         }
 
-        private void aboutMenu_Click(object sender, RoutedEventArgs e)
+        private void AboutCommand_Executed(object sender, RoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box
             dlg.Owner = this;

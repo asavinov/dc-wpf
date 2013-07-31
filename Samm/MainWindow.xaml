@@ -108,7 +108,24 @@
             </Border>
         </DataTemplate>
 
+        <!-- Commands can be (and should be later) defined programmatically as classes -->
+        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
+        <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access Database" />
+        <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
+        <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
+        <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
+        <RoutedUICommand x:Key="AboutCommand" Text="About" />
+
     </RibbonWindow.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource OpenTableCommand}" Executed="OpenTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
+        <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
+    </Window.CommandBindings>
 
     <DockPanel LastChildFill="False">
 
@@ -138,13 +155,13 @@
             <!-- Application Menu, located at the left-hand side (down arrow) -->
             <Ribbon.ApplicationMenu>
                 <RibbonApplicationMenu KeyTip="F">
-                    <RibbonApplicationMenuItem Header="New" ImageSource="Images\default.png" Command="New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.png" Command="Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.png" Command="Close"/>
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.png" Command="Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.png" Command="SaveAs"/>
+                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\default.png" Command="ApplicationCommands.New"/>
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.png" Command="ApplicationCommands.Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.png" Command="ApplicationCommands.Close"/>
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.png" Command="ApplicationCommands.Save"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.png" Command="ApplicationCommands.SaveAs"/>
                     <RibbonApplicationMenuItem Header="Options" ImageSource="Images\default.png" />
-                    <RibbonApplicationMenuItem Name="aboutMenu" Header="About" ImageSource="Images\default.png" Click="aboutMenu_Click" />
+                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\default.png" Command="{StaticResource AboutCommand}" />
                     <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\default.png" />
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
@@ -170,21 +187,21 @@
 
             <!-- Ribbon Tab Data Source -->
             <RibbonTab Header="Data Source" KeyTip="D">
-                <RibbonButton Name="accessDataSourceMenu" SmallImageSource="Images\default.png" Label="Access Database" KeyTip="A" Click="accessDataSourceMenu_Click"/>
-                <RibbonButton Name="sqlServerDataSourceMenu" SmallImageSource="Images\default.png" Label="SQL Server" KeyTip="X"  Click="sqlServerDataSourceMenu_Click"/>
-                <RibbonButton Name="removeDataSource" SmallImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
-                <RibbonButton Name="searchDataSource" SmallImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
+                <RibbonButton SmallImageSource="Images\default.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                <RibbonButton SmallImageSource="Images\default.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
+                <RibbonButton SmallImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
+                <RibbonButton SmallImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
             </RibbonTab>
 
             <!-- Ribbon Tab Insert -->
             <RibbonTab Header="Insert" KeyTip="W">
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
-                    <RibbonButton Name="importTableInsertMenu" SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" Click="importTableInsertMenu_Click" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
                     <RibbonButton SmallImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
                     <RibbonButton SmallImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
-                    <RibbonButton Name="addAggregationAttributeMenu" SmallImageSource="Images\default.png" Label="Add Aggregation Column" KeyTip="A" Click="addAggregationAttributeMenu_Click" />
+                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton SmallImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
                 </RibbonGroup>
             </RibbonTab>
