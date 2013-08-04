@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:com="clr-namespace:Com.Model;assembly=Com"
         xmlns:local="clr-namespace:Samm"
-        Title="ConceptMix Application" 
         x:Name="UI"
+        Title="ConceptMix Application" 
+        Icon="Images\default.png"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
 
@@ -156,13 +157,13 @@
             <Ribbon.ApplicationMenu>
                 <RibbonApplicationMenu KeyTip="F">
                     <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\default.png" Command="ApplicationCommands.New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.png" Command="ApplicationCommands.Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.png" Command="ApplicationCommands.Close"/>
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.png" Command="ApplicationCommands.Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.png" Command="ApplicationCommands.SaveAs"/>
-                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\default.png" />
-                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\default.png" Command="{StaticResource AboutCommand}" />
-                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\default.png" />
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\co.ico" Command="ApplicationCommands.Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\co.ico" Command="ApplicationCommands.Close"/>
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\co.ico" Command="ApplicationCommands.Save"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\co.ico" Command="ApplicationCommands.SaveAs"/>
+                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\co.ico" />
+                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\co.ico" Command="{StaticResource AboutCommand}" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\co.ico" />
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
 
@@ -187,22 +188,24 @@
 
             <!-- Ribbon Tab Data Source -->
             <RibbonTab Header="Data Source" KeyTip="D">
-                <RibbonButton SmallImageSource="Images\default.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
-                <RibbonButton SmallImageSource="Images\default.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
-                <RibbonButton SmallImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
-                <RibbonButton SmallImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
+                <RibbonGroup x:Name="microsoftMenuGroup" Header="Microsoft">
+                    <RibbonButton LargeImageSource="Images\co.ico" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
+                </RibbonGroup>
             </RibbonTab>
 
             <!-- Ribbon Tab Insert -->
-            <RibbonTab Header="Insert" KeyTip="W">
+            <RibbonTab Header="Insert" KeyTip="W" >
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
+                    <RibbonButton LargeImageSource="Images\co.ico" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\co.ico" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
                 </RibbonGroup>
             </RibbonTab>
 
@@ -228,18 +231,24 @@
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
             <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
-            <StackPanel Name="DsPanel" Grid.Column="0" VerticalAlignment="Stretch">
-                <Label Name="lblDatasources" FontSize="16" Margin="10,10,0,0" >Data sources</Label>
+            <!-- Data source panel -->
+            <Grid Name="DsPanel" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <!-- Data source panel -->
-                <TreeView Name="DsView" 
+                <Label Name="lblDatasources" Grid.Row="0" FontSize="16" Margin="5" >Data sources</Label>
+
+                <TreeView Name="DsView" Grid.Row="1"
                           BorderThickness="0" 
-                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                          ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                           ItemsSource="{Binding DsModel}"
                           MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
-            </StackPanel>
+            </Grid>
 
             <!-- Workspace panel -->
             <StackPanel Name="WorkspacePanel" Grid.Column="2" >
@@ -249,18 +258,23 @@
             </StackPanel>
 
             <!-- Mashup panel -->
-            <StackPanel Name="MashupPanel" Grid.Column="4" VerticalAlignment="Stretch">
-                <Label Name="lblMashup" FontSize="16" Margin="10,10,0,0" >MASHUP</Label>
+            <Grid Name="MashupPanel" Grid.Column="4" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <!-- Data source panel -->
-                <TreeView Name="MashupView" 
+                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5" >Data mashup</Label>
+
+                <TreeView Name="MashupView" Grid.Row="1"
                           BorderThickness="0" 
-                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+                          ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
                           ItemsSource="{Binding MashupModel}"
                           MouseDoubleClick="MashupView_MouseDoubleClick"
                           >
                 </TreeView>
-            </StackPanel>
+            </Grid>
 
         </Grid>
 

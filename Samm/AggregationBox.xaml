@@ -12,31 +12,47 @@
             <ColumnDefinition Width="57*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="100*"/>
-            <RowDefinition Height="100*"/>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5,5,5,5"/>
-        <TextBox Grid.Column="1" Grid.Row="0" Text="My Table" HorizontalAlignment="Stretch" Height="25" Margin="5,5,5,5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
-        <Label  Grid.Column="0" Grid.Row="1" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5,5,5,5"/>
-        <TextBox Grid.Column="1" Grid.Row="1" Text="My Column" HorizontalAlignment="Stretch" Height="25" Margin="5,5,5,5" TextWrapping="NoWrap" VerticalAlignment="Top" />
+        <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Path=SourceTable.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Text="My Column" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Grouping Path:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <local:PathListControl Grid.Column="1" Grid.Row="2" x:Name="groupingPath" DataContext="{Binding GroupingPath}" />
+        <TextBox Grid.Column="1" Grid.Row="2" Text="Grouping Path" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+        <!-- <local:PathListControl Grid.Column="1" Grid.Row="2" x:Name="groupingPath" DataContext="{Binding GroupingPath}" /> -->
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="Measure Path:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5,5,5,5"/>
-        <local:PathListControl Grid.Column="1" Grid.Row="3" x:Name="measurePath" DataContext="{Binding MeasurePath}" />
+        <Label  Grid.Column="0" Grid.Row="3" Content="Fact Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding FactTables}" SelectedItem="{Binding FactTable, Mode=TwoWay}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" />
 
-        <Label  Grid.Column="0" Grid.Row="4" Content="Aggregation Function:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5,5,5,5"/>
-        <ComboBox Grid.Column="1" Grid.Row="4" ItemsSource="{Binding AggregationFunctions}" HorizontalAlignment="Stretch" Margin="5,5,5,5" VerticalAlignment="Top" />
+        <Label  Grid.Column="0" Grid.Row="4" Content="Measure Path:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Grid.Column="1" Grid.Row="4" Text="Measure Path" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+        <!-- <local:PathListControl Grid.Column="1" Grid.Row="3" x:Name="measurePath" DataContext="{Binding MeasurePath}" /> -->
 
-        <StackPanel Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
-            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25"/>
+        <Label  Grid.Column="0" Grid.Row="5" Content="Measure Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
+        <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Path=MeasureTable.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="6" Content="Measure Column:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Grid.Column="1" Grid.Row="6" Text="{Binding Path=MeasureColumn.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="7" Content="Aggregation Function:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Grid.Column="1" Grid.Row="7" ItemsSource="{Binding AggregationFunctions}" SelectedItem="{Binding AggregationFunction, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <StackPanel Grid.Column="1" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" />
         </StackPanel>
     </Grid>
 </Window>

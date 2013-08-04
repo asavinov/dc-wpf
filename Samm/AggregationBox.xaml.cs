@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,18 +19,50 @@ namespace Samm
 {
     /// <summary>
     /// Interaction logic for AggregationBox.xaml
+    /// TODO:
+    /// + SourceTable is fixed in context - we do not want to change it (too flexible)
+    /// + MeasureTable and column are also fixed in context - they are chosen before the dialog started - they are paramters of the pattern
+    /// - What we can change: 
+    ///   - fact table (among alternative, possibly empty), 
+    ///   + aggregation function (among possible), 
+    ///   - alternative grouping paths (to the current facts), 
+    ///   - alternative measure paths (from chosen facts to measure)
+    /// 
     /// </summary>
     public partial class AggregationBox : Window
     {
-        private Com.Model.Expression aggregationExpresion;
+        public Set SourceTable { get; set; }
+
+        public List<Set> FactTables { get; set; }
+        public Set FactTable { get; set; }
+
+        public Set MeasureTable { get; set; }
+
+        public Dim MeasureColumn { get; set; }
 
         public List<string> AggregationFunctions { get; private set; }
+
         
+        private Com.Model.Expression aggregationExpresion;
+
         public Segments GroupingPath { get; set; }
         public Segments MeasurePath { get; set; }
 
         public AggregationBox()
         {
+            SetRoot db = ((MainWindow)App.Current.MainWindow).DsModel[0];
+
+            List<Set> allSets = db.SubSets.Where(o=>!o.IsPrimitive).ToList();
+
+            FactTables = allSets;
+
+            SourceTable = allSets[0];
+            FactTable = null;
+            MeasureTable = allSets[0];
+            MeasureColumn = MeasureTable.GreaterDims[0];
+            
+
+
             // Initialize aggregation expression that we are going to edit (either new or load it from an existing derived dimension)
 
             AggregationFunctions = new List<string>(new string[] { "SUM", "AVG" });
@@ -68,6 +101,15 @@ namespace Samm
             MeasurePath = new Segments(mExpr);
 
             InitializeComponent();
+        }
+
+        private void FactTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (((ComboBox)sender).SelectedItem == null) return;
+
+            List<Dim> dims = MeasureTable.GreaterDims.Where(o => o.IsPrimitive).ToList();
+            //MeasureColumns.Clear();
+            //dims.ForEach(x => MeasureColumns.Add(x));
         }
     }
 

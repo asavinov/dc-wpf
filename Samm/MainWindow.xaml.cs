@@ -233,7 +233,7 @@ namespace Samm
         private void AccessDatasourceCommand_Executed(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm";
+            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofd.Filter = "Access Files (*.ACCDB)|*.ACCDB|All files (*.*)|*.*";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;
