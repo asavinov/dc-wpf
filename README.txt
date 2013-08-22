@@ -14,3 +14,16 @@ http://www.gimp.org/tutorials/Creating_Icons/
 
 Microsoft guidlines for icons:
 http://msdn.microsoft.com/en-us/library/aa511280.aspx
+
+
+
+<!--
+     ____                               _      ____       _
+    |  _ \ ___  ___  ___  __ _ _ __ ___| |__  / ___| __ _| |_ ___
+    | |_) / _ \/ __|/ _ \/ _` | '__/ __| '_ \| |  _ / _` | __/ _ \
+    |  _ <  __/\__ \  __/ (_| | | | (__| | | | |_| | (_| | ||  __/
+    |_| \_\___||___/\___|\__,_|_|  \___|_| |_|\____|\__,_|\__\___| is hiring!
+
+    See http://www.researchgate.net/aboutus.AboutUsCareers.html.
+
+-->

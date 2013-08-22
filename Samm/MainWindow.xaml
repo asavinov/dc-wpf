@@ -189,7 +189,7 @@
             <!-- Ribbon Tab Data Source -->
             <RibbonTab Header="Data Source" KeyTip="D">
                 <RibbonGroup x:Name="microsoftMenuGroup" Header="Microsoft">
-                    <RibbonButton LargeImageSource="Images\co.ico" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
                     <RibbonButton LargeImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
@@ -199,12 +199,12 @@
             <!-- Ribbon Tab Insert -->
             <RibbonTab Header="Insert" KeyTip="W" >
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
-                    <RibbonButton LargeImageSource="Images\co.ico" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
                     <RibbonButton LargeImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
                     <RibbonButton LargeImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
-                    <RibbonButton LargeImageSource="Images\co.ico" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton LargeImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
                 </RibbonGroup>
             </RibbonTab>
