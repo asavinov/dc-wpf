@@ -128,7 +128,7 @@
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
-    <DockPanel LastChildFill="False">
+    <DockPanel LastChildFill="True">
 
         <Ribbon x:Name="RibbonWin" DockPanel.Dock="Top" SelectedIndex="0">
 
@@ -220,12 +220,11 @@
         <Grid>
             <!-- Define the rows and columns -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="600" />
+                <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition />
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
@@ -264,7 +263,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5" >Data mashup</Label>
+                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
 
                 <TreeView Name="MashupView" Grid.Row="1"
                           BorderThickness="0" 
