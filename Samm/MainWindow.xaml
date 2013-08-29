@@ -5,7 +5,7 @@
         xmlns:local="clr-namespace:Samm"
         x:Name="UI"
         Title="ConceptMix Application" 
-        Icon="Images\default.png"
+        Icon="Images\default.ico"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
 
@@ -140,15 +140,11 @@
             <!-- Quick Access Toolbar - located at the upper-left corner -->
             <Ribbon.QuickAccessToolBar>
                 <RibbonQuickAccessToolBar>
-                    <RibbonButton x:Name ="Save" SmallImageSource="Images\default.png" />
-                    <RibbonSplitButton x:Name ="Undo" SmallImageSource="Images\default.png">
-                        <RibbonSplitMenuItem Header="Undo 1" />
-                        <RibbonSplitMenuItem Header="Undo 2" />
-                        <RibbonSplitMenuItem Header="Undo 3" />
-                    </RibbonSplitButton>
-                    <RibbonSplitButton x:Name="Redo" SmallImageSource="Images\default.png" >
-                        <RibbonSplitMenuItem Header="Redo 1" />
-                        <RibbonSplitMenuItem Header="Redo 2" />
+                    <RibbonButton x:Name ="Save" SmallImageSource="Images\default.ico" />
+                    <RibbonSplitButton x:Name ="Update" SmallImageSource="Images\default.ico">
+                        <RibbonSplitMenuItem Header="Update All"/>
+                        <RibbonSplitMenuItem Header="Update local (recompute)"/>
+                        <RibbonSplitMenuItem Header="Update table (and depending tables)"/>
                     </RibbonSplitButton>
                 </RibbonQuickAccessToolBar>
             </Ribbon.QuickAccessToolBar>
@@ -156,14 +152,14 @@
             <!-- Application Menu, located at the left-hand side (down arrow) -->
             <Ribbon.ApplicationMenu>
                 <RibbonApplicationMenu KeyTip="F">
-                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\default.png" Command="ApplicationCommands.New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\co.ico" Command="ApplicationCommands.Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\co.ico" Command="ApplicationCommands.Close"/>
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\co.ico" Command="ApplicationCommands.Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\co.ico" Command="ApplicationCommands.SaveAs"/>
-                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\co.ico" />
-                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\co.ico" Command="{StaticResource AboutCommand}" />
-                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\co.ico" />
+                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\default.ico" Command="ApplicationCommands.New"/>
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.ico" Command="ApplicationCommands.Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.ico" Command="ApplicationCommands.Close"/>
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.ico" Command="ApplicationCommands.Save"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.ico" Command="ApplicationCommands.SaveAs"/>
+                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\default.ico" />
+                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\default.ico" Command="{StaticResource AboutCommand}" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\default.ico" />
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
 
@@ -177,35 +173,51 @@
                     </RibbonMenuButton>
                     <RibbonButton SmallImageSource="Images\cut.png" Label="Cut" KeyTip="X" />
                     <RibbonButton SmallImageSource="Images\copy.png" Label="Copy" KeyTip="C" />
-                    <RibbonButton SmallImageSource="Images\default.png" Label="Format Painter" KeyTip="FP" />
                 </RibbonGroup>
             </RibbonTab>
 
             <!-- Ribbon Tab View -->
             <RibbonTab Header="View" KeyTip="V">
-                <RibbonButton SmallImageSource="Images\default.png" Label="Window" KeyTip="W" />
+                <RibbonGroup x:Name="windowGroup" Header="Window">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Window" KeyTip="W" />
+                </RibbonGroup>
             </RibbonTab>
 
             <!-- Ribbon Tab Data Source -->
-            <RibbonTab Header="Data Source" KeyTip="D">
-                <RibbonGroup x:Name="microsoftMenuGroup" Header="Microsoft">
+            <RibbonTab Header="Data Source" KeyTip="S">
+                <RibbonGroup x:Name="dataSourceGroup" Header="Microsoft">
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.png" Label="Remove Data Source" KeyTip="R"/>
-                    <RibbonButton LargeImageSource="Images\default.png" Label="Search Data Source" KeyTip="S"/>
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Search Data Source" KeyTip="S"/>
                 </RibbonGroup>
             </RibbonTab>
 
             <!-- Ribbon Tab Insert -->
-            <RibbonTab Header="Insert" KeyTip="W" >
+            <RibbonTab Header="Insert" KeyTip="I" >
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.png" Label="Add Filtered Table" KeyTip="F" />
-                    <RibbonButton LargeImageSource="Images\default.png" Label="Remove Table" KeyTip="R" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Add Filtered Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.png" Label="Add Some Other Attribute" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Add Some Other Attribute" KeyTip="X" />
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!-- Ribbon Tab Data -->
+            <RibbonTab Header="Data" KeyTip="D" >
+                <RibbonGroup Header="Update">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Update All" KeyTip="A" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Update Local (Recompute)" KeyTip="L" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Update Table" KeyTip="T" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Update Column" KeyTip="C" />
+                </RibbonGroup>
+                <RibbonGroup Header="Selection Propagation">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
                 </RibbonGroup>
             </RibbonTab>
 
