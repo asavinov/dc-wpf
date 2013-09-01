@@ -355,8 +355,8 @@ namespace Samm
             {
                 Set set = (Set)item;
 
-                DimExport dimExp = new DimExport("Import " + set.Name, set, MashupModel[0]);
-                dimExp.BuildExpression();
+                DimImport dimExp = new DimImport("Import " + set.Name, MashupModel[0], set);
+                dimExp.BuildImportExpression();
 
                 // Show dialog for editing import
                 ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
@@ -364,7 +364,8 @@ namespace Samm
                 dlg.TupleExpressionModel.Add(dimExp.SelectExpression);
                 dlg.ShowDialog();
 
-                dimExp.ExportDimensions(); // Load structure
+                // TODO: Add import dimension to the schema (to the connected sets)
+                dimExp.ImportDimensions(); // Load structure
                 dimExp.Populate(); // Load data (it should be a separate action with a separate button)
 
                 // HACK: refresh the view
