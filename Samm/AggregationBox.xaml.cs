@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,8 +30,37 @@ namespace Samm
     ///   - alternative measure paths (from chosen facts to measure)
     /// 
     /// </summary>
-    public partial class AggregationBox : Window
+    public partial class AggregationBox : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // It is a number of lists representing fragments the user should choose from
+        private RecommendedAggregations _recommendations;
+        public RecommendedAggregations Recommendations
+        {
+            get { return _recommendations; }
+            set
+            {
+                _recommendations = value;
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("Recommendations"));
+                }
+            }
+        }
+
+        // Grouping paths
+        public RecommendedFragment GroupingPath { get; set; } 
+        // Actually, not needed because current selection is flagged in the selected fragment itself
+        // TODO: In RecommendedAggregations define for each dimension property Current* where get returns the flagged element and set sets the flag. Then we can bind to this property. 
+        // TODO: In RecommendedFragment (a list item) define property DisplayName so that it shows something meaningful for the fragment. For example, it can compute the name on demand if empty and it can be set by the recommender (better).
+
+
+        // We need a field for the new column name
+
+
+
+/*
         public Set SourceTable { get; set; }
 
         public List<Set> FactTables { get; set; }
@@ -42,14 +72,14 @@ namespace Samm
 
         public List<string> AggregationFunctions { get; private set; }
 
-        
-        private Com.Model.Expression aggregationExpresion;
-
-        public Segments GroupingPath { get; set; }
+        // public Segments GroupingPath { get; set; }
         public Segments MeasurePath { get; set; }
+*/
 
         public AggregationBox()
         {
+
+/*
             SetRoot db = ((MainWindow)App.Current.MainWindow).DsModel[0];
 
             List<Set> allSets = db.SubSets.Where(o=>!o.IsPrimitive).ToList();
@@ -61,8 +91,6 @@ namespace Samm
             MeasureTable = allSets[0];
             MeasureColumn = MeasureTable.GreaterDims[0];
             
-
-
             // Initialize aggregation expression that we are going to edit (either new or load it from an existing derived dimension)
 
             AggregationFunctions = new List<string>(new string[] { "SUM", "AVG" });
@@ -82,7 +110,7 @@ namespace Samm
             gExpr3.Operation = Com.Model.Operation.VARIABLE;
             gExpr2.SetInput(gExpr3);
 
-            GroupingPath = new Segments(gExpr);
+            // GroupingPath = new Segments(gExpr);
 
             var mExpr = new Com.Model.Expression("Measure Root");
             mExpr.OutputSetName = "Measure Set Name";
@@ -99,17 +127,39 @@ namespace Samm
             mExpr2.SetInput(mExpr3);
 
             MeasurePath = new Segments(mExpr);
+*/
 
             InitializeComponent();
         }
 
-        private void FactTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void GroupingPaths_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (((ComboBox)sender).SelectedItem == null) return;
+            var cb = (ComboBox)e.Source; // or sender
+            var fragment = cb.SelectedItem; // or SelectedValue
 
-            List<Dim> dims = MeasureTable.GreaterDims.Where(o => o.IsPrimitive).ToList();
-            //MeasureColumns.Clear();
-            //dims.ForEach(x => MeasureColumns.Add(x));
+            if (fragment == null) return;
+
+            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
+        }
+
+        private void MeasurePaths_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = (ComboBox)e.Source; // or sender
+            var fragment = cb.SelectedItem; // or SelectedValue
+
+            if (fragment == null) return;
+
+            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
+        }
+
+        private void MeasureDimensions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = (ComboBox)e.Source; // or sender
+            var fragment = cb.SelectedItem; // or SelectedValue
+
+            if (fragment == null) return;
+
+            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
         }
     }
 

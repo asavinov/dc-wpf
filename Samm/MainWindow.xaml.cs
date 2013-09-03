@@ -381,9 +381,54 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, RoutedEventArgs e)
         {
-            AggregationBox dlg = new AggregationBox(); // Instantiate the dialog box
+            SetRoot mashup = MashupModel[0];
+
+            //
+            // Generate recommendations
+            //
+            RecommendedAggregations recoms = new RecommendedAggregations();
+            recoms.SourceSet = mashup.FindSubset("Employees");
+            recoms.TargetSet = mashup.FindSubset("Customers");
+            recoms.FactSet = null; // Any
+
+            Recommender.RecommendAggregations(recoms);
+
+            //
+            // Show recommendations and let the user choose one aggregation
+            //
+            AggregationBox dlg = new AggregationBox();
             dlg.Owner = this;
+            dlg.Recommendations = recoms;
             dlg.ShowDialog(); // Open the dialog box modally 
+
+            // TODO: we need to directly access the fragments selected by the user in the dialog
+/*
+            Set factSet = (Set) relationships.FactSets[0].Fragment;
+            List<Dim> groupingPath = (List<Dim>) relationships.GroupingPaths[0].Fragment;
+            List<Dim> measurePath = (List<Dim>)relationships.MeasurePaths[0].Fragment;
+            Dim aggregColumn = null; // TODO: Append an aggregated attribute chosen by the user
+            measurePath.Add(aggregColumn); 
+            string aggregationFunction = "SUM"; // TODO: Read aggregation function chosen by the user
+            string derivedColumnName = "Average List Price"; // TODO: read the user-provided new column name
+
+            //
+            // Build the expression and create a derived column
+            //
+            var deprExpr = Com.Model.Expression.CreateDeprojectExpression(factSet, groupingPath); // Grouping (deproject) expression: (Customers) <- (Orders) <- (Order Details)
+
+            var projExpr = Com.Model.Expression.CreateProjectExpression(factSet, measurePath, Operation.DOT); // Measure (project) expression: (Order Details) -> (Product) -> List Price
+
+            var aggregExpr = Com.Model.Expression.CreateAggregateExpression(aggregationFunction, deprExpr, projExpr);
+
+            //
+            // Add derived dimension
+            //
+            Dim aggregDim = aggregColumn.GreaterSet.CreateDefaultLesserDimension(derivedColumnName, fromSet);
+            aggregDim.SelectExpression = aggregExpr;
+            fromSet.AddGreaterDim(aggregDim);
+
+            aggregDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+*/
         }
 
         private void AboutCommand_Executed(object sender, RoutedEventArgs e)
