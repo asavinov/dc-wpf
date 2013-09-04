@@ -19,7 +19,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"  Text="{Binding Relevance}" Style="{StaticResource RelevanceStyle}"></TextBlock>
-                <TextBlock Grid.Column="1"  Text="{Binding IsDisabled}" Style="{StaticResource RelevanceStyle}"></TextBlock>
+                <TextBlock Grid.Column="1"  Text="{Binding IsRelevant}" Style="{StaticResource RelevanceStyle}"></TextBlock>
                 <TextBlock Grid.Column="2"  Text="{Binding DisplayName}" Style="{StaticResource RelevanceStyle}"></TextBlock>
             </Grid>
         </DataTemplate>
@@ -49,24 +49,24 @@
         <TextBox Grid.Column="1" Grid.Row="1" Text="My Column" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Grouping Paths:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=Recommendations.GroupingPaths}" SelectedItem="{Binding GroupingPath, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="GroupingPaths_SelectionChanged"/>
+        <ComboBox Name="GroupingPaths" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=Recommendations.GroupingPaths}" SelectedItem="{Binding Path=Recommendations.SelectedGroupingPath, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="GroupingPaths_SelectionChanged"/>
         <!-- <local:PathListControl Grid.Column="1" Grid.Row="2" x:Name="groupingPath" DataContext="{Binding GroupingPath}" /> -->
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Fact Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=Recommendations.FactSets}" SelectedItem="{Binding FactSet, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" />
+        <ComboBox Name="FactSets" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=Recommendations.FactSets}" SelectedItem="{Binding Path=Recommendations.SelectedFactSet, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top"  SelectionChanged="FactSets_SelectionChanged"/>
 
         <Label  Grid.Column="0" Grid.Row="4" Content="Measure Path:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=Recommendations.MeasurePaths}" SelectedItem="{Binding MeasurePath, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasurePaths_SelectionChanged"/>
+        <ComboBox Name="MeasurePaths" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=Recommendations.MeasurePaths}" SelectedItem="{Binding Path=Recommendations.SelectedMeasurePath, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasurePaths_SelectionChanged"/>
         <!-- <local:PathListControl Grid.Column="1" Grid.Row="3" x:Name="measurePath" DataContext="{Binding MeasurePath}" /> -->
 
         <Label  Grid.Column="0" Grid.Row="5" Content="Measure Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
         <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Path=Recommendations.TargetSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="6" Content="Measure Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="6" ItemsSource="{Binding Path=Recommendations.MeasureDimensions}" SelectedItem="{Binding MeasureDimension, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasureDimensions_SelectionChanged"/>
+        <ComboBox Name="MeasureDimensions" Grid.Column="1" Grid.Row="6" ItemsSource="{Binding Path=Recommendations.MeasureDimensions}" SelectedItem="{Binding MeasureDimension, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top"/>
 
         <Label  Grid.Column="0" Grid.Row="7" Content="Aggregation Functions:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Grid.Column="1" Grid.Row="7" ItemsSource="{Binding Path=Recommendations.AggregationFunctions}" SelectedItem="{Binding AggregationFunction, Mode=TwoWay}" DisplayMemberPath="DisplayName" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <ComboBox Name="AggregationFunctions" Grid.Column="1" Grid.Row="7" ItemsSource="{Binding Path=Recommendations.AggregationFunctions}" SelectedItem="{Binding AggregationFunction, Mode=TwoWay}" DisplayMemberPath="DisplayName" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" />

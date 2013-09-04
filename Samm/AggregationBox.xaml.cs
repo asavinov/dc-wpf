@@ -45,8 +45,18 @@ namespace Samm
                 if (PropertyChanged != null)
                 {
                     PropertyChanged(this, new PropertyChangedEventArgs("Recommendations"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("GroupingPaths"));
                 }
             }
+        }
+
+        public void RefreshAll()
+        {
+            GroupingPaths.Items.Refresh();
+            FactSets.Items.Refresh();
+            MeasurePaths.Items.Refresh();
+            MeasureDimensions.Items.Refresh();
+            AggregationFunctions.Items.Refresh();
         }
 
         // Grouping paths
@@ -139,7 +149,21 @@ namespace Samm
 
             if (fragment == null) return;
 
-            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
+            // Refresh
+            RefreshAll();
+            Recommendations = Recommendations;
+        }
+
+        private void FactSets_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = (ComboBox)e.Source; // or sender
+            var fragment = cb.SelectedItem; // or SelectedValue
+
+            if (fragment == null) return;
+
+            // Refresh
+            RefreshAll();
+            Recommendations = Recommendations;
         }
 
         private void MeasurePaths_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -149,18 +173,11 @@ namespace Samm
 
             if (fragment == null) return;
 
-            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
+            // Refresh
+            RefreshAll();
+            Recommendations = Recommendations;
         }
 
-        private void MeasureDimensions_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var cb = (ComboBox)e.Source; // or sender
-            var fragment = cb.SelectedItem; // or SelectedValue
-
-            if (fragment == null) return;
-
-            // Update other fragment selections, sort order and disabled grouping (avoid recursive updates back to this method)
-        }
     }
 
 }

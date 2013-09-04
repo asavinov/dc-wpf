@@ -391,7 +391,7 @@ namespace Samm
             recoms.TargetSet = mashup.FindSubset("Customers");
             recoms.FactSet = null; // Any
 
-            Recommender.RecommendAggregations(recoms);
+            recoms.Recommend();
 
             //
             // Show recommendations and let the user choose one aggregation
@@ -400,6 +400,9 @@ namespace Samm
             dlg.Owner = this;
             dlg.Recommendations = recoms;
             dlg.ShowDialog(); // Open the dialog box modally 
+
+            RecommendedFragment gp = recoms.SelectedGroupingPath;
+            gp = null;
 
             // TODO: we need to directly access the fragments selected by the user in the dialog
 /*
