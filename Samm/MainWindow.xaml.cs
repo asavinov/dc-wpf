@@ -381,17 +381,41 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, RoutedEventArgs e)
         {
-            SetRoot mashup = MashupModel[0];
+            var item = MashupView.SelectedItem;
+
+            if(item == null) return;
 
             //
             // Generate recommendations
             //
+//            SetRoot mashup = MashupModel[0];
+
+            Set srcSet = null;
+            Set dstSet = null;
+            Dim dstDim = null; // mashup.FindSubset("Employees");
+            if (item is Set)
+            {
+                dstSet = (Set)item;
+            }
+            else if (item is Dim)
+            {
+                dstDim = (Dim)item;
+                dstSet = dstDim.LesserSet;
+            }
+            srcSet = dstSet.Root.FindSubset("Customers"); // TODO: Now the source set is fixed. We need a mechanism for choosing a source set, for example, by DnD. 
+
             RecommendedAggregations recoms = new RecommendedAggregations();
-            recoms.SourceSet = mashup.FindSubset("Employees");
-            recoms.TargetSet = mashup.FindSubset("Customers");
+            recoms.SourceSet = srcSet;
+            recoms.TargetSet = dstSet;
             recoms.FactSet = null; // Any
 
             recoms.Recommend();
+
+            if (dstDim != null)
+            {
+                RecommendedFragment dstDimFrag = recoms.MeasureDimensions.FirstOrDefault(f => f.Fragment == dstDim);
+                recoms.SelectedMeasureDimension = dstDimFrag;
+            }
 
             //
             // Show recommendations and let the user choose one aggregation
@@ -401,37 +425,22 @@ namespace Samm
             dlg.Recommendations = recoms;
             dlg.ShowDialog(); // Open the dialog box modally 
 
-            RecommendedFragment gp = recoms.SelectedGroupingPath;
-            gp = null;
-
-            // TODO: we need to directly access the fragments selected by the user in the dialog
-/*
-            Set factSet = (Set) relationships.FactSets[0].Fragment;
-            List<Dim> groupingPath = (List<Dim>) relationships.GroupingPaths[0].Fragment;
-            List<Dim> measurePath = (List<Dim>)relationships.MeasurePaths[0].Fragment;
-            Dim aggregColumn = null; // TODO: Append an aggregated attribute chosen by the user
-            measurePath.Add(aggregColumn); 
-            string aggregationFunction = "SUM"; // TODO: Read aggregation function chosen by the user
-            string derivedColumnName = "Average List Price"; // TODO: read the user-provided new column name
+            if (recoms.IsValidExpression() != null) return;
 
             //
-            // Build the expression and create a derived column
+            // Create new derived dimension
+            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
             //
-            var deprExpr = Com.Model.Expression.CreateDeprojectExpression(factSet, groupingPath); // Grouping (deproject) expression: (Customers) <- (Orders) <- (Order Details)
+            Dim aggregDim = (Dim)recoms.SelectedMeasureDimension.Fragment;
+            string derivedDimName = dlg.SourceColumn.Text;
+            Com.Model.Expression aggreExpr = recoms.GetExpression();
 
-            var projExpr = Com.Model.Expression.CreateProjectExpression(factSet, measurePath, Operation.DOT); // Measure (project) expression: (Order Details) -> (Product) -> List Price
+            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            derivedDim.SelectExpression = aggreExpr;
+            srcSet.AddGreaterDim(derivedDim);
 
-            var aggregExpr = Com.Model.Expression.CreateAggregateExpression(aggregationFunction, deprExpr, projExpr);
-
-            //
-            // Add derived dimension
-            //
-            Dim aggregDim = aggregColumn.GreaterSet.CreateDefaultLesserDimension(derivedColumnName, fromSet);
-            aggregDim.SelectExpression = aggregExpr;
-            fromSet.AddGreaterDim(aggregDim);
-
-            aggregDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
-*/
+            // Update new derived dimension
+            derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
         }
 
         private void AboutCommand_Executed(object sender, RoutedEventArgs e)

@@ -21,13 +21,8 @@ namespace Samm
     /// <summary>
     /// Interaction logic for AggregationBox.xaml
     /// TODO:
-    /// + SourceTable is fixed in context - we do not want to change it (too flexible)
-    /// + MeasureTable and column are also fixed in context - they are chosen before the dialog started - they are paramters of the pattern
-    /// - What we can change: 
-    ///   - fact table (among alternative, possibly empty), 
-    ///   + aggregation function (among possible), 
-    ///   - alternative grouping paths (to the current facts), 
-    ///   - alternative measure paths (from chosen facts to measure)
+    /// - Sort fragments by relevance. Non-relevant items at the end and possibly greyed. 
+    /// - Display non-relevant fragments as a separate group (at the end of the list): http://stackoverflow.com/questions/4114385/wpf-refine-the-look-of-a-grouped-combobox-vs-a-grouped-datagrid-sample-attach
     /// 
     /// </summary>
     public partial class AggregationBox : Window, INotifyPropertyChanged
