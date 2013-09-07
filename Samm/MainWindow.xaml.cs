@@ -361,7 +361,7 @@ namespace Samm
                 // Show dialog for editing import
                 ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
                 dlg.Owner = this;
-                dlg.TupleExpressionModel.Add(dimExp.SelectExpression);
+                dlg.ExpressionModel.Add(dimExp.SelectExpression);
                 dlg.ShowDialog();
 
                 // TODO: Add import dimension to the schema (to the connected sets)
@@ -388,7 +388,6 @@ namespace Samm
             //
             // Generate recommendations
             //
-//            SetRoot mashup = MashupModel[0];
 
             Set srcSet = null;
             Set dstSet = null;
@@ -437,6 +436,73 @@ namespace Samm
 
             Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
             derivedDim.SelectExpression = aggreExpr;
+            srcSet.AddGreaterDim(derivedDim);
+
+            // Update new derived dimension
+            derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+        }
+
+        private void AddCalculatedCommand_Executed(object sender, RoutedEventArgs e)
+        {
+            var item = MashupView.SelectedItem;
+
+            if (item == null) return;
+
+            //
+            // Generate recommendations
+            //
+
+            Set srcSet = null;
+            if (item is Set)
+            {
+                srcSet = (Set)item;
+            }
+            else if (item is Dim)
+            {
+                srcSet = ((Dim)item).LesserSet;
+            }
+
+            Com.Model.Expression initialExpr = new Com.Model.Expression("List Price");
+            initialExpr.Operation = Operation.PROJECTION;
+            initialExpr.OutputSet = srcSet.Root.GetPrimitiveSubset("Double");
+
+            //
+            // Show recommendations and let the user choose one aggregation
+            //
+            ArithmeticBox dlg = new ArithmeticBox();
+            dlg.Owner = this;
+            dlg.SourceTable = srcSet;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            //
+            // Fix expression. 
+            //
+            Com.Model.Expression expr = dlg.ExpressionModel[0];
+            foreach (var node in expr.GetOperands(Operation.DOT))
+            {
+                if (node.Input == null)
+                {
+                    var thisExpr = new Com.Model.Expression("this");
+                    thisExpr.Operation = Operation.VARIABLE;
+                    thisExpr.OutputIsSetValued = false;
+                    thisExpr.OutputSet = srcSet;
+                    thisExpr.OutputSetName = srcSet.Name;
+
+                    node.Input = thisExpr;
+                }
+            }
+
+            //
+            // Create new derived dimension
+            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            //
+            string derivedDimName = dlg.sourceColumn.Text;
+
+            Set dstSet = expr.OutputSet;
+            Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            derivedDim.SelectExpression = expr;
             srcSet.AddGreaterDim(derivedDim);
 
             // Update new derived dimension

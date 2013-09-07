@@ -115,6 +115,7 @@
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
         <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
+        <RoutedUICommand x:Key="AddCalculatedCommand" Text="Add Calculation" />
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
     </RibbonWindow.Resources>
@@ -125,6 +126,7 @@
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddCalculatedCommand}" Executed="AddCalculatedCommand_Executed" />
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
@@ -202,7 +204,7 @@
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Add Some Other Attribute" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculatedCommand}" />
                 </RibbonGroup>
             </RibbonTab>
 

@@ -49,15 +49,17 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20*"/>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <TreeView Name="ExpressionTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
         </TreeView>
 
+<!--
         <StackPanel Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="_Add..." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
             <Button Content="Remove" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
         </StackPanel>
+-->
     </Grid>
 </UserControl>

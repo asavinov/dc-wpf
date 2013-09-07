@@ -39,8 +39,11 @@ namespace Samm
     }
 
     /// <summary>
-    /// Enumerates segments of a (path) expression. 
-    /// It is a model for all views that visualize or edit dimension path including a list view and a graph view. 
+    /// Enumerates segments of a (path) expression. Its purpose is to connect two representations of a path: as a nested expression or as a list of segments. 
+    /// Make it generic by including operation type: DOT, PROJECTION, DEPROJECTION etc. - only the specified operation(s) will be followed. 
+    /// If not specified, then it will use the operation of the node specified as a parameter (root node). 
+    /// May it can be useful to be able to choose between root node and leaf node (as a paremter for the list). Or the same, we can choose a direction: downwards (default) or upwards. 
+    /// 
     /// </summary>
     public class Segments : IEnumerable<Segment>, IEnumerator<Segment>
     {

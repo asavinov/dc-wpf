@@ -54,86 +54,8 @@ namespace Samm
             AggregationFunctions.Items.Refresh();
         }
 
-        // Grouping paths
-        public RecommendedFragment GroupingPath { get; set; } 
-        // Actually, not needed because current selection is flagged in the selected fragment itself
-        // TODO: In RecommendedAggregations define for each dimension property Current* where get returns the flagged element and set sets the flag. Then we can bind to this property. 
-        // TODO: In RecommendedFragment (a list item) define property DisplayName so that it shows something meaningful for the fragment. For example, it can compute the name on demand if empty and it can be set by the recommender (better).
-
-
-        // We need a field for the new column name
-
-
-
-/*
-        public Set SourceTable { get; set; }
-
-        public List<Set> FactTables { get; set; }
-        public Set FactTable { get; set; }
-
-        public Set MeasureTable { get; set; }
-
-        public Dim MeasureColumn { get; set; }
-
-        public List<string> AggregationFunctions { get; private set; }
-
-        // public Segments GroupingPath { get; set; }
-        public Segments MeasurePath { get; set; }
-*/
-
         public AggregationBox()
         {
-
-/*
-            SetRoot db = ((MainWindow)App.Current.MainWindow).DsModel[0];
-
-            List<Set> allSets = db.SubSets.Where(o=>!o.IsPrimitive).ToList();
-
-            FactTables = allSets;
-
-            SourceTable = allSets[0];
-            FactTable = null;
-            MeasureTable = allSets[0];
-            MeasureColumn = MeasureTable.GreaterDims[0];
-            
-            // Initialize aggregation expression that we are going to edit (either new or load it from an existing derived dimension)
-
-            AggregationFunctions = new List<string>(new string[] { "SUM", "AVG" });
-
-            // Prepare test aggregation expressions
-            var gExpr = new Com.Model.Expression("Root (last)"); // Root of expression is that last computed element along a path (so it has to be the last in the list)
-            gExpr.OutputSetName = "Last set (root expr)";
-            gExpr.Operation = Com.Model.Operation.DEPROJECTION;
-
-            var gExpr2 = new Com.Model.Expression("Before last");
-            gExpr2.OutputSetName = "Before last";
-            gExpr2.Operation = Com.Model.Operation.DEPROJECTION;
-            gExpr.SetInput(gExpr2);
-
-            var gExpr3 = new Com.Model.Expression("Group OFFSET");
-            gExpr3.OutputSetName = "this";
-            gExpr3.Operation = Com.Model.Operation.VARIABLE;
-            gExpr2.SetInput(gExpr3);
-
-            // GroupingPath = new Segments(gExpr);
-
-            var mExpr = new Com.Model.Expression("Measure Root");
-            mExpr.OutputSetName = "Measure Set Name";
-            mExpr.Operation = Com.Model.Operation.DOT;
-
-            var mExpr2 = new Com.Model.Expression("Second Segment");
-            mExpr2.Operation = Com.Model.Operation.DOT;
-            mExpr2.OutputSetName = "Measure 2 Set Name";
-            mExpr.SetInput(mExpr2);
-
-            var mExpr3 = new Com.Model.Expression("Measure OFFSET");
-            mExpr3.Operation = Com.Model.Operation.VARIABLE;
-            mExpr3.OutputSetName = "group";
-            mExpr2.SetInput(mExpr3);
-
-            MeasurePath = new Segments(mExpr);
-*/
-
             InitializeComponent();
         }
 

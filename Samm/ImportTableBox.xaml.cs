@@ -20,11 +20,11 @@ namespace Samm
     /// </summary>
     public partial class ImportTableBox : Window
     {
-        public ObservableCollection<Com.Model.Expression> TupleExpressionModel { get; set; }
+        public ObservableCollection<Com.Model.Expression> ExpressionModel { get; set; }
 
         public ImportTableBox()
         {
-            TupleExpressionModel = new ObservableCollection<Com.Model.Expression>();
+            ExpressionModel = new ObservableCollection<Com.Model.Expression>();
 
             InitializeComponent();
         }

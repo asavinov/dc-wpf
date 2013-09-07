@@ -91,6 +91,9 @@
     <Compile Include="AggregationBox.xaml.cs">
       <DependentUpon>AggregationBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ArithmeticBox.xaml.cs">
+      <DependentUpon>ArithmeticBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImportTableBox.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>ImportTableBox.xaml</DependentUpon>
@@ -106,6 +109,10 @@
       <DependentUpon>TupleTreeControl.xaml</DependentUpon>
     </Compile>
     <Page Include="AggregationBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ArithmeticBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
