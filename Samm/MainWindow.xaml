@@ -114,6 +114,7 @@
         <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access Database" />
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
         <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
+        <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="AddCalculatedCommand" Text="Add Calculation" />
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
@@ -125,6 +126,7 @@
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculatedCommand}" Executed="AddCalculatedCommand_Executed" />
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
@@ -199,7 +201,7 @@
             <RibbonTab Header="Insert" KeyTip="I" >
                 <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Add Filtered Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" Command="{StaticResource FilteredTableCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="columnMenuGroup" Header="Columns">

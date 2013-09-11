@@ -197,7 +197,7 @@ namespace Samm
             }
         }
 
-        private void OpenTableCommand_Executed(object sender, RoutedEventArgs e)
+        private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var tv = (TreeView)e.Source;
 
@@ -230,7 +230,7 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void AccessDatasourceCommand_Executed(object sender, RoutedEventArgs e)
+        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -260,7 +260,7 @@ namespace Samm
             DsModel.Add(root);
         }
 
-        private void SqlserverDatasourceCommand_Executed(object sender, RoutedEventArgs e)
+        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
 
             /*
@@ -347,7 +347,7 @@ namespace Samm
 
         }
 
-        private void ImportTableCommand_Executed(object sender, RoutedEventArgs e)
+        private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var item = DsView.SelectedItem;
 
@@ -372,14 +372,83 @@ namespace Samm
                 SetRoot mashup = MashupModel[0];
                 MashupModel.RemoveAt(0);
                 MashupModel.Add(mashup);
-                // ListCollectionView view = (ListCollectionView)CollectionViewSource.GetDefaultView(MashupView.DataContext);
-                // view.Refresh();
             }
 
             e.Handled = true;
         }
 
-        private void AddAggregationCommand_Executed(object sender, RoutedEventArgs e)
+        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var item = MashupView.SelectedItem;
+
+            if (item == null) return;
+
+            //
+            // Generate recommendations
+            //
+
+            Set srcSet = null;
+            if (item is Set)
+            {
+                srcSet = (Set)item;
+            }
+            else if (item is Dim)
+            {
+                srcSet = ((Dim)item).LesserSet;
+            }
+
+            //
+            // Create new subset
+            //
+            Set dstSet = new Set("My Table");
+            srcSet.AddSubset(dstSet);
+
+            //
+            // Show recommendations and let the user choose one aggregation
+            //
+            FilteredTableBox dlg = new FilteredTableBox();
+            dlg.Owner = this;
+            dlg.SourceTable = srcSet;
+            dlg.FilteredTable = dstSet;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
+                return;
+
+            Com.Model.Expression expr = dlg.ExpressionModel[0];
+
+            //
+            // Fix expression. 
+            //
+/*
+            foreach (var node in expr.GetOperands(Operation.DOT))
+            {
+                if (node.Input == null)
+                {
+                    var thisExpr = new Com.Model.Expression("this");
+                    thisExpr.Operation = Operation.VARIABLE;
+                    thisExpr.OutputIsSetValued = false;
+                    thisExpr.OutputSet = srcSet;
+                    thisExpr.OutputSetName = srcSet.Name;
+
+                    node.Input = thisExpr;
+                }
+            }
+*/
+
+            // Populate new set
+            dstSet.WhereExpression = expr;
+            dstSet.Populate();
+
+            // HACK: refresh the view
+            SetRoot mashup = MashupModel[0];
+            MashupModel.RemoveAt(0);
+            MashupModel.Add(mashup);
+        }
+
+        private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var item = MashupView.SelectedItem;
 
@@ -442,7 +511,7 @@ namespace Samm
             derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
         }
 
-        private void AddCalculatedCommand_Executed(object sender, RoutedEventArgs e)
+        private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var item = MashupView.SelectedItem;
 
@@ -462,10 +531,6 @@ namespace Samm
                 srcSet = ((Dim)item).LesserSet;
             }
 
-            Com.Model.Expression initialExpr = new Com.Model.Expression("List Price");
-            initialExpr.Operation = Operation.PROJECTION;
-            initialExpr.OutputSet = srcSet.Root.GetPrimitiveSubset("Double");
-
             //
             // Show recommendations and let the user choose one aggregation
             //
@@ -476,23 +541,10 @@ namespace Samm
 
             dlg.ShowDialog(); // Open the dialog box modally 
 
-            //
-            // Fix expression. 
-            //
-            Com.Model.Expression expr = dlg.ExpressionModel[0];
-            foreach (var node in expr.GetOperands(Operation.DOT))
-            {
-                if (node.Input == null)
-                {
-                    var thisExpr = new Com.Model.Expression("this");
-                    thisExpr.Operation = Operation.VARIABLE;
-                    thisExpr.OutputIsSetValued = false;
-                    thisExpr.OutputSet = srcSet;
-                    thisExpr.OutputSetName = srcSet.Name;
+            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
+                return;
 
-                    node.Input = thisExpr;
-                }
-            }
+            Com.Model.Expression expr = expr = dlg.ExpressionModel[0];
 
             //
             // Create new derived dimension
@@ -507,9 +559,14 @@ namespace Samm
 
             // Update new derived dimension
             derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+
+            // HACK: refresh the view
+            SetRoot mashup = MashupModel[0];
+            MashupModel.RemoveAt(0);
+            MashupModel.Add(mashup);
         }
 
-        private void AboutCommand_Executed(object sender, RoutedEventArgs e)
+        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box
             dlg.Owner = this;

@@ -21,7 +21,7 @@ namespace Samm
     /// Interaction logic for ArithmeticBox.xaml
     /// 
     /// It should return a valid expression for a calculated column. 
-    /// Arithmetics means single-valued without set (multi-valued) types. 
+    /// Arithmetics means single-valued expression without set (multi-valued) types. 
     /// We can use dimensions, dot operation, system functions (like string or number conversion), arithmetic and maybe other special operations etc.
     /// 
     /// 
@@ -109,7 +109,7 @@ namespace Samm
             // Determine operation and create child expression
             //
             Operation op = (Operation)Operations.SelectedItem;
-            if (op == null) return;
+            if (op == null) return; // WARNING: never happens
 
             var expr = new Com.Model.Expression(op.ToString());
             expr.Operation = op;
@@ -154,11 +154,7 @@ namespace Samm
             Dim op = (Dim)Operands.SelectedItem;
             if (op == null) return;
 
-            var expr = new Com.Model.Expression(op.Name);
-            expr.Operation = Operation.DOT;
-            expr.OutputSet = op.GreaterSet;
-            expr.OutputSetName = op.GreaterSet.Name;
-            expr.OutputIsSetValued = false;
+            var expr = Com.Model.Expression.CreateProjectExpression(new List<Dim> { op }, Operation.DOT);
 
             //
             // Insert new child expression
