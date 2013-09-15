@@ -404,7 +404,7 @@ namespace Samm
             srcSet.AddSubset(dstSet);
 
             //
-            // Show recommendations and let the user choose one aggregation
+            // Show recommendations and let the user choose one of them
             //
             FilteredTableBox dlg = new FilteredTableBox();
             dlg.Owner = this;
@@ -418,25 +418,6 @@ namespace Samm
                 return;
 
             Com.Model.Expression expr = dlg.ExpressionModel[0];
-
-            //
-            // Fix expression. 
-            //
-/*
-            foreach (var node in expr.GetOperands(Operation.DOT))
-            {
-                if (node.Input == null)
-                {
-                    var thisExpr = new Com.Model.Expression("this");
-                    thisExpr.Operation = Operation.VARIABLE;
-                    thisExpr.OutputIsSetValued = false;
-                    thisExpr.OutputSet = srcSet;
-                    thisExpr.OutputSetName = srcSet.Name;
-
-                    node.Input = thisExpr;
-                }
-            }
-*/
 
             // Populate new set
             dstSet.WhereExpression = expr;
@@ -479,14 +460,13 @@ namespace Samm
 
             recoms.Recommend();
 
-            if (dstDim != null)
+            if (dstDim != null) // Try to set the current measure to the specified dimension
             {
-                RecommendedFragment dstDimFrag = recoms.MeasureDimensions.FirstOrDefault(f => f.Fragment == dstDim);
-                recoms.SelectedMeasureDimension = dstDimFrag;
+                recoms.MeasureDimensions.SelectedObject = dstDim; 
             }
 
             //
-            // Show recommendations and let the user choose one aggregation
+            // Show recommendations and let the user choose one of them
             //
             AggregationBox dlg = new AggregationBox();
             dlg.Owner = this;
@@ -499,7 +479,7 @@ namespace Samm
             // Create new derived dimension
             // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
             //
-            Dim aggregDim = (Dim)recoms.SelectedMeasureDimension.Fragment;
+            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
             string derivedDimName = dlg.SourceColumn.Text;
             Com.Model.Expression aggreExpr = recoms.GetExpression();
 
@@ -532,7 +512,7 @@ namespace Samm
             }
 
             //
-            // Show recommendations and let the user choose one aggregation
+            // Show recommendations and let the user choose one of them
             //
             ArithmeticBox dlg = new ArithmeticBox();
             dlg.Owner = this;

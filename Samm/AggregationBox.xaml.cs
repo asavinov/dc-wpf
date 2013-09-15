@@ -41,6 +41,8 @@ namespace Samm
                 {
                     PropertyChanged(this, new PropertyChangedEventArgs("Recommendations"));
                     PropertyChanged(this, new PropertyChangedEventArgs("GroupingPaths"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("FactSets"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("MeasurePaths"));
                 }
             }
         }
@@ -66,6 +68,8 @@ namespace Samm
 
             if (fragment == null) return;
 
+            Recommendations.UpdateSelection("GroupingPaths");
+
             // Refresh
             RefreshAll();
             Recommendations = Recommendations;
@@ -78,6 +82,8 @@ namespace Samm
 
             if (fragment == null) return;
 
+            Recommendations.UpdateSelection("FactSets");
+
             // Refresh
             RefreshAll();
             Recommendations = Recommendations;
@@ -89,6 +95,8 @@ namespace Samm
             var fragment = cb.SelectedItem; // or SelectedValue
 
             if (fragment == null) return;
+
+            Recommendations.UpdateSelection("MeasurePaths");
 
             // Refresh
             RefreshAll();
