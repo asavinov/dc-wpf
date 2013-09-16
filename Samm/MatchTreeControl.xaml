@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Samm.MatchTreeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:com="clr-namespace:Com.Model;assembly=Com"
+             xmlns:local="clr-namespace:Samm"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+
+        <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="TextAlignment" Value="Left"></Setter>
+        </Style>
+
+        <DataTemplate x:Key="DimTreeFragment">
+            <Grid ShowGridLines="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"></ColumnDefinition>
+                    <ColumnDefinition Width="30"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"  Text="{Binding Relevance}" Style="{StaticResource RelevanceStyle}"></TextBlock>
+                <TextBlock Grid.Column="1"  Text="{Binding IsRelevant}" Style="{StaticResource RelevanceStyle}"></TextBlock>
+                <TextBlock Grid.Column="2"  Text="{Binding DisplayName}" Style="{StaticResource RelevanceStyle}"></TextBlock>
+            </Grid>
+        </DataTemplate>
+
+        <HierarchicalDataTemplate DataType="{x:Type com:MatchTree}">
+            <HierarchicalDataTemplate.ItemsSource>
+                <MultiBinding  Converter="{StaticResource SubConv}">
+                    <Binding Path="Children"/>
+                </MultiBinding>
+            </HierarchicalDataTemplate.ItemsSource>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=Set.Name}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <ComboBox Name="TargetSets" ItemsSource="{Binding Path=Matches.Alternatives}" SelectedItem="{Binding Path=Matches.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource DimTreeFragment}" HorizontalAlignment="Stretch" />
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TreeView Name="MatchTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        </TreeView>
+
+    </Grid>
+</UserControl>

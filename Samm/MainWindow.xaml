@@ -44,7 +44,7 @@
             //   - TreeView header (it is probably needed only if we have allignment).
             // - The root (SetRoot) is either shown or hidden so that its direct child sets are listed in tree view at the very first level
             // - Touchable actions: context menu, drag-n-drop, DnD icon changing its appearance depending on the drop area, scrolling etc.
-            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property changes etc. 
+            // - Visualizations: animations during actions (touching, DnD), pitching, external events like process updates or property ^s etc. 
             // - Selection and highlighting: multi-selection (including via touch), conditional selection when not all combinations are possible (with warning animation or other visualization). 
             // - Getting unique representation for a (selected or arbitrary) item visualized by a tree item (dim id, set id etc. including root)
 -->
@@ -117,6 +117,7 @@
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="AddCalculatedCommand" Text="Add Calculation" />
+        <RoutedUICommand x:Key="ChangeRangeCommand" Text="Change Column Type" />
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
     </RibbonWindow.Resources>
@@ -129,6 +130,7 @@
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculatedCommand}" Executed="AddCalculatedCommand_Executed" />
+        <CommandBinding Command="{StaticResource ChangeRangeCommand}" Executed="ChangeRangeCommand_Executed" />
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
@@ -199,14 +201,25 @@
 
             <!-- Ribbon Tab Insert -->
             <RibbonTab Header="Insert" KeyTip="I" >
-                <RibbonGroup x:Name="tableMenuGroup" Header="Tables">
+                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Tables">
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" Command="{StaticResource FilteredTableCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
-                <RibbonGroup x:Name="columnMenuGroup" Header="Columns">
+                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Columns">
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculatedCommand}" />
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!-- Ribbon Tab Refactor -->
+            <RibbonTab Header="Refactor" KeyTip="R" >
+                <RibbonGroup x:Name="refactorTablesMenuGroup" Header="Tables">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" />
+                </RibbonGroup>
+                <RibbonGroup x:Name="refactorColumnsMenuGroup" Header="Columns">
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
                 </RibbonGroup>
             </RibbonTab>
 

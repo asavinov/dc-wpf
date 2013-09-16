@@ -383,10 +383,6 @@ namespace Samm
 
             if (item == null) return;
 
-            //
-            // Generate recommendations
-            //
-
             Set srcSet = null;
             if (item is Set)
             {
@@ -434,10 +430,6 @@ namespace Samm
             var item = MashupView.SelectedItem;
 
             if(item == null) return;
-
-            //
-            // Generate recommendations
-            //
 
             Set srcSet = null;
             Set dstSet = null;
@@ -497,10 +489,6 @@ namespace Samm
 
             if (item == null) return;
 
-            //
-            // Generate recommendations
-            //
-
             Set srcSet = null;
             if (item is Set)
             {
@@ -544,6 +532,72 @@ namespace Samm
             SetRoot mashup = MashupModel[0];
             MashupModel.RemoveAt(0);
             MashupModel.Add(mashup);
+        }
+
+        private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var item = MashupView.SelectedItem;
+
+            if (item == null) return;
+
+            Set srcSet = null;
+            Dim srcDim = null;
+            if (item is Set)
+            {
+                srcSet = (Set)item;
+            }
+            else if (item is Dim)
+            {
+                srcDim = (Dim)item;
+                srcSet = srcDim.LesserSet;
+            }
+
+            //
+            // Parameterize the recommendation model
+            //
+
+            Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table
+
+            // Target DimTree
+            DimTree targetTree = new DimTree();
+            targetTree.AddChild(new DimTree(dstSet));
+            dstSet.GetLeastSubsets().ForEach(s => targetTree.AddChild(new DimTree(s)));
+            targetTree.ExpandTree();
+
+            // Source MatchDimTree
+            MatchTree sourceTree = new MatchTree(targetTree);
+            MatchTree sourceChild = new MatchTree(srcDim, sourceTree); // !!! TODO: It will damage srcDim (lesserset = null because the parent set is null) So if set is null then children have to be allowed to have any dim.lesser set.
+            sourceTree.ExpandTree();
+            sourceTree.Recommend();
+
+            //
+            // Show recommendations and let the user choose one of them
+            //
+            ChangeRangeBox dlg = new ChangeRangeBox();
+            dlg.Owner = this;
+            dlg.MatchTreeModel = sourceTree;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            DimTree dstTree = ((MatchTree)dlg.MatchTreeModel.Children[0]).Matches.SelectedObject;
+            if (dstTree == null) return;
+
+            //
+            // Really changing the range
+            //
+
+            // Create import (conversion) expression 
+
+            // Import data from old to new dimension with conversion 
+            // Importing is performed in the loop on source elements by finding root element in another tree. During propagation primitive values (tree leaves) intermediate sets are appended if necessary
+            // We need to formally create an expression from two dimension trees with matches. 
+            // This expression tree is then used by the (standard) population procedure which iterates through one set, assignes leaf values, propagates and appends new elements in the target sets and intermediate sets.
+
+            // delete old dimension
+
+            // Update existing (lesser) import expressions so that next time they are used the data is imported into the new dimension rather than old one (which is deleted)
+
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)

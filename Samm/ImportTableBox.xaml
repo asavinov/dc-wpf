@@ -24,7 +24,7 @@
         <TextBox Grid.Column="1" Grid.Row="1" Text="Reserved" HorizontalAlignment="Stretch" Height="25" Margin="5,5,5,5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Column mapping:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <local:TupleTreeControl Grid.Column="1" Grid.Row="2" x:Name="tupleTree" DataContext="{Binding ExpressionModel}" />
+        <local:TupleTreeControl x:Name="tupleTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding ExpressionModel}" />
 
         <StackPanel Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
