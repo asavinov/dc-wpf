@@ -349,27 +349,39 @@ namespace Samm
 
         private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            SetRoot mashup = MashupModel[0];
+
             var item = DsView.SelectedItem;
 
             if (item is Set && ((Set)item).Root == DsModel[0])
             {
                 Set set = (Set)item;
 
-                DimImport dimExp = new DimImport("Import " + set.Name, MashupModel[0], set);
-                dimExp.BuildImportExpression();
+                Mapper mapper = new Mapper();
+                mapper.RecommendMappings(set, mashup, 1.0);
+
+                SetMapping bestMapping = mapper.GetBestMapping(set);
+                Com.Model.Expression expr = bestMapping.GetTargetExpression(); // Build a tuple tree with paths in leaves
 
                 // Show dialog for editing import
                 ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
                 dlg.Owner = this;
-                dlg.ExpressionModel.Add(dimExp.SelectExpression);
+                dlg.ExpressionModel.Add(expr);
                 dlg.ShowDialog();
 
-                // TODO: Add import dimension to the schema (to the connected sets)
-                dimExp.ImportDimensions(); // Load structure
-                dimExp.Populate(); // Load data (it should be a separate action with a separate button)
+                Set targetSet = bestMapping.TargetSet;
+                DimTree tree = bestMapping.GetTargetTree();
+                tree.IncludeInSchema(mashup); // Include new elements in schema
+
+                targetSet.ImportExpression = expr;
+                string importDimName = set.Name; // The same as the source (imported) set name
+                DimImport importDim = new DimImport(importDimName, targetSet, set);
+                importDim.Add();
+
+                targetSet.Populate();
 
                 // HACK: refresh the view
-                SetRoot mashup = MashupModel[0];
+                mashup = MashupModel[0];
                 MashupModel.RemoveAt(0);
                 MashupModel.Add(mashup);
             }
@@ -552,23 +564,28 @@ namespace Samm
                 srcSet = srcDim.LesserSet;
             }
 
-            //
-            // Parameterize the recommendation model
-            //
-
             Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table
 
-            // Target DimTree
-            DimTree targetTree = new DimTree();
-            targetTree.AddChild(new DimTree(dstSet));
-            dstSet.GetLeastSubsets().ForEach(s => targetTree.AddChild(new DimTree(s)));
-            targetTree.ExpandTree();
+            //
+            // Parameterize the matching model
+            //
+            SetMapping mapping = new SetMapping(srcSet, dstSet);
 
             // Source MatchDimTree
-            MatchTree sourceTree = new MatchTree(targetTree);
-            MatchTree sourceChild = new MatchTree(srcDim, sourceTree); // !!! TODO: It will damage srcDim (lesserset = null because the parent set is null) So if set is null then children have to be allowed to have any dim.lesser set.
+            MatchTree sourceTree = new MatchTree();
+            sourceTree.Mapping = mapping;
+            MatchTreeNode sourceChild = new MatchTreeNode();
+            sourceChild.Dim = srcDim;
+            sourceTree.AddChild(sourceChild);
             sourceTree.ExpandTree();
-            sourceTree.Recommend();
+
+            // Target DimTree
+            MatchTree targetTree = new MatchTree();
+            targetTree.Mapping = mapping;
+            MatchTreeNode targetChild = new MatchTreeNode();
+            targetChild.Set = dstSet;
+            targetTree.AddChild(targetChild);
+            targetTree.ExpandTree();
 
             //
             // Show recommendations and let the user choose one of them
@@ -579,9 +596,6 @@ namespace Samm
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
-
-            DimTree dstTree = ((MatchTree)dlg.MatchTreeModel.Children[0]).Matches.SelectedObject;
-            if (dstTree == null) return;
 
             //
             // Really changing the range
