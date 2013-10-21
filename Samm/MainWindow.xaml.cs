@@ -359,20 +359,22 @@ namespace Samm
 
                 Mapper mapper = new Mapper();
                 mapper.RecommendMappings(set, mashup, 1.0);
+                SetMapping mapping = mapper.GetBestMapping(set);
 
-                SetMapping bestMapping = mapper.GetBestMapping(set);
-                Com.Model.Expression expr = bestMapping.GetTargetExpression(); // Build a tuple tree with paths in leaves
+                MappingModel model = new MappingModel(mapping);
 
                 // Show dialog for editing import
                 ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
                 dlg.Owner = this;
-                dlg.ExpressionModel.Add(expr);
+                dlg.MappingModel = model;
+                dlg.RefreshAll();
                 dlg.ShowDialog();
 
-                Set targetSet = bestMapping.TargetSet;
-                DimTree tree = bestMapping.GetTargetTree();
+                Set targetSet = mapping.TargetSet;
+                DimTree tree = mapping.GetTargetTree();
                 tree.IncludeInSchema(mashup); // Include new elements in schema
 
+                Com.Model.Expression expr = mapping.GetTargetExpression(); // Build a tuple tree with paths in leaves
                 targetSet.ImportExpression = expr;
                 string importDimName = set.Name; // The same as the source (imported) set name
                 DimImport importDim = new DimImport(importDimName, targetSet, set);

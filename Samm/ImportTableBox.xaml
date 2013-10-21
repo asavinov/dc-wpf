@@ -14,7 +14,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
-            <RowDefinition Height="100*"/>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="80*"/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
         <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5,5,5,5"/>
@@ -24,9 +25,12 @@
         <TextBox Grid.Column="1" Grid.Row="1" Text="Reserved" HorizontalAlignment="Stretch" Height="25" Margin="5,5,5,5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Column mapping:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <local:TupleTreeControl x:Name="tupleTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding ExpressionModel}" />
+        <local:MatchTreeControl x:Name="sourceTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding Path=MappingModel.SourceTree}" />
+        <local:MatchTreeControl x:Name="targetTree" Grid.Column="1" Grid.Row="3" DataContext="{Binding Path=MappingModel.TargetTree}" />
 
-        <StackPanel Grid.Column="1" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+        <!-- <local:TupleTreeControl x:Name="tupleTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding ExpressionModel}" /> -->
+
+        <StackPanel Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25" />
             <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,5,5,5" Width="75" Height="25"/>
         </StackPanel>

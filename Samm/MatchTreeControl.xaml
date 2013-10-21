@@ -41,6 +41,11 @@
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=Set.Name}"/>
                 <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=IsMatched}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=CanMatch}"/>
+                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=MatchRelevance}"/>
                 <!-- <ComboBox Name="TargetSets" ItemsSource="{Binding Path=Matches.Alternatives}" SelectedItem="{Binding Path=Matches.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource DimTreeFragment}" HorizontalAlignment="Stretch" /> -->
             </StackPanel>
         </HierarchicalDataTemplate>

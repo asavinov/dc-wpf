@@ -22,6 +22,7 @@ namespace Samm
     /// </summary>
     public partial class ChangeRangeBox : Window
     {
+        [System.Obsolete("Use MappingModel")]
         public MatchTree MatchTreeModel { get; set; }
 
         public MappingModel MappingModel { get; set; }
@@ -41,6 +42,7 @@ namespace Samm
 
             this.GetBindingExpression(ChangeRangeBox.DataContextProperty).UpdateTarget();
         }
+
         public ChangeRangeBox()
         {
             InitializeComponent();

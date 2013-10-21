@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using Com.Model;
+
 namespace Samm
 {
     /// <summary>
@@ -20,12 +22,24 @@ namespace Samm
     /// </summary>
     public partial class ImportTableBox : Window
     {
+        [System.Obsolete("Use MappingModel")]
         public ObservableCollection<Com.Model.Expression> ExpressionModel { get; set; }
+
+        public MappingModel MappingModel { get; set; }
+
+        public void RefreshAll()
+        {
+            sourceTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
+
+            // !!! Use it for other controls where we update the data context and need to refresh the view
+            sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+            targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+
+            this.GetBindingExpression(ChangeRangeBox.DataContextProperty).UpdateTarget();
+        }
 
         public ImportTableBox()
         {
-            ExpressionModel = new ObservableCollection<Com.Model.Expression>();
-
             InitializeComponent();
         }
     }
