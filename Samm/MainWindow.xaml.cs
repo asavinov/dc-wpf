@@ -564,35 +564,19 @@ namespace Samm
                 srcSet = srcDim.LesserSet;
             }
 
-            Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table
+            Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
 
             //
             // Parameterize the matching model
             //
-            SetMapping mapping = new SetMapping(srcSet, dstSet);
-
-            // Source MatchDimTree
-            MatchTree sourceTree = new MatchTree();
-            sourceTree.Mapping = mapping;
-            MatchTreeNode sourceChild = new MatchTreeNode();
-            sourceChild.Dim = srcDim;
-            sourceTree.AddChild(sourceChild);
-            sourceTree.ExpandTree();
-
-            // Target DimTree
-            MatchTree targetTree = new MatchTree();
-            targetTree.Mapping = mapping;
-            MatchTreeNode targetChild = new MatchTreeNode();
-            targetChild.Set = dstSet;
-            targetTree.AddChild(targetChild);
-            targetTree.ExpandTree();
-
+            MappingModel model = new MappingModel(srcSet, dstSet);
+            
             //
-            // Show recommendations and let the user choose one of them
+            // Show mapping editor with recommendations and let the user build the mapping
             //
             ChangeRangeBox dlg = new ChangeRangeBox();
             dlg.Owner = this;
-            dlg.MatchTreeModel = sourceTree;
+            dlg.MappingModel = model;
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 

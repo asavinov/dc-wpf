@@ -22,18 +22,24 @@ namespace Samm
     /// </summary>
     public partial class ChangeRangeBox : Window
     {
-
         public MatchTree MatchTreeModel { get; set; }
+
+        public MappingModel MappingModel { get; set; }
 
         public void RefreshAll()
         {
             sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             sourceColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
-            matchTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
+            sourceTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
+
+            targetTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
             // !!! Use it for other controls where we update the data context and need to refresh the view
-            matchTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+            sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+            targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+
+            this.GetBindingExpression(ChangeRangeBox.DataContextProperty).UpdateTarget();
         }
         public ChangeRangeBox()
         {
