@@ -371,14 +371,7 @@ namespace Samm
                 dlg.ShowDialog();
 
                 Set targetSet = mapping.TargetSet;
-                DimTree tree = mapping.GetTargetTree();
-                tree.IncludeInSchema(mashup); // Include new elements in schema
-
-                Com.Model.Expression expr = mapping.GetTargetExpression(); // Build a tuple tree with paths in leaves
-                targetSet.ImportExpression = expr;
-                string importDimName = set.Name; // The same as the source (imported) set name
-                DimImport importDim = new DimImport(importDimName, targetSet, set);
-                importDim.Add();
+                targetSet.ImportMapping = mapping;
 
                 targetSet.Populate();
 

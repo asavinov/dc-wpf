@@ -30,6 +30,19 @@
         </DataTemplate>
 -->
 
+        <Style x:Key="CanMatchStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=CanMatch}" Value="true">
+                    <Setter Property="Background" Value="LightGreen"></Setter>
+                    <Setter Property="Opacity" Value="160"></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=CanMatch}" Value="false">
+                    <Setter Property="Background" Value="Pink"></Setter>
+                    <Setter Property="Opacity" Value="100"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <HierarchicalDataTemplate DataType="{x:Type com:MatchTreeNode}">
             <HierarchicalDataTemplate.ItemsSource>
                 <MultiBinding  Converter="{StaticResource SubConv}">
@@ -43,7 +56,7 @@
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=IsMatched}"/>
                 <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=CanMatch}"/>
+                <TextBlock Text="{Binding Path=CanMatch, Mode=Default, UpdateSourceTrigger=Default}" Style="{StaticResource CanMatchStyle}"/>
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=MatchRelevance}"/>
                 <!-- <ComboBox Name="TargetSets" ItemsSource="{Binding Path=Matches.Alternatives}" SelectedItem="{Binding Path=Matches.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource DimTreeFragment}" HorizontalAlignment="Stretch" /> -->
@@ -58,7 +71,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView Name="MatchTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <TreeView Name="MatchTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" SelectedItemChanged="MatchTree_SelectedItemChanged">
         </TreeView>
 
     </Grid>
