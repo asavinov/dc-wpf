@@ -190,46 +190,47 @@
             </RibbonTab>
 
             <!-- Ribbon Tab Data Source -->
-            <RibbonTab Header="Data Source" KeyTip="S">
-                <RibbonGroup x:Name="dataSourceGroup" Header="Microsoft">
+            <RibbonTab Header="Import" KeyTip="S">
+                <RibbonGroup x:Name="importDatasourceGroup" Header="Data Sources">
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Search Data Source" KeyTip="S"/>
                 </RibbonGroup>
-            </RibbonTab>
-
-            <!-- Ribbon Tab Insert -->
-            <RibbonTab Header="Insert" KeyTip="I" >
-                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Tables">
+                <RibbonGroup x:Name="importTableGroup" Header="Import">
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" Command="{StaticResource FilteredTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Table" KeyTip="R" />
                 </RibbonGroup>
-                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Columns">
-                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculatedCommand}" />
-                </RibbonGroup>
-            </RibbonTab>
-
-            <!-- Ribbon Tab Refactor -->
-            <RibbonTab Header="Refactor" KeyTip="R" >
-                <RibbonGroup x:Name="refactorTablesMenuGroup" Header="Tables">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="refactorColumnsMenuGroup" Header="Columns">
-                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
-                </RibbonGroup>
-            </RibbonTab>
-
-            <!-- Ribbon Tab Data -->
-            <RibbonTab Header="Data" KeyTip="D" >
                 <RibbonGroup Header="Update">
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Update All" KeyTip="A" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Update Local (Recompute)" KeyTip="L" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Update Table" KeyTip="T" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Update Column" KeyTip="C" />
+                </RibbonGroup>
+            </RibbonTab>
+
+            <RibbonTab Header="Export" KeyTip="S">
+                <RibbonGroup x:Name="exportGroup" Header="Data Sources">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="CSV" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R"/>
+                </RibbonGroup>
+                <RibbonGroup x:Name="exportTableGroup" Header="Export">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Export Table" KeyTip="E" />
+                </RibbonGroup>
+            </RibbonTab>
+
+            <!-- Ribbon Tab Insert -->
+            <RibbonTab Header="Data" KeyTip="I" >
+                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Tables">
+                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" Command="{StaticResource FilteredTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Table" KeyTip="R" />
+                </RibbonGroup>
+                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Columns">
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculatedCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
                 </RibbonGroup>
                 <RibbonGroup Header="Selection Propagation">
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />

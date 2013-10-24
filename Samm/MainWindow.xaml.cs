@@ -371,7 +371,8 @@ namespace Samm
                 dlg.ShowDialog();
 
                 Set targetSet = mapping.TargetSet;
-                targetSet.ImportMapping = mapping;
+                DimImport dimImport = new DimImport(mapping); // Configure first set for import
+                dimImport.Add();
 
                 targetSet.Populate();
 
@@ -551,12 +552,12 @@ namespace Samm
             Dim srcDim = null;
             if (item is Set)
             {
-                srcSet = (Set)item;
+                return; // We must know the dimension the type of which has to be changed
             }
             else if (item is Dim)
             {
                 srcDim = (Dim)item;
-                srcSet = srcDim.LesserSet;
+                srcSet = srcDim.GreaterSet;
             }
 
             Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
