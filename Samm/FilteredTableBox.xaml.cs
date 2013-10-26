@@ -133,5 +133,10 @@ namespace Samm
             RefreshAll();
 
         }
+
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+        }
     }
 }

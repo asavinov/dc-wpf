@@ -370,6 +370,8 @@ namespace Samm
                 dlg.RefreshAll();
                 dlg.ShowDialog();
 
+                if (dlg.DialogResult == false) return; // Cancel
+
                 Set targetSet = mapping.TargetSet;
                 DimImport dimImport = new DimImport(mapping); // Configure first set for import
                 dimImport.Add();
@@ -417,6 +419,8 @@ namespace Samm
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
 
             if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
                 return;
@@ -473,6 +477,8 @@ namespace Samm
             dlg.Recommendations = recoms;
             dlg.ShowDialog(); // Open the dialog box modally 
 
+            if (dlg.DialogResult == false) return; // Cancel
+
             if (recoms.IsValidExpression() != null) return;
 
             //
@@ -516,6 +522,8 @@ namespace Samm
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
 
             if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
                 return;
@@ -561,11 +569,12 @@ namespace Samm
             }
 
             Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
+            Dim dstDim = dstSet.CreateDefaultLesserDimension(srcDim.Name, srcDim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
 
             //
             // Parameterize the matching model
             //
-            MappingModel model = new MappingModel(srcSet, dstSet);
+            MappingModel model = new MappingModel(srcDim, dstDim);
             
             //
             // Show mapping editor with recommendations and let the user build the mapping
@@ -577,21 +586,19 @@ namespace Samm
 
             dlg.ShowDialog(); // Open the dialog box modally 
 
+            if (dlg.DialogResult == false) return; // Cancel
+
             //
             // Really changing the range
             //
 
-            // Create import (conversion) expression 
+            Com.Model.Expression expr = model.Mapping.GetTargetExpression(srcDim, dstDim);
+            dstDim.SelectExpression = expr;
 
-            // Import data from old to new dimension with conversion 
-            // Importing is performed in the loop on source elements by finding root element in another tree. During propagation primitive values (tree leaves) intermediate sets are appended if necessary
-            // We need to formally create an expression from two dimension trees with matches. 
-            // This expression tree is then used by the (standard) population procedure which iterates through one set, assignes leaf values, propagates and appends new elements in the target sets and intermediate sets.
+            dstDim.Populate(); // Compute the values of the new dimension
 
-            // delete old dimension
-
-            // Update existing (lesser) import expressions so that next time they are used the data is imported into the new dimension rather than old one (which is deleted)
-
+            srcDim.Remove(); // Remove old dimension (detach) and attach new dimension (if not attached)
+            dstDim.Add();
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)

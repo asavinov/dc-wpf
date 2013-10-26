@@ -35,12 +35,13 @@ namespace Samm
             ((MatchTree)DataContext).SelectedNode = treeItem;
 
 
+            MappingModel MappingModel = ((MatchTree)treeItem.Root).MappingModel;
             // Redraw both trees. Use property name like "CanMatch" or String.Empty for all properties (but it does not work because selection is also updated)
-            ((MatchTree)treeItem.Root).MappingModel.SourceTree.NotifyAllOnPropertyChanged("CanMatch");
-            ((MatchTree)treeItem.Root).MappingModel.TargetTree.NotifyAllOnPropertyChanged("CanMatch");
+            MappingModel.SourceTree.NotifyAllOnPropertyChanged("CanMatch");
+            MappingModel.TargetTree.NotifyAllOnPropertyChanged("CanMatch");
 
-            ((MatchTree)treeItem.Root).MappingModel.SourceTree.NotifyAllOnPropertyChanged("IsMatched");
-            ((MatchTree)treeItem.Root).MappingModel.TargetTree.NotifyAllOnPropertyChanged("IsMatched");
+            MappingModel.SourceTree.NotifyAllOnPropertyChanged("IsMatched");
+            MappingModel.TargetTree.NotifyAllOnPropertyChanged("IsMatched");
 
             this.UpdateLayout();
             this.UpdateLayout();

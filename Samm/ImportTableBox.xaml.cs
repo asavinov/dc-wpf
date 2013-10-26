@@ -42,5 +42,10 @@ namespace Samm
         {
             InitializeComponent();
         }
+
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+        }
     }
 }

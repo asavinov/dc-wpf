@@ -68,8 +68,8 @@
         <ComboBox Name="AggregationFunctions" Grid.Column="1" Grid.Row="7" ItemsSource="{Binding Path=Recommendations.AggregationFunctions.Alternatives}" SelectedItem="{Binding Path=Recommendations.AggregationFunctions.SelectedFragment, Mode=TwoWay}" DisplayMemberPath="DisplayName" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" />
-            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" />
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
         </StackPanel>
     </Grid>
 </Window>
