@@ -208,14 +208,12 @@ namespace Samm
                 Set set = (Set)item;
                 lblWorkspace.Content = set.Name;
 
-                GridPanel.Children.Clear();
-
                 Label lbl = new Label();
                 lbl.Content = "Content";
-                // GridPanel.Children.Add(lbl);
 
                 var gridView = new SetGridView(set);
-                GridPanel.Children.Add(gridView.Grid);
+                GridPanel.Content = gridView.Grid;
+
 
             }
             else if (item is Dim)
@@ -224,7 +222,7 @@ namespace Samm
                 Set set = dim.LesserSet;
                 lblWorkspace.Content = set.Name + " : " + dim.Name;
 
-                GridPanel.Children.Clear();
+                GridPanel.Content = null;
             }
 
             e.Handled = true;
@@ -494,7 +492,7 @@ namespace Samm
             srcSet.AddGreaterDim(derivedDim);
 
             // Update new derived dimension
-            derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
         }
 
         private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -542,7 +540,7 @@ namespace Samm
             srcSet.AddGreaterDim(derivedDim);
 
             // Update new derived dimension
-            derivedDim.Populate(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
 
             // HACK: refresh the view
             SetRoot mashup = MashupModel[0];
@@ -595,7 +593,7 @@ namespace Samm
             Com.Model.Expression expr = model.Mapping.GetTargetExpression(srcDim, dstDim);
             dstDim.SelectExpression = expr;
 
-            dstDim.Populate(); // Compute the values of the new dimension
+            dstDim.ComputeValues(); // Compute the values of the new dimension
 
             srcDim.Remove(); // Remove old dimension (detach) and attach new dimension (if not attached)
             dstDim.Add();

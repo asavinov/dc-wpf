@@ -287,11 +287,25 @@
             </Grid>
 
             <!-- Workspace panel -->
+            <Grid Name="WorkspacePanel" Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Name="lblWorkspace" Grid.Row="0" FontSize="16" Margin="5">WORKSPACE PANEL</Label>
+                <ContentControl Name="GridPanel" Grid.Row="1">
+                </ContentControl>
+
+            </Grid>
+
+            <!--
             <StackPanel Name="WorkspacePanel" Grid.Column="2" >
                 <Label Name="lblWorkspace" FontSize="16" Margin="10,10,0,0">WORKSPACE PANEL</Label>
                 <StackPanel Name="GridPanel">
                 </StackPanel>
             </StackPanel>
+            -->
 
             <!-- Mashup panel -->
             <Grid Name="MashupPanel" Grid.Column="4" >
