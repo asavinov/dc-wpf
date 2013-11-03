@@ -114,6 +114,9 @@
     <Compile Include="AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SubsetTreeControl.xaml.cs">
+      <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TupleTreeControl.xaml.cs">
       <DependentUpon>TupleTreeControl.xaml</DependentUpon>
     </Compile>
@@ -163,6 +166,10 @@
     <Page Include="PathListControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SubsetTreeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TupleTreeControl.xaml">
       <SubType>Designer</SubType>

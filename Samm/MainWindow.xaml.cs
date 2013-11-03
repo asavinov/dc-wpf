@@ -72,7 +72,6 @@ namespace Samm
 
             MashupModel.Add(muRoot);
 
-
 //            this.DataContext = this;
             InitializeComponent();
         }
@@ -187,19 +186,21 @@ namespace Samm
             }
         }
 
-        private void MashupView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            ICommand cmd = this.Resources["OpenTableCommand"] as ICommand;
-
-            if (cmd.CanExecute(null))
-            {
-                cmd.Execute(null);
-            }
-        }
-
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var tv = (TreeView)e.Source;
+            TreeView tv;
+            if (e.Source is SubsetTreeControl)
+            {
+                tv = (TreeView)((SubsetTreeControl)e.Source).SubsetTree;
+            }
+            else if (e.Source is TreeView)
+            {
+                tv = (TreeView)e.Source;
+            }
+            else
+            {
+                return;
+            }
 
             var item = tv.SelectedItem; // tv.SelectedValue
 
@@ -349,7 +350,7 @@ namespace Samm
         {
             SetRoot mashup = MashupModel[0];
 
-            var item = DsView.SelectedItem;
+            var item = DsView.SubsetTree.SelectedItem;
 
             if (item is Set && ((Set)item).Root == DsModel[0])
             {
@@ -387,7 +388,7 @@ namespace Samm
 
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SelectedItem;
+            var item = MashupView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
@@ -437,7 +438,7 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SelectedItem;
+            var item = MashupView.SubsetTree.SelectedItem;
 
             if(item == null) return;
 
@@ -497,7 +498,7 @@ namespace Samm
 
         private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SelectedItem;
+            var item = MashupView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
@@ -550,7 +551,7 @@ namespace Samm
 
         private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SelectedItem;
+            var item = MashupView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
@@ -566,7 +567,7 @@ namespace Samm
                 srcSet = srcDim.GreaterSet;
             }
 
-            Set dstSet = srcSet.Root.FindSubset("Customers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
+            Set dstSet = srcSet.Root.FindSubset("Employees"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
             Dim dstDim = dstSet.CreateDefaultLesserDimension(srcDim.Name, srcDim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
 
             //

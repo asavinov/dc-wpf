@@ -84,7 +84,15 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView Name="MatchTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" SelectedItemChanged="MatchTree_SelectedItemChanged">
+        <TreeView 
+            Name="MatchTree" 
+            Grid.Column="0" Grid.Row="0" 
+            ItemsSource="{Binding Path=.}" 
+            ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+            Margin="5" 
+            SelectedItemChanged="MatchTree_SelectedItemChanged"
+            >
         </TreeView>
 
     </Grid>
