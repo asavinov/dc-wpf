@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -85,6 +86,176 @@ namespace Samm
             InitializeComponent();
         }
 
+        // Drag and drop sources: 
+        // http://msdn.microsoft.com/en-us/library/ms742859.aspx
+        // http://www.wpftutorial.net/DragAndDrop.html, 
+        // http://dotnet-experience.blogspot.de/2011/04/wpf-treeview-drag-n-drop.html
+        // http://www.codeproject.com/Articles/55168/Drag-and-Drop-Feature-in-WPF-TreeView-Control
+        // Auto-expand node (use DragOver): http://stackoverflow.com/questions/1709581/whilst-using-drag-and-drop-can-i-cause-a-treeview-to-expand-the-node-over-which?rq=1
+
+        private Point dragStartingPoint;
+
+        private void SubsetTree_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            dragStartingPoint = e.GetPosition(null); // Store the mouse position
+        }
+
+        private void SubsetTree_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point dragCurrentPoint = e.GetPosition(null); // Get the current mouse position
+            Vector diff = dragStartingPoint - dragCurrentPoint;
+
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                (Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance))
+            {
+                TreeView treeView = sender as TreeView;
+                TreeViewItem treeViewItem = FindAnchestor<TreeViewItem>((DependencyObject)e.OriginalSource); // Get the dragged TreeViewItem
+
+                if (treeView == null || treeViewItem == null) return;
+
+                // Find the data behind the TreeViewItem
+                object data1 = (object)treeView.ItemContainerGenerator.ItemFromContainer(treeViewItem);
+                object data2 = treeViewItem.DataContext; // Alternative
+                object data3 = treeView.SelectedItem; // Alternative
+                object data = data2;
+
+                // Initialize the drag & drop operation
+                string format = null;
+                if (data is Set) format = "Set";
+                else if (data is Dim) format = "Dim";
+                DataObject dragData = new DataObject(format, data);
+                DragDrop.DoDragDrop(treeViewItem, dragData, DragDropEffects.Copy);
+            }
+        }
+
+        private void SubsetTree_DragEnter(object sender, DragEventArgs e)
+        {
+/*
+            if (!e.Data.GetDataPresent(typeof(Set))) // Choose type of data that is about to be dropped
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+*/
+        }
+
+        private void SubsetTree_DragOver(object sender, DragEventArgs e)
+        {
+            try
+            {
+                Point dragCurrentPoint = e.GetPosition(null);
+                Vector diff = dragStartingPoint - dragCurrentPoint;
+
+                if ((Math.Abs(diff.X) > 10.0) || (Math.Abs(diff.Y) > 10.0))
+                {
+                    // Verify that this is a valid drop and then store the drop target
+/*
+                    TreeViewItem item = GetNearestContainer(e.OriginalSource as UIElement);
+                    if (CheckDropTarget(draggedItem, item))
+                    {
+                        e.Effects = DragDropEffects.Move;
+                    }
+                    else
+                    {
+                        e.Effects = DragDropEffects.None;
+                    }
+*/
+                }
+                e.Handled = true;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void SubsetTree_Drop(object sender, DragEventArgs e)
+        {
+            // Determine the drop target
+            object dropTarget = null;;
+
+            var treeViewItem = FindAnchestor<TreeViewItem>((DependencyObject)e.OriginalSource);
+            if (treeViewItem == null) // No item. // Check if it is dropped inside the treeview area (rather than any node)
+            {
+                var treeView = FindAnchestor<TreeView>((DependencyObject)e.OriginalSource);
+                if (treeView == null) return;
+
+                var rootItem = treeView.Items[0];
+                var rootItem2 = ((ObservableCollection<SetRoot>)treeView.DataContext)[0];
+                var rootItem3 = ((ObservableCollection<SetRoot>)treeView.ItemsSource)[0];
+
+                dropTarget = rootItem;
+            }
+            else
+            {
+                dropTarget = treeViewItem.Header;
+            }
+            if (dropTarget == null) return;
+            // Now dropTarget is supposed to be either Set (including SetRoot) or Dim (including primitive dimensions)
+
+            // Determine the source
+            if (e.Data.GetDataPresent("Set"))
+            {
+                var dropSource = e.Data.GetData("Set") as Set;
+                if (dropSource == null) return; // No data
+                
+                // Do action
+                if (dropTarget is SetRoot)
+                {
+                    if (dropTarget == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.Root == ((MainWindow)App.Current.MainWindow).DsModel[0])
+                    {
+                        // Some table from a data source is dropped to the mashup: import table
+                        ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["ImportTableCommand"] as ICommand;
+
+                        if (cmd == null) return;
+
+                        if (cmd.CanExecute(null))
+                        {
+                            cmd.Execute(null);
+                        }
+                    }
+
+                }
+                else if (dropTarget is Set)
+                {
+                    Set set = dropTarget as Set;
+                }
+                else if (dropTarget is Dim)
+                {
+                    Dim dim = treeViewItem.Header as Dim;
+                }
+            }
+            // Determine the source
+            else if (e.Data.GetDataPresent("Dim"))
+            {
+                var dropSource = e.Data.GetData("Dim") as Dim;
+                if (dropSource == null) return; // No data
+
+                // Do action
+                if (dropTarget is SetRoot)
+                {
+                    // Cannot drop column to root
+                }
+                else if (dropTarget is Set)
+                {
+                    Set set = dropTarget as Set;
+                    if (set.Root == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.LesserSet.Root == ((MainWindow)App.Current.MainWindow).MashupModel[0])
+                    {
+                        // Some dimension from mashup is dropped to a table in the mashup: add aggregated column
+                        ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["AddAggregationCommand"] as ICommand;
+
+                        if (cmd == null) return;
+
+                        if (cmd.CanExecute(null))
+                        {
+                            cmd.Execute(null);
+                        }
+                    }
+
+                }
+            }
+
+        }
+
         private void SubsetTree_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // TODO: This control does not know what to do with actions like double click or drag-n-drop
@@ -106,6 +277,37 @@ namespace Samm
                 ;
             }
         }
+
+        // Helper to search up the VisualTree
+        private static T FindAnchestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            do
+            {
+                if (current is T)
+                {
+                    return (T)current;
+                }
+                current = VisualTreeHelper.GetParent(current);
+            }
+            while (current != null);
+            return null;
+        }
+
+        // Alternative
+        public static T GetVisualParent<T>(Visual referencedVisual) where T : Visual
+        {
+            Visual parent = referencedVisual;
+
+            while (parent != null && !object.ReferenceEquals(parent.GetType(), typeof(T)))
+            {
+                parent = VisualTreeHelper.GetParent(parent) as Visual;
+            }
+
+            var parent1 = VisualTreeHelper.GetParent(referencedVisual);
+
+            return parent as T;
+        }
+
     }
 
     // http://msdn.microsoft.com/en-us/library/system.windows.controls.datatemplateselector.aspx

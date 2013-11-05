@@ -63,6 +63,12 @@
             BorderThickness="0" 
             ScrollViewer.VerticalScrollBarVisibility="Visible" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+            AllowDrop="True"
+            PreviewMouseLeftButtonDown="SubsetTree_PreviewMouseLeftButtonDown" 
+            PreviewMouseMove="SubsetTree_MouseMove"
+            DragEnter="SubsetTree_DragEnter" 
+            DragOver="SubsetTree_DragOver"
+            Drop="SubsetTree_Drop" 
             MouseDoubleClick="SubsetTree_MouseDoubleClick"
             >
         </TreeView>
