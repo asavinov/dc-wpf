@@ -36,15 +36,15 @@ namespace Samm
         {
             DsModel = new ObservableCollection<SetRoot>();
 
-            SetRoot root = new  SetRoot("My Data Source");
+            SetTop top = new SetTop("My Data Source");
 
-            DsModel.Add(root);
+            DsModel.Add(top.Root);
 
             Set departments = new Set("Departments");
-            departments.SuperDim = new DimSuper("super", departments, root);
-            departments.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments));
+            departments.SuperDim = new DimSuper("super", departments, top.Root);
+            departments.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments));
             departments.GetGreaterDim("name").IsIdentity = true;
-            departments.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments));
+            departments.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments));
 
             departments.Append();
             departments.SetValue("name", 0, "SALES");
@@ -54,23 +54,23 @@ namespace Samm
             departments.SetValue("location", 1, "Walldorf");
 
             Set employees = new Set("Employees");
-            employees.SuperDim = new DimSuper("super", employees, root);
-            employees.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees));
+            employees.SuperDim = new DimSuper("super", employees, top.Root);
+            employees.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees));
             employees.GetGreaterDim("name").IsIdentity = true;
-            employees.AddGreaterDim(root.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees));
-            employees.AddGreaterDim(root.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees));
+            employees.AddGreaterDim(top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees));
+            employees.AddGreaterDim(top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees));
             employees.AddGreaterDim(departments.CreateDefaultLesserDimension("dept", employees));
 
             Set managers = new Set("Managers");
             managers.SuperDim = new DimSuper("super", managers, employees);
-            managers.AddGreaterDim(root.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
-            managers.AddGreaterDim(root.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
+            managers.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
+            managers.AddGreaterDim(top.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
 
             MashupModel = new ObservableCollection<SetRoot>();
 
-            SetRoot muRoot = new SetRoot("My Mashup");
+            SetTop muTop = new SetTop("My Mashup");
 
-            MashupModel.Add(muRoot);
+            MashupModel.Add(muTop.Root);
 
 //            this.DataContext = this;
             InitializeComponent();
@@ -249,14 +249,14 @@ namespace Samm
             if (DsModel == null) DsModel = new ObservableCollection<SetRoot>();
             else DsModel.Clear();
 
-            SetRootOledb root = new SetRootOledb("My Data Source");
+            SetTopOledb top = new SetTopOledb("My Data Source");
 
-            root.ConnectionString = connectionString;
+            top.ConnectionString = connectionString;
 
-            root.Open();
-            root.ImportSchema();
+            top.Open();
+            top.ImportSchema();
 
-            DsModel.Add(root);
+            DsModel.Add(top.Root);
         }
 
         private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -348,11 +348,11 @@ namespace Samm
 
         private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            SetRoot mashup = MashupModel[0];
+            SetTop mashup = MashupModel[0].Top;
 
             var item = DsView.SubsetTree.SelectedItem;
 
-            if (item is Set && ((Set)item).Root == DsModel[0])
+            if (item is Set && ((Set)item).Top == DsModel[0].Top)
             {
                 Set set = (Set)item;
 
@@ -378,9 +378,9 @@ namespace Samm
                 targetSet.Populate();
 
                 // HACK: refresh the view
-                mashup = MashupModel[0];
+                mashup = MashupModel[0].Top;
                 MashupModel.RemoveAt(0);
-                MashupModel.Add(mashup);
+                MashupModel.Add(mashup.Root);
             }
 
             e.Handled = true;
@@ -431,9 +431,9 @@ namespace Samm
             dstSet.Populate();
 
             // HACK: refresh the view
-            SetRoot mashup = MashupModel[0];
+            SetTop mashup = MashupModel[0].Top;
             MashupModel.RemoveAt(0);
-            MashupModel.Add(mashup);
+            MashupModel.Add(mashup.Root);
         }
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -544,9 +544,9 @@ namespace Samm
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
 
             // HACK: refresh the view
-            SetRoot mashup = MashupModel[0];
+            SetTop mashup = MashupModel[0].Top;
             MashupModel.RemoveAt(0);
-            MashupModel.Add(mashup);
+            MashupModel.Add(mashup.Root);
         }
 
         private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)

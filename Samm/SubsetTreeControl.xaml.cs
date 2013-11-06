@@ -201,7 +201,7 @@ namespace Samm
                 // Do action
                 if (dropTarget is SetRoot)
                 {
-                    if (dropTarget == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.Root == ((MainWindow)App.Current.MainWindow).DsModel[0])
+                    if (dropTarget == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.Top == ((MainWindow)App.Current.MainWindow).DsModel[0].Top)
                     {
                         // Some table from a data source is dropped to the mashup: import table
                         ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["ImportTableCommand"] as ICommand;
@@ -238,7 +238,7 @@ namespace Samm
                 else if (dropTarget is Set)
                 {
                     Set set = dropTarget as Set;
-                    if (set.Root == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.LesserSet.Root == ((MainWindow)App.Current.MainWindow).MashupModel[0])
+                    if (set.Top == ((MainWindow)App.Current.MainWindow).MashupModel[0].Top && dropSource.LesserSet.Top == ((MainWindow)App.Current.MainWindow).MashupModel[0].Top)
                     {
                         // Some dimension from mashup is dropped to a table in the mashup: add aggregated column
                         ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["AddAggregationCommand"] as ICommand;

@@ -113,7 +113,7 @@ namespace Samm
 
             var expr = new Com.Model.Expression(op.ToString());
             expr.Operation = op;
-            expr.OutputSet = SourceTable.Root.GetPrimitiveSubset("Double");
+            expr.OutputSet = SourceTable.Top.GetPrimitiveSubset("Double");
             expr.OutputSetName = expr.OutputSet.Name;
             expr.OutputIsSetValued = false;
 
