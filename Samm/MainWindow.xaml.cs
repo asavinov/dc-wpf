@@ -357,8 +357,9 @@ namespace Samm
                 Set set = (Set)item;
 
                 Mapper mapper = new Mapper();
-                mapper.RecommendMappings(set, mashup, 1.0);
-                SetMapping mapping = mapper.GetBestMapping(set);
+                mapper.SetCreationThreshold = 1.0;
+                mapper.MapSet(set, mashup);
+                SetMapping mapping = mapper.GetBestMapping(set, mashup);
 
                 MappingModel model = new MappingModel(mapping);
 
@@ -570,10 +571,16 @@ namespace Samm
             Set dstSet = srcSet.Root.FindSubset("Employees"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
             Dim dstDim = dstSet.CreateDefaultLesserDimension(srcDim.Name, srcDim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
 
+            Mapper mapper = new Mapper();
+            mapper.MaxMappingsToBuild = 100;
+            mapper.MapDim(new DimPath(srcDim), new DimPath(dstDim));
+            SetMapping mapping = mapper.Mappings[0];
+
             //
-            // Parameterize the matching model
+            // Parameterize the mapping model
             //
             MappingModel model = new MappingModel(srcDim, dstDim);
+            model.Mapping = mapping;
             
             //
             // Show mapping editor with recommendations and let the user build the mapping
