@@ -40,11 +40,15 @@ namespace Samm
 
             DsModel.Add(top.Root);
 
+            Dim dim;
             Set departments = new Set("Departments");
-            departments.SuperDim = new DimSuper("super", departments, top.Root);
-            departments.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments));
-            departments.GetGreaterDim("name").IsIdentity = true;
-            departments.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments));
+            dim = new DimSuper("super", departments, top.Root);
+            dim.Add();
+            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments);
+            dim.IsIdentity = true;
+            dim.Add();
+            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments);
+            dim.Add();
 
             departments.Append();
             departments.SetValue("name", 0, "SALES");
@@ -54,17 +58,25 @@ namespace Samm
             departments.SetValue("location", 1, "Walldorf");
 
             Set employees = new Set("Employees");
-            employees.SuperDim = new DimSuper("super", employees, top.Root);
-            employees.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees));
-            employees.GetGreaterDim("name").IsIdentity = true;
-            employees.AddGreaterDim(top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees));
-            employees.AddGreaterDim(top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees));
-            employees.AddGreaterDim(departments.CreateDefaultLesserDimension("dept", employees));
+            dim = new DimSuper("super", employees, top.Root);
+            dim.Add();
+            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees);
+            dim.IsIdentity = true;
+            dim.Add();
+            dim = top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees);
+            dim.Add();
+            dim = top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees);
+            dim.Add();
+            dim = departments.CreateDefaultLesserDimension("dept", employees);
+            dim.Add();
 
             Set managers = new Set("Managers");
-            managers.SuperDim = new DimSuper("super", managers, employees);
-            managers.AddGreaterDim(top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers));
-            managers.AddGreaterDim(top.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers));
+            dim = new DimSuper("super", managers, employees);
+            dim.Add();
+            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers);
+            dim.Add();
+            dim = top.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers);
+            dim.Add();
 
             MashupModel = new ObservableCollection<SetRoot>();
 
@@ -491,7 +503,7 @@ namespace Samm
 
             Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
             derivedDim.SelectExpression = aggreExpr;
-            srcSet.AddGreaterDim(derivedDim);
+            derivedDim.Add();
 
             // Update new derived dimension
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
@@ -539,7 +551,7 @@ namespace Samm
             Set dstSet = expr.OutputSet;
             Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
             derivedDim.SelectExpression = expr;
-            srcSet.AddGreaterDim(derivedDim);
+            derivedDim.Add();
 
             // Update new derived dimension
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
