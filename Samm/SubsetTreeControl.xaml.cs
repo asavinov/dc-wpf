@@ -171,7 +171,7 @@ namespace Samm
         private void SubsetTree_Drop(object sender, DragEventArgs e)
         {
             // Determine the drop target
-            object dropTarget = null;;
+            object dropTarget = null;
 
             var treeViewItem = FindAnchestor<TreeViewItem>((DependencyObject)e.OriginalSource);
             if (treeViewItem == null) // No item. // Check if it is dropped inside the treeview area (rather than any node)
@@ -201,7 +201,7 @@ namespace Samm
                 // Do action
                 if (dropTarget is SetRoot)
                 {
-                    if (dropTarget == ((MainWindow)App.Current.MainWindow).MashupModel[0] && dropSource.Top == ((MainWindow)App.Current.MainWindow).DsModel[0].Top)
+                    if (dropTarget == ((MainWindow)App.Current.MainWindow).MashupRoot && ((MainWindow)App.Current.MainWindow).IsInSource(dropSource))
                     {
                         // Some table from a data source is dropped to the mashup: import table
                         ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["ImportTableCommand"] as ICommand;
@@ -238,7 +238,7 @@ namespace Samm
                 else if (dropTarget is Set)
                 {
                     Set set = dropTarget as Set;
-                    if (set.Top == ((MainWindow)App.Current.MainWindow).MashupModel[0].Top && dropSource.LesserSet.Top == ((MainWindow)App.Current.MainWindow).MashupModel[0].Top)
+                    if (set.Top == ((MainWindow)App.Current.MainWindow).MashupTop && dropSource.LesserSet.Top == ((MainWindow)App.Current.MainWindow).MashupTop)
                     {
                         // Some dimension from mashup is dropped to a table in the mashup: add aggregated column
                         ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["AddAggregationCommand"] as ICommand;

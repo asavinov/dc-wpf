@@ -27,27 +27,37 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
-        public ObservableCollection<SetRoot> DsModel { get; set; }
+        //
+        // Main application model - everything that is manipulated by the application
+        //
         public ObservableCollection<SetRoot> MashupModel { get; set; }
+        public SetTop MashupTop { get { return MashupModel.Count != 0 ? MashupModel[0].Top : null; } }
+        public SetRoot MashupRoot { get { return MashupModel.Count != 0 ? MashupModel[0] : null; } }
 
-        List<object> windows = new List<object>();
+        public ObservableCollection<SetRoot> DataSources { get; set; }
+        public bool IsInSource(Set set) 
+        {
+            foreach (SetRoot r in DataSources) { if (set.Top == r.Top) return true; }
+            return false;
+        }
 
         public MainWindow()
         {
-            DsModel = new ObservableCollection<SetRoot>();
+            DataSources = new ObservableCollection<SetRoot>();
 
-            SetTop top = new SetTop("My Data Source");
-
-            DsModel.Add(top.Root);
+            //
+            // Initialize sample data source (for testing purposes)
+            //
+            SetTop ds = new SetTop("My Data Source");
 
             Dim dim;
             Set departments = new Set("Departments");
-            dim = new DimSuper("super", departments, top.Root);
+            dim = new DimSuper("super", departments, ds.Root);
             dim.Add();
-            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments);
+            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments);
             dim.IsIdentity = true;
             dim.Add();
-            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments);
+            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments);
             dim.Add();
 
             departments.Append();
@@ -58,14 +68,14 @@ namespace Samm
             departments.SetValue("location", 1, "Walldorf");
 
             Set employees = new Set("Employees");
-            dim = new DimSuper("super", employees, top.Root);
+            dim = new DimSuper("super", employees, ds.Root);
             dim.Add();
-            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees);
+            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees);
             dim.IsIdentity = true;
             dim.Add();
-            dim = top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees);
+            dim = ds.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees);
             dim.Add();
-            dim = top.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees);
+            dim = ds.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees);
             dim.Add();
             dim = departments.CreateDefaultLesserDimension("dept", employees);
             dim.Add();
@@ -73,15 +83,18 @@ namespace Samm
             Set managers = new Set("Managers");
             dim = new DimSuper("super", managers, employees);
             dim.Add();
-            dim = top.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers);
+            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers);
             dim.Add();
-            dim = top.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers);
+            dim = ds.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers);
             dim.Add();
 
+            DataSources.Add(ds.Root);
+
+            //
+            // Initialize empty mashup
+            //
             MashupModel = new ObservableCollection<SetRoot>();
-
             SetTop muTop = new SetTop("My Mashup");
-
             MashupModel.Add(muTop.Root);
 
 //            this.DataContext = this;
@@ -257,10 +270,7 @@ namespace Samm
 
             string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath;
 
-            // Initialize the data suorce
-            if (DsModel == null) DsModel = new ObservableCollection<SetRoot>();
-            else DsModel.Clear();
-
+            // Initialize a new data source schema
             SetTopOledb top = new SetTopOledb("My Data Source");
 
             top.ConnectionString = connectionString;
@@ -268,7 +278,7 @@ namespace Samm
             top.Open();
             top.ImportSchema();
 
-            DsModel.Add(top.Root);
+            DataSources.Add(top.Root); // Append to the list of data sources
         }
 
         private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -355,16 +365,15 @@ namespace Samm
             //readOledbSchema(connectionString); //For testing purposes
 
             dcs.SaveConfiguration(dcd);
-
         }
 
         private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            SetTop mashup = MashupModel[0].Top;
+            SetTop mashup = MashupTop;
 
             var item = DsView.SubsetTree.SelectedItem;
 
-            if (item is Set && ((Set)item).Top == DsModel[0].Top)
+            if (item is Set)
             {
                 Set set = (Set)item;
 
@@ -391,7 +400,7 @@ namespace Samm
                 targetSet.Populate();
 
                 // HACK: refresh the view
-                mashup = MashupModel[0].Top;
+                mashup = MashupTop;
                 MashupModel.RemoveAt(0);
                 MashupModel.Add(mashup.Root);
             }
@@ -444,7 +453,7 @@ namespace Samm
             dstSet.Populate();
 
             // HACK: refresh the view
-            SetTop mashup = MashupModel[0].Top;
+            SetTop mashup = MashupTop;
             MashupModel.RemoveAt(0);
             MashupModel.Add(mashup.Root);
         }
@@ -557,7 +566,7 @@ namespace Samm
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
 
             // HACK: refresh the view
-            SetTop mashup = MashupModel[0].Top;
+            SetTop mashup = MashupTop;
             MashupModel.RemoveAt(0);
             MashupModel.Add(mashup.Root);
         }
