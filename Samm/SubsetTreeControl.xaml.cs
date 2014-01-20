@@ -124,6 +124,20 @@ namespace Samm
                 string format = null;
                 if (data is Set) format = "Set";
                 else if (data is Dim) format = "Dim";
+                else if (data is SubsetTree)
+                {
+                    if (((SubsetTree)data).IsSubsetNode) 
+                    {
+                        data = ((SubsetTree)data).LesserSet;
+                        format = "Set";
+                    }
+                    else if (((SubsetTree)data).IsDimensionNode)
+                    {
+                        data = ((SubsetTree)data).Dim;
+                        format = "Dim";
+                    }
+
+                }
                 DataObject dragData = new DataObject(format, data);
                 DragDrop.DoDragDrop(treeViewItem, dragData, DragDropEffects.Copy);
             }
@@ -180,10 +194,24 @@ namespace Samm
                 if (treeView == null) return;
 
                 var rootItem = treeView.Items[0];
-                var rootItem2 = ((ObservableCollection<SetRoot>)treeView.DataContext)[0];
-                var rootItem3 = ((ObservableCollection<SetRoot>)treeView.ItemsSource)[0];
+                var rootItem2 = ((ObservableCollection<SubsetTree>)treeView.DataContext)[0];
+                var rootItem3 = ((ObservableCollection<SubsetTree>)treeView.ItemsSource)[0];
 
-                dropTarget = rootItem;
+                if (rootItem is Set || rootItem is Dim)
+                {
+                    dropTarget = rootItem;
+                }
+                else if (rootItem is SubsetTree)
+                {
+                    if (((SubsetTree)rootItem).IsSubsetNode)
+                    {
+                        dropTarget = ((SubsetTree)rootItem).LesserSet;
+                    }
+                    else if (((SubsetTree)rootItem).IsDimensionNode)
+                    {
+                        dropTarget = ((SubsetTree)rootItem).Dim;
+                    }
+                }
             }
             else
             {
@@ -261,7 +289,7 @@ namespace Samm
             // TODO: This control does not know what to do with actions like double click or drag-n-drop
             // Therefore, it should do its logic (if any) and propagate this event to parent controls where it should be cought by the main window dispatcher or the view dispatcher.
 
-            if (this == ((MainWindow)App.Current.MainWindow).MashupView)
+            if (this == ((MainWindow)App.Current.MainWindow).MashupsView)
             {
                 ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["OpenTableCommand"] as ICommand;
 
@@ -272,7 +300,7 @@ namespace Samm
                     cmd.Execute(null);
                 }
             }
-            else if (this == ((MainWindow)App.Current.MainWindow).DsView)
+            else if (this == ((MainWindow)App.Current.MainWindow).SourcesView)
             {
                 ;
             }
@@ -315,21 +343,36 @@ namespace Samm
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
+            // Here we can also choose appropriate templates depending on item properties (like item.IsPrimitive) and not only on its class as it is done in XAML
             FrameworkElement element = container as FrameworkElement;
 
             if (element != null && item != null)
             {
-                if (item is Set)
+                if (item is SubsetTree)
+                {
+                    SubsetTree nodeItem = item as SubsetTree;
+                    if (nodeItem.Dim.LesserSet.IsRoot)
+                    {
+                        return element.FindResource("rootItemTemplate") as DataTemplate;
+                    }
+                    else if (nodeItem.IsSubsetNode)
+                    {
+                        return element.FindResource("setItemTemplate") as DataTemplate;
+                    }
+                    else if (nodeItem.IsDimensionNode)
+                    {
+                        return element.FindResource("dimensionItemTemplate") as DataTemplate;
+                    }
+                }
+                else if (item is Set)
                 {
                     Set setItem = item as Set;
                     return element.FindResource("setItemTemplate") as DataTemplate;
-                    // We can also choose templates depending on property of the item like item.IsPrimitive (and not only on its class)
                 }
                 else if (item is Dim)
                 {
                     Dim dimItem = item as Dim;
                     return element.FindResource("dimensionItemTemplate") as DataTemplate;
-                    // We can also choose templates depending on property of the item like item.IsPrimitive (and not only on its class)
                 }
                 else if (item.GetType().IsGenericType) // It is used for TreeNode<T> (where T is Set or Dim) or other generic item types
                 {

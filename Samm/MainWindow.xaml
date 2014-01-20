@@ -203,9 +203,9 @@
                 <Label Name="lblDatasources" Grid.Row="0" FontSize="16" Margin="5" >Data sources</Label>
 
                 <local:SubsetTreeControl 
-                    x:Name="DsView" 
+                    x:Name="SourcesView" 
                     Grid.Column="0" Grid.Row="1" 
-                    DataContext="{Binding Path=DataSources}" 
+                    DataContext="{Binding Path=SourcesModel}" 
                     />
             </Grid>
 
@@ -232,11 +232,31 @@
                 <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
 
                 <local:SubsetTreeControl 
-                    x:Name="MashupView" 
+                    x:Name="MashupsView" 
                     Grid.Column="0" Grid.Row="1" 
-                    DataContext="{Binding Path=MashupModel}" 
+                    DataContext="{Binding Path=MashupsModel}" 
                     />
 
+<!--
+                <TreeView 
+                    Name="SubsetTree" 
+                    Grid.Column="0" Grid.Row="2" 
+                    ItemsSource="{Binding Path=MashupTreeTop}" 
+                    BorderThickness="5" 
+                    ScrollViewer.VerticalScrollBarVisibility="Visible" 
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                    >
+
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Path=.}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+
+                </TreeView>
+-->
             </Grid>
 
         </Grid>

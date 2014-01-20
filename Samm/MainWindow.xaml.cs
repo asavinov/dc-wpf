@@ -27,33 +27,65 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
-        //
-        // Main application model - everything that is manipulated by the application
-        //
-        public ObservableCollection<SetRoot> MashupModel { get; set; }
-        public SetTop MashupTop { get { return MashupModel.Count != 0 ? MashupModel[0].Top : null; } }
-        public SetRoot MashupRoot { get { return MashupModel.Count != 0 ? MashupModel[0] : null; } }
-
-        public ObservableCollection<SetRoot> DataSources { get; set; }
-        public bool IsInSource(Set set) 
+        // Data sources
+        public ObservableCollection<SetTop> Sources { get; set; }
+        public bool IsInSource(Set set)
         {
-            foreach (SetRoot r in DataSources) { if (set.Top == r.Top) return true; }
+            foreach (SetTop t in Sources) { if (set.Top == t) return true; }
             return false;
         }
 
+        public ObservableCollection<SubsetTree> SourcesModel { get; set; }
+
+        // Mashups (only one is used)
+        public ObservableCollection<SetTop> Mashups { get; set; }
+        public SetTop MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
+        public SetRoot MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
+
+        public ObservableCollection<SubsetTree> MashupsModel { get; set; }
+        public SubsetTree MashupModelRoot { get { return MashupsModel.Count != 0 ? (SubsetTree)MashupsModel[0] : null; } }
+
         public MainWindow()
         {
-            DataSources = new ObservableCollection<SetRoot>();
+            //
+            // Initialize data sources
+            //
+            Sources = new ObservableCollection<SetTop>();
+            SourcesModel = new ObservableCollection<SubsetTree>();
+
+            SetTop sourceTop = CreateSampleSchema(); // For testing
+            Sources.Add(sourceTop);
+
+            SubsetTree sourceModel = new SubsetTree(sourceTop.Root.SuperDim);
+            sourceModel.ExpandTree();
+            SourcesModel.Add(sourceModel);
 
             //
-            // Initialize sample data source (for testing purposes)
+            // Initialize mashups (one empty mashup)
             //
+            Mashups = new ObservableCollection<SetTop>();
+            MashupsModel = new ObservableCollection<SubsetTree>();
+
+            SetTop mashupTop = new SetTop("My Mashup");
+            Mashups.Add(mashupTop);
+
+            SubsetTree mashupModel = new SubsetTree(mashupTop.Root.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+
+
+//            this.DataContext = this;
+            InitializeComponent();
+        }
+
+        public SetTop CreateSampleSchema()
+        {
             SetTop ds = new SetTop("My Data Source");
-
             Dim dim;
+
             Set departments = new Set("Departments");
-            dim = new DimSuper("super", departments, ds.Root);
-            dim.Add();
+            ds.Root.AddSubset(departments);
+
             dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments);
             dim.IsIdentity = true;
             dim.Add();
@@ -68,8 +100,8 @@ namespace Samm
             departments.SetValue("location", 1, "Walldorf");
 
             Set employees = new Set("Employees");
-            dim = new DimSuper("super", employees, ds.Root);
-            dim.Add();
+            ds.Root.AddSubset(employees);
+
             dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees);
             dim.IsIdentity = true;
             dim.Add();
@@ -81,24 +113,15 @@ namespace Samm
             dim.Add();
 
             Set managers = new Set("Managers");
-            dim = new DimSuper("super", managers, employees);
+            employees.AddSubset(managers);
+
             dim.Add();
             dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers);
             dim.Add();
             dim = ds.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers);
             dim.Add();
 
-            DataSources.Add(ds.Root);
-
-            //
-            // Initialize empty mashup
-            //
-            MashupModel = new ObservableCollection<SetRoot>();
-            SetTop muTop = new SetTop("My Mashup");
-            MashupModel.Add(muTop.Root);
-
-//            this.DataContext = this;
-            InitializeComponent();
+            return ds;
         }
 
         private void readOledbSchema(string connectionString)
@@ -278,7 +301,12 @@ namespace Samm
             top.Open();
             top.ImportSchema();
 
-            DataSources.Add(top.Root); // Append to the list of data sources
+            Sources.Add(top); // Append to the list of data sources
+
+            // And also append to the tree model
+            SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
+            sourceModel.ExpandTree();
+            SourcesModel.Add(sourceModel);
         }
 
         private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -371,12 +399,19 @@ namespace Samm
         {
             SetTop mashup = MashupTop;
 
-            var item = DsView.SubsetTree.SelectedItem;
-
+            var item = SourcesView.SubsetTree.SelectedItem;
+            Set set = null;
             if (item is Set)
             {
-                Set set = (Set)item;
+                set = (Set)item;
+            }
+            else if (item is SubsetTree && ((SubsetTree)item).IsSubsetNode)
+            {
+                set = ((SubsetTree)item).LesserSet;
+            }
 
+            if (set != null)
+            {
                 Mapper mapper = new Mapper();
                 mapper.SetCreationThreshold = 1.0;
                 mapper.MapSet(set, mashup);
@@ -400,9 +435,9 @@ namespace Samm
                 targetSet.Populate();
 
                 // HACK: refresh the view
-                mashup = MashupTop;
-                MashupModel.RemoveAt(0);
-                MashupModel.Add(mashup.Root);
+                //mashup = MashupTop;
+                //Mashups.RemoveAt(0);
+                //Mashups.Add(mashup.Root);
             }
 
             e.Handled = true;
@@ -410,7 +445,7 @@ namespace Samm
 
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SubsetTree.SelectedItem;
+            var item = MashupsView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
@@ -453,14 +488,14 @@ namespace Samm
             dstSet.Populate();
 
             // HACK: refresh the view
-            SetTop mashup = MashupTop;
-            MashupModel.RemoveAt(0);
-            MashupModel.Add(mashup.Root);
+            //SetTop mashup = MashupTop;
+            //Mashups.RemoveAt(0);
+            //Mashups.Add(mashup.Root);
         }
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SubsetTree.SelectedItem;
+            var item = MashupsView.SubsetTree.SelectedItem;
 
             if(item == null) return;
 
@@ -520,7 +555,7 @@ namespace Samm
 
         private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SubsetTree.SelectedItem;
+            var item = MashupsView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
@@ -566,14 +601,14 @@ namespace Samm
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
 
             // HACK: refresh the view
-            SetTop mashup = MashupTop;
-            MashupModel.RemoveAt(0);
-            MashupModel.Add(mashup.Root);
+            //SetTop mashup = MashupTop;
+            //Mashups.RemoveAt(0);
+            //Mashups.Add(mashup.Root);
         }
 
         private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupView.SubsetTree.SelectedItem;
+            var item = MashupsView.SubsetTree.SelectedItem;
 
             if (item == null) return;
 
