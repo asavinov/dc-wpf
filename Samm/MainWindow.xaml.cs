@@ -27,23 +27,61 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
+        //
         // Data sources
+        //
         public ObservableCollection<SetTop> Sources { get; set; }
-        public bool IsInSource(Set set)
+
+        public ObservableCollection<SubsetTree> SourcesModel { get; set; } // What is shown in SubsetTree for data sources
+
+        public bool IsInSources(Set set) // Determine if the specified set belongs to some data source
         {
+            if (set == null || Sources == null) return false;
             foreach (SetTop t in Sources) { if (set.Top == t) return true; }
             return false;
         }
+        public bool IsInSources(Dim dim) // Determine if the specified dimension belongs to some data source
+        {
+            if (dim == null || Sources == null) return false;
+            if (IsInSources(dim.LesserSet) && IsInSources(dim.GreaterSet)) return true;
+            return false;
+        }
+        public SubsetTree SelectedSourceItem { get { return (SubsetTree)SourcesView.SubsetTree.SelectedItem; } }
+        public Set SelectedSourceSet { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
+        public Dim SelectedSourceDim { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
+        public bool IsSourcesFocused { get { return SourcesView.SubsetTree.IsFocused; } } // TODO: Does not work
 
-        public ObservableCollection<SubsetTree> SourcesModel { get; set; }
-
+        //
         // Mashups (only one is used)
+        //
         public ObservableCollection<SetTop> Mashups { get; set; }
         public SetTop MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
         public SetRoot MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
 
-        public ObservableCollection<SubsetTree> MashupsModel { get; set; }
+        public ObservableCollection<SubsetTree> MashupsModel { get; set; } // What is shown in SubsetTree for mashups
         public SubsetTree MashupModelRoot { get { return MashupsModel.Count != 0 ? (SubsetTree)MashupsModel[0] : null; } }
+
+        public bool IsInMashups(Set set) // Determine if the specified set belongs to some mashup
+        {
+            if (set == null || Mashups == null) return false;
+            foreach (SetTop t in Mashups) { if (set.Top == t) return true; }
+            return false;
+        }
+        public bool IsInMashups(Dim dim) // Determine if the specified dimension belongs to some mashup
+        {
+            if (dim == null || Mashups == null) return false;
+            if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
+            return false;
+        }
+        public SubsetTree SelectedMashupItem { get { return (SubsetTree)MashupsView.SubsetTree.SelectedItem; } }
+        public Set SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
+        public Dim SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
+
+
+        //
+        // Operations and behavior
+        //
+        public DragDropHelper DragDropHelper { get; protected set; }
 
         public MainWindow()
         {
@@ -73,6 +111,7 @@ namespace Samm
             mashupModel.ExpandTree();
             MashupsModel.Add(mashupModel);
 
+            DragDropHelper = new DragDropHelper();
 
 //            this.DataContext = this;
             InitializeComponent();
@@ -124,155 +163,25 @@ namespace Samm
             return ds;
         }
 
-        private void readOledbSchema(string connectionString)
-        {
-            using (/*SqlConnection*/ System.Data.OleDb.OleDbConnection connection = new System.Data.OleDb.OleDbConnection(connectionString))
-            {
-                // For oledb: http://www.c-sharpcorner.com/UploadFile/Suprotim/OledbSchema09032005054630AM/OledbSchema.aspx
-                    
-                connection.Open();
 
-                // Read a table with schema information
-                DataTable tables = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Tables, new object[] { null, null, null, "TABLE" });
-
-                // Read table info
-                foreach (DataRow row in tables.Rows)
-                {
-                    string tableName = row["TABLE_NAME"].ToString();
-                    Console.WriteLine(tableName);
-
-                    //
-                    // TODO: Create a COM concept for this table
-                    //
-
-                    // Read column info
-                    DataTable columns = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Columns, new object[] { null, null, tableName, null });
-                    foreach (DataRow col in columns.Rows)
-                    {
-                        string columnName = col["COLUMN_NAME"].ToString();
-                        Console.WriteLine("   "+columnName);
-
-                        // Find column type and define the dimension type
-                        System.Data.OleDb.OleDbType columnType = (System.Data.OleDb.OleDbType) col["DATA_TYPE"];
-                        switch (columnType)
-                        {
-                            case System.Data.OleDb.OleDbType.Double:
-                                break;
-                            case System.Data.OleDb.OleDbType.Integer: 
-                                break;
-                            case System.Data.OleDb.OleDbType.Char:
-                            case System.Data.OleDb.OleDbType.VarChar:
-                            case System.Data.OleDb.OleDbType.VarWChar:
-                            case System.Data.OleDb.OleDbType.WChar:
-                                break;
-                            default:
-                                // All the rest of types or error in the case we have enumerated all of them
-                                break;
-                        }
-
-                        //
-                        // TODO: Create a new COM dimension of this type
-                        //
-                    }
-
-                    // Read and grouping PK attributes: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.primary_keys.aspx
-                    DataTable pks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Primary_Keys, new object[] { null, null, tableName });
-                    Dictionary<string, List<string>> pkNames = new Dictionary<string, List<string>>();
-                    foreach (DataRow pk in pks.Rows)
-                    {
-                        string Name = (string)pk["PK_NAME"];
-                        string PrimaryField = (string)pk["COLUMN_NAME"];
-
-                        // One PK contains several columns. And we also assume that there can be many PKs.
-                        if (pkNames.ContainsKey(Name))
-                        {
-                            pkNames[Name].Add(PrimaryField);
-                        }
-                        else
-                        {
-                            pkNames.Add(Name, new List<string>() { PrimaryField } );
-                        }
-                    }
-                    foreach (var entry in pkNames)
-                    {
-                        Console.WriteLine("   " + tableName + " PK {0}: {1}", entry.Key, entry.Value);
-                    }
-
-                    // Read and grouping FK attributes: http://msdn.microsoft.com/en-us/library/system.data.oledb.oledbschemaguid.foreign_keys.aspx
-                    DataTable fks = connection.GetOleDbSchemaTable(System.Data.OleDb.OleDbSchemaGuid.Foreign_Keys, new object[] { null, null, null, null, null, tableName });
-                    Dictionary<string, List<Tuple<string, string, string>>> fkNames = new Dictionary<string, List<Tuple<string, string, string>>>();
-                    foreach (DataRow fk in fks.Rows)
-                    {
-                        // Columns belonging to one FK should by identifed by one FK or PK name
-                        // We need to create a list of complex FKs rather than a flat list of FK columns
-                        // The structure of a complex FK is defined either explicitly by the columns or (later, derived) by referencing the corresponding PK
-                        // Our task is to collect all schema information for creationg a new COM schema
-                        string Name = (string)fk["FK_NAME"];
-                        string PrimaryTable = (string)fk["PK_TABLE_NAME"];
-                        string PrimaryField = (string)fk["PK_COLUMN_NAME"];
-                        string PrimaryIndex = (string)fk["PK_NAME"];
-                        string ForeignTable = (string)fk["FK_TABLE_NAME"];
-                        string ForeignField = (string)fk["FK_COLUMN_NAME"];
-                        string OnUpdate = (string)fk["UPDATE_RULE"];
-                        string OnDelete = (string)fk["DELETE_RULE"];
-
-                        if (fkNames.ContainsKey(Name))
-                        {
-                            fkNames[Name].Add(Tuple.Create(ForeignField, PrimaryTable, PrimaryField));
-                        }
-                        else
-                        {
-                            fkNames.Add(Name, new List<Tuple<string, string, string>>() { Tuple.Create(ForeignField, PrimaryTable, PrimaryField) });
-                        }
-                    }
-                    foreach (var entry in fkNames)
-                    {
-                        Console.WriteLine("   " + tableName + " FK {0}: {1}", entry.Key, entry.Value);
-                    }
-
-                }
-            }
-        }
+        # region Command_Executed
 
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            TreeView tv;
-            if (e.Source is SubsetTreeControl)
-            {
-                tv = (TreeView)((SubsetTreeControl)e.Source).SubsetTree;
-            }
-            else if (e.Source is TreeView)
-            {
-                tv = (TreeView)e.Source;
-            }
-            else
-            {
-                return;
-            }
+            if (!(e.Source is SubsetTreeControl)) return;
 
-            var item = tv.SelectedItem; // tv.SelectedValue
+            if (((SubsetTreeControl)e.Source) != MashupsView) return;
 
-            if (item is Set)
-            {
-                Set set = (Set)item;
-                lblWorkspace.Content = set.Name;
+            if (SelectedMashupSet == null) return;
 
-                Label lbl = new Label();
-                lbl.Content = "Content";
+            Set set = SelectedMashupSet;
+            lblWorkspace.Content = set.Name;
 
-                var gridView = new SetGridView(set);
-                GridPanel.Content = gridView.Grid;
+            Label lbl = new Label();
+            lbl.Content = "Content";
 
-
-            }
-            else if (item is Dim)
-            {
-                Dim dim = (Dim)item;
-                Set set = dim.LesserSet;
-                lblWorkspace.Content = set.Name + " : " + dim.Name;
-
-                GridPanel.Content = null;
-            }
+            var gridView = new SetGridView(set);
+            GridPanel.Content = gridView.Grid;
 
             e.Handled = true;
         }
@@ -397,67 +306,42 @@ namespace Samm
 
         private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            Set set = SelectedSourceSet;
+            if (set == null) return;
+
             SetTop mashup = MashupTop;
 
-            var item = SourcesView.SubsetTree.SelectedItem;
-            Set set = null;
-            if (item is Set)
-            {
-                set = (Set)item;
-            }
-            else if (item is SubsetTree && ((SubsetTree)item).IsSubsetNode)
-            {
-                set = ((SubsetTree)item).LesserSet;
-            }
+            Mapper mapper = new Mapper();
+            mapper.SetCreationThreshold = 1.0;
+            mapper.MapSet(set, mashup);
+            SetMapping mapping = mapper.GetBestMapping(set, mashup);
 
-            if (set != null)
-            {
-                Mapper mapper = new Mapper();
-                mapper.SetCreationThreshold = 1.0;
-                mapper.MapSet(set, mashup);
-                SetMapping mapping = mapper.GetBestMapping(set, mashup);
+            MappingModel model = new MappingModel(mapping);
 
-                MappingModel model = new MappingModel(mapping);
+            //
+            // Show dialog with recommended mappings for import
+            //
+            ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.MappingModel = model;
+            dlg.RefreshAll();
+            dlg.ShowDialog();
 
-                // Show dialog for editing import
-                ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
-                dlg.Owner = this;
-                dlg.MappingModel = model;
-                dlg.RefreshAll();
-                dlg.ShowDialog();
+            if (dlg.DialogResult == false) return; // Cancel
 
-                if (dlg.DialogResult == false) return; // Cancel
+            Set targetSet = mapping.TargetSet;
+            DimImport dimImport = new DimImport(mapping); // Configure first set for import
+            dimImport.Add();
 
-                Set targetSet = mapping.TargetSet;
-                DimImport dimImport = new DimImport(mapping); // Configure first set for import
-                dimImport.Add();
-
-                targetSet.Populate();
-
-                // HACK: refresh the view
-                //mashup = MashupTop;
-                //Mashups.RemoveAt(0);
-                //Mashups.Add(mashup.Root);
-            }
+            targetSet.Populate();
 
             e.Handled = true;
         }
 
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupsView.SubsetTree.SelectedItem;
-
-            if (item == null) return;
-
-            Set srcSet = null;
-            if (item is Set)
-            {
-                srcSet = (Set)item;
-            }
-            else if (item is Dim)
-            {
-                srcSet = ((Dim)item).LesserSet;
-            }
+            Set srcSet = SelectedMashupSet;
+            if (srcSet == null) return;
 
             //
             // Create new subset
@@ -555,19 +439,8 @@ namespace Samm
 
         private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupsView.SubsetTree.SelectedItem;
-
-            if (item == null) return;
-
-            Set srcSet = null;
-            if (item is Set)
-            {
-                srcSet = (Set)item;
-            }
-            else if (item is Dim)
-            {
-                srcSet = ((Dim)item).LesserSet;
-            }
+            Set srcSet = SelectedMashupSet;
+            if (srcSet == null) return;
 
             //
             // Show recommendations and let the user choose one of them
@@ -599,11 +472,6 @@ namespace Samm
 
             // Update new derived dimension
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
-
-            // HACK: refresh the view
-            //SetTop mashup = MashupTop;
-            //Mashups.RemoveAt(0);
-            //Mashups.Add(mashup.Root);
         }
 
         private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -670,5 +538,85 @@ namespace Samm
             dlg.ShowDialog(); // Open the dialog box modally 
         }
 
+        #endregion
+
     }
+
+    public class DragDropHelper
+    {
+        public bool CanDrag(object data)
+        {
+            if (data is Set) return true;
+            else if (data is Dim) return true;
+            else if (data is SubsetTree) return true;
+            return false;
+        }
+
+        public bool CanDrop(object dropSource, object dropTarget)
+        {
+            if (dropSource == null || dropTarget == null) return false;
+            return true;
+        }
+
+        public void Drop(object dropSource, object dropTarget)
+        {
+            if (dropSource == null || dropTarget == null) return;
+
+            // Transform to one format (Set or Dim) from several possible classes: Set, Dim, SubsetTree
+            if (dropSource is SubsetTree)
+            {
+                if (((SubsetTree)dropSource).IsSubsetNode) dropSource = ((SubsetTree)dropSource).LesserSet;
+                else if (((SubsetTree)dropSource).IsDimensionNode) dropSource = ((SubsetTree)dropSource).Dim;
+            }
+            if (dropTarget is SubsetTree)
+            {
+                if (((SubsetTree)dropTarget).IsSubsetNode) dropTarget = ((SubsetTree)dropTarget).LesserSet;
+                else if (((SubsetTree)dropTarget).IsDimensionNode) dropTarget = ((SubsetTree)dropTarget).Dim;
+            }
+
+            //
+            // Conditions for importing a set
+            //
+            if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInSources((Set)dropSource))
+            {
+                if (dropTarget is SetRoot && ((MainWindow)App.Current.MainWindow).IsInMashups((SetRoot)dropTarget))
+                {
+                    // TODO: Call a direct operation method for importing with the necessary parameters (rather than a command)
+
+                    // Some table from a data source is dropped to the mashup: import table
+                    ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["ImportTableCommand"] as ICommand;
+
+                    if (cmd == null) return;
+
+                    if (cmd.CanExecute(null))
+                    {
+                        cmd.Execute(null);
+                    }
+                }
+            }
+
+            //
+            // Conditions for new aggregated columns
+            //
+
+            if (dropSource is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropSource))
+            {
+                if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
+                {
+                    // TODO: Call a direct operation method for aggregation with the necessary parameters (rather than a command)
+
+                    // Some dimension from mashup is dropped to a table in the mashup: add aggregated column
+                    ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["AddAggregationCommand"] as ICommand;
+
+                    if (cmd == null) return;
+
+                    if (cmd.CanExecute(null))
+                    {
+                        cmd.Execute(null);
+                    }
+                }
+            }
+        }
+    }
+
 }
