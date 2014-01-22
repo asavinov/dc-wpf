@@ -125,7 +125,9 @@ namespace Samm
                 object data3 = treeView.SelectedItem; // Alternative
                 object data = data2;
 
-                if (ddHelper == null || !ddHelper.CanDrag(data)) return;
+                if (ddHelper == null) return;
+
+                if(!ddHelper.CanDrag(data)) return;
 
                 // Initialize the drag & drop operation
                 string format = null;
@@ -158,6 +160,7 @@ namespace Samm
                 if ((Math.Abs(diff.X) > 10.0) || (Math.Abs(diff.Y) > 10.0))
                 {
                     // Verify that this is a valid drop and then store the drop target
+                    if (ddHelper == null) return;
                     if (ddHelper.CanDrop(GetDropSource(e), GetDropTarget(e)))
                     {
                         e.Effects = DragDropEffects.All;
@@ -182,29 +185,26 @@ namespace Samm
             object dropTarget = GetDropTarget(e);
             if (dropTarget == null) return;
 
+            if (ddHelper == null) return;
             ddHelper.Drop(dropSource, dropTarget);
         }
 
         private void SubsetTree_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            // TODO: This control does not know what to do with actions like double click or drag-n-drop
-            // Therefore, it should do its logic (if any) and propagate this event to parent controls where it should be cought by the main window dispatcher or the view dispatcher.
+            
+            TreeView treeView = sender as TreeView;
+            TreeViewItem treeViewItem = FindAnchestor<TreeViewItem>((DependencyObject)e.OriginalSource); // Get the dragged TreeViewItem
 
-            if (this == ((MainWindow)App.Current.MainWindow).MashupsView)
-            {
-                ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["OpenTableCommand"] as ICommand;
+            if (treeView == null || treeViewItem == null) return;
 
-                if (cmd == null) return;
+            // Find the data behind the TreeViewItem
+            object data1 = (object)treeView.ItemContainerGenerator.ItemFromContainer(treeViewItem);
+            object data2 = treeViewItem.DataContext; // Alternative
+            object data3 = treeView.SelectedItem; // Alternative
+            object data = data2;
 
-                if (cmd.CanExecute(null))
-                {
-                    cmd.Execute(null);
-                }
-            }
-            else if (this == ((MainWindow)App.Current.MainWindow).SourcesView)
-            {
-                ;
-            }
+            if (ddHelper == null) return;
+            ddHelper.DoDoubleClick(data);
 
             e.Handled = true;
         }

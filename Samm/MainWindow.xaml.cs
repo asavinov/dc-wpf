@@ -164,24 +164,13 @@ namespace Samm
         }
 
 
-        # region Command_Executed
+        # region Command_Executed (call backs from Commands)
 
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!(e.Source is SubsetTreeControl)) return;
-
-            if (((SubsetTreeControl)e.Source) != MashupsView) return;
-
             if (SelectedMashupSet == null) return;
 
-            Set set = SelectedMashupSet;
-            lblWorkspace.Content = set.Name;
-
-            Label lbl = new Label();
-            lbl.Content = "Content";
-
-            var gridView = new SetGridView(set);
-            GridPanel.Content = gridView.Grid;
+            Operation_OpenTable(SelectedMashupSet);
 
             e.Handled = true;
         }
@@ -309,31 +298,7 @@ namespace Samm
             Set set = SelectedSourceSet;
             if (set == null) return;
 
-            SetTop mashup = MashupTop;
-
-            Mapper mapper = new Mapper();
-            mapper.SetCreationThreshold = 1.0;
-            mapper.MapSet(set, mashup);
-            SetMapping mapping = mapper.GetBestMapping(set, mashup);
-
-            MappingModel model = new MappingModel(mapping);
-
-            //
-            // Show dialog with recommended mappings for import
-            //
-            ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
-            dlg.Owner = this;
-            dlg.MappingModel = model;
-            dlg.RefreshAll();
-            dlg.ShowDialog();
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            Set targetSet = mapping.TargetSet;
-            DimImport dimImport = new DimImport(mapping); // Configure first set for import
-            dimImport.Add();
-
-            targetSet.Populate();
+            Wizard_ImportTable(set, MashupRoot);
 
             e.Handled = true;
         }
@@ -379,62 +344,23 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var item = MashupsView.SubsetTree.SelectedItem;
-
-            if(item == null) return;
-
+            //
+            // Find a set where we want to create a new derived (aggregated) dimension
+            //
             Set srcSet = null;
-            Set dstSet = null;
-            Dim dstDim = null; // mashup.FindSubset("Employees");
-            if (item is Set)
+            srcSet = MashupRoot.FindSubset("Customers");
+
+            //
+            // Find a set and dimension which have to be used in the definition (a dimension the values of which will be aggregated)
+            //
+            Dim dstDim = SelectedMashupDim;
+            Set dstSet = SelectedMashupSet;
+            if(dstSet == null && dstDim != null)
             {
-                dstSet = (Set)item;
-            }
-            else if (item is Dim)
-            {
-                dstDim = (Dim)item;
                 dstSet = dstDim.LesserSet;
             }
-            srcSet = dstSet.Root.FindSubset("Customers"); // TODO: Now the source set is fixed. We need a mechanism for choosing a source set, for example, by DnD. 
 
-            RecommendedAggregations recoms = new RecommendedAggregations();
-            recoms.SourceSet = srcSet;
-            recoms.TargetSet = dstSet;
-            recoms.FactSet = null; // Any
-
-            recoms.Recommend();
-
-            if (dstDim != null) // Try to set the current measure to the specified dimension
-            {
-                recoms.MeasureDimensions.SelectedObject = dstDim; 
-            }
-
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            AggregationBox dlg = new AggregationBox();
-            dlg.Owner = this;
-            dlg.Recommendations = recoms;
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            if (recoms.IsValidExpression() != null) return;
-
-            //
-            // Create new derived dimension
-            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
-            //
-            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
-            string derivedDimName = dlg.SourceColumn.Text;
-            Com.Model.Expression aggreExpr = recoms.GetExpression();
-
-            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
-            derivedDim.SelectExpression = aggreExpr;
-            derivedDim.Add();
-
-            // Update new derived dimension
-            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+            Wizard_AddAggregation(srcSet, dstSet, dstDim);
         }
 
         private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -540,6 +466,99 @@ namespace Samm
 
         #endregion
 
+        #region Operations (no user interactions)
+
+        public void Operation_OpenTable(Set set)
+        {
+            lblWorkspace.Content = set.Name;
+
+            Label lbl = new Label();
+            lbl.Content = "Content";
+
+            var gridView = new SetGridView(set);
+            GridPanel.Content = gridView.Grid;
+        }
+
+        #endregion
+
+        #region Wizards (with user interactions)
+
+        public void Wizard_ImportTable(Set set, Set parent)
+        {
+            //
+            // Compute suggested mapping(s) for importing
+            //
+            Mapper mapper = new Mapper();
+            mapper.SetCreationThreshold = 1.0;
+            mapper.MapSet(set, parent.Top);
+            SetMapping mapping = mapper.GetBestMapping(set, parent.Top);
+
+            MappingModel model = new MappingModel(mapping);
+
+            //
+            // Show dialog with recommended mappings for import
+            //
+            ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.MappingModel = model;
+            dlg.RefreshAll();
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            Set targetSet = mapping.TargetSet;
+            DimImport dimImport = new DimImport(mapping); // Configure first set for import
+            dimImport.Add();
+
+            targetSet.Populate();
+        }
+
+        public void Wizard_AddAggregation(Set srcSet, Set dstSet, Dim dstDim)
+        {
+            // Source set is where we want to create a new (source) derived dimension
+            // Target set and dimension is what we want to use in the definition of the new dimension
+
+            RecommendedAggregations recoms = new RecommendedAggregations();
+            recoms.SourceSet = srcSet;
+            recoms.TargetSet = dstSet;
+            recoms.FactSet = null; // Any
+
+            recoms.Recommend();
+
+            if (dstDim != null) // Try to set the current measure to the specified dimension
+            {
+                recoms.MeasureDimensions.SelectedObject = dstDim;
+            }
+
+            //
+            // Show recommendations and let the user choose one of them
+            //
+            AggregationBox dlg = new AggregationBox();
+            dlg.Owner = this;
+            dlg.Recommendations = recoms;
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (recoms.IsValidExpression() != null) return;
+
+            //
+            // Create new derived dimension
+            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            //
+            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
+            string derivedDimName = dlg.SourceColumn.Text;
+            Com.Model.Expression aggreExpr = recoms.GetExpression();
+
+            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            derivedDim.SelectExpression = aggreExpr;
+            derivedDim.Add();
+
+            // Update new derived dimension
+            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+        }
+
+        #endregion
     }
 
     public class DragDropHelper
@@ -581,17 +600,8 @@ namespace Samm
             {
                 if (dropTarget is SetRoot && ((MainWindow)App.Current.MainWindow).IsInMashups((SetRoot)dropTarget))
                 {
-                    // TODO: Call a direct operation method for importing with the necessary parameters (rather than a command)
-
                     // Some table from a data source is dropped to the mashup: import table
-                    ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["ImportTableCommand"] as ICommand;
-
-                    if (cmd == null) return;
-
-                    if (cmd.CanExecute(null))
-                    {
-                        cmd.Execute(null);
-                    }
+                    ((MainWindow)App.Current.MainWindow).Wizard_ImportTable((Set)dropSource, (SetRoot)dropTarget);
                 }
             }
 
@@ -603,17 +613,26 @@ namespace Samm
             {
                 if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-                    // TODO: Call a direct operation method for aggregation with the necessary parameters (rather than a command)
+                    // Note that here source and target have opposite interpretations
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, null, (Dim)dropSource);
+                }
+            }
+        }
 
-                    // Some dimension from mashup is dropped to a table in the mashup: add aggregated column
-                    ICommand cmd = ((MainWindow)App.Current.MainWindow).Resources["AddAggregationCommand"] as ICommand;
+        public void DoDoubleClick(object data)
+        {
+            if (data == null) return;
 
-                    if (cmd == null) return;
-
-                    if (cmd.CanExecute(null))
-                    {
-                        cmd.Execute(null);
-                    }
+            //
+            // Conditions for opening a table view
+            //
+            if (data is SubsetTree && ((SubsetTree)data).IsSubsetNode) 
+            {
+                Set set = ((SubsetTree)data).LesserSet;
+                if(!(set is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups(set)) 
+                {
+                    // Call a direct operation method for opening a table with the necessary parameters (rather than a command)
+                    ((MainWindow)App.Current.MainWindow).Operation_OpenTable(set);
                 }
             }
         }
