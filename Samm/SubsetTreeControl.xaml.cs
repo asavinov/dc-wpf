@@ -85,7 +85,10 @@ namespace Samm
 
         public SubsetTreeControl()
         {
-            ddHelper = ((MainWindow)App.Current.MainWindow).DragDropHelper;
+            if (App.Current != null && App.Current.MainWindow != null)
+            {
+                ddHelper = ((MainWindow)App.Current.MainWindow).DragDropHelper;
+            }
 
             InitializeComponent();
         }

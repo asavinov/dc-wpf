@@ -18,14 +18,17 @@
             <DataTemplate.Triggers>
             </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
+                <Binding Path="."/>
+<!--
                 <MultiBinding  Converter="{StaticResource SubConv}">
-                    <!-- <Binding Path="SubsetChildren"/>
-                    <Binding Path="DimensionChildren"/> -->
+                    <Binding Path="SubsetChildren"/>
+                    <Binding Path="DimensionChildren"/>
                     <Binding Path="."/>
                 </MultiBinding>
+-->
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Dim.LesserSet.Top.Name}" />
+                <TextBlock Text="{Binding Path=Dim.LesserSet.Top.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
             </StackPanel>
         </HierarchicalDataTemplate>
 
@@ -37,14 +40,17 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
+                <Binding Path="."/>
+<!-- 
                 <MultiBinding  Converter="{StaticResource SubConv}">
-                    <!-- <Binding Path="SubsetChildren"/>
-                    <Binding Path="DimensionChildren"/> -->
+                    <Binding Path="SubsetChildren"/>
+                    <Binding Path="DimensionChildren"/>
                     <Binding Path="."/>
                 </MultiBinding>
+-->
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" />
+                <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
             </StackPanel>
         </HierarchicalDataTemplate>
 
@@ -56,7 +62,7 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=Dim.GreaterSet.Name}"/>
                 <TextBlock Text=" : " Width="10"/>
@@ -73,7 +79,7 @@
         </Grid.RowDefinitions>
 
         <TreeView 
-            Name="SubsetTree" 
+            Name="SubsetTree"
             Grid.Column="0" Grid.Row="0" 
             ItemsSource="{Binding Path=.}" 
             ItemTemplateSelector="{StaticResource subsetTreeDataTemplateSelector}"
@@ -88,6 +94,8 @@
             Drop="SubsetTree_Drop" 
             MouseDoubleClick="SubsetTree_MouseDoubleClick"
             >
+<!--
+-->
         </TreeView>
 
     </Grid>

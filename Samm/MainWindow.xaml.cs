@@ -46,7 +46,7 @@ namespace Samm
             if (IsInSources(dim.LesserSet) && IsInSources(dim.GreaterSet)) return true;
             return false;
         }
-        public SubsetTree SelectedSourceItem { get { return (SubsetTree)SourcesView.SubsetTree.SelectedItem; } }
+        public SubsetTree SelectedSourceItem { get { if (SourcesView == null || SourcesView.SubsetTree == null) return null; return (SubsetTree)SourcesView.SubsetTree.SelectedItem; } }
         public Set SelectedSourceSet { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
         public Dim SelectedSourceDim { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
         public bool IsSourcesFocused { get { return SourcesView.SubsetTree.IsFocused; } } // TODO: Does not work
@@ -73,7 +73,7 @@ namespace Samm
             if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
             return false;
         }
-        public SubsetTree SelectedMashupItem { get { return (SubsetTree)MashupsView.SubsetTree.SelectedItem; } }
+        public SubsetTree SelectedMashupItem { get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; } }
         public Set SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
         public Dim SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
 
@@ -113,7 +113,7 @@ namespace Samm
 
             DragDropHelper = new DragDropHelper();
 
-//            this.DataContext = this;
+            //this.DataContext = this;
             InitializeComponent();
         }
 
@@ -169,13 +169,78 @@ namespace Samm
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedMashupSet == null) return;
-
             Operation_OpenTable(SelectedMashupSet);
-
             e.Handled = true;
         }
 
         private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AccessDatasource();
+            e.Handled = true;
+        }
+
+        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_SqlserverDatasource();
+            e.Handled = true;
+        }
+
+        private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedSourceSet == null) return;
+            Wizard_ImportTable(SelectedSourceSet, MashupRoot);
+            e.Handled = true;
+        }
+
+        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedMashupSet == null) return;
+            Wizard_FilteredTable(SelectedMashupSet);
+            e.Handled = true;
+        }
+
+        private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // Find a set where we want to create a new derived (aggregated) dimension
+            Set srcSet = null;
+            srcSet = MashupRoot.FindSubset("Customers");
+
+            // Find a set and dimension which have to be used in the definition (a dimension the values of which will be aggregated)
+            Dim dstDim = SelectedMashupDim;
+            Set dstSet = SelectedMashupSet;
+            if(dstSet == null && dstDim != null)
+            {
+                dstSet = dstDim.LesserSet;
+            }
+
+            Wizard_AddAggregation(srcSet, dstSet, dstDim);
+            e.Handled = true;
+        }
+
+        private void AddCalculationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AddCalculation(SelectedMashupSet);
+            e.Handled = true;
+        }
+
+        private void ChangeTypeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Set newTypeSet = MashupRoot.FindSubset("Employees"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
+            Wizard_ChangeType(SelectedMashupDim, newTypeSet);
+        }
+
+        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+        }
+
+        #endregion
+
+        #region Wizards (with user interactions)
+
+        public void Wizard_AccessDatasource()
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -207,9 +272,8 @@ namespace Samm
             SourcesModel.Add(sourceModel);
         }
 
-        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private static void Wizard_SqlserverDatasource()
         {
-
             /*
                                 // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
 
@@ -293,196 +357,6 @@ namespace Samm
             dcs.SaveConfiguration(dcd);
         }
 
-        private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Set set = SelectedSourceSet;
-            if (set == null) return;
-
-            Wizard_ImportTable(set, MashupRoot);
-
-            e.Handled = true;
-        }
-
-        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Set srcSet = SelectedMashupSet;
-            if (srcSet == null) return;
-
-            //
-            // Create new subset
-            //
-            Set dstSet = new Set("My Table");
-            srcSet.AddSubset(dstSet);
-
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            FilteredTableBox dlg = new FilteredTableBox();
-            dlg.Owner = this;
-            dlg.SourceTable = srcSet;
-            dlg.FilteredTable = dstSet;
-            dlg.RefreshAll();
-
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
-                return;
-
-            Com.Model.Expression expr = dlg.ExpressionModel[0];
-
-            // Populate new set
-            dstSet.WhereExpression = expr;
-            dstSet.Populate();
-
-            // HACK: refresh the view
-            //SetTop mashup = MashupTop;
-            //Mashups.RemoveAt(0);
-            //Mashups.Add(mashup.Root);
-        }
-
-        private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            //
-            // Find a set where we want to create a new derived (aggregated) dimension
-            //
-            Set srcSet = null;
-            srcSet = MashupRoot.FindSubset("Customers");
-
-            //
-            // Find a set and dimension which have to be used in the definition (a dimension the values of which will be aggregated)
-            //
-            Dim dstDim = SelectedMashupDim;
-            Set dstSet = SelectedMashupSet;
-            if(dstSet == null && dstDim != null)
-            {
-                dstSet = dstDim.LesserSet;
-            }
-
-            Wizard_AddAggregation(srcSet, dstSet, dstDim);
-        }
-
-        private void AddCalculatedCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Set srcSet = SelectedMashupSet;
-            if (srcSet == null) return;
-
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            ArithmeticBox dlg = new ArithmeticBox();
-            dlg.Owner = this;
-            dlg.SourceTable = srcSet;
-            dlg.RefreshAll();
-
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
-                return;
-
-            Com.Model.Expression expr = expr = dlg.ExpressionModel[0];
-
-            //
-            // Create new derived dimension
-            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
-            //
-            string derivedDimName = dlg.sourceColumn.Text;
-
-            Set dstSet = expr.OutputSet;
-            Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
-            derivedDim.SelectExpression = expr;
-            derivedDim.Add();
-
-            // Update new derived dimension
-            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
-        }
-
-        private void ChangeRangeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var item = MashupsView.SubsetTree.SelectedItem;
-
-            if (item == null) return;
-
-            Set srcSet = null;
-            Dim srcDim = null;
-            if (item is Set)
-            {
-                return; // We must know the dimension the type of which has to be changed
-            }
-            else if (item is Dim)
-            {
-                srcDim = (Dim)item;
-                srcSet = srcDim.GreaterSet;
-            }
-
-            Set dstSet = srcSet.Root.FindSubset("Employees"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
-            Dim dstDim = dstSet.CreateDefaultLesserDimension(srcDim.Name, srcDim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
-
-            Mapper mapper = new Mapper();
-            mapper.MaxMappingsToBuild = 100;
-            mapper.MapDim(new DimPath(srcDim), new DimPath(dstDim));
-            SetMapping mapping = mapper.Mappings[0];
-
-            //
-            // Parameterize the mapping model
-            //
-            MappingModel model = new MappingModel(srcDim, dstDim);
-            model.Mapping = mapping;
-            
-            //
-            // Show mapping editor with recommendations and let the user build the mapping
-            //
-            ChangeRangeBox dlg = new ChangeRangeBox();
-            dlg.Owner = this;
-            dlg.MappingModel = model;
-            dlg.RefreshAll();
-
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            //
-            // Really changing the range
-            //
-
-            Com.Model.Expression expr = model.Mapping.GetTargetExpression(srcDim, dstDim);
-            dstDim.SelectExpression = expr;
-
-            dstDim.ComputeValues(); // Compute the values of the new dimension
-
-            srcDim.Remove(); // Remove old dimension (detach) and attach new dimension (if not attached)
-            dstDim.Add();
-        }
-
-        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
-        }
-
-        #endregion
-
-        #region Operations (no user interactions)
-
-        public void Operation_OpenTable(Set set)
-        {
-            lblWorkspace.Content = set.Name;
-
-            Label lbl = new Label();
-            lbl.Content = "Content";
-
-            var gridView = new SetGridView(set);
-            GridPanel.Content = gridView.Grid;
-        }
-
-        #endregion
-
-        #region Wizards (with user interactions)
-
         public void Wizard_ImportTable(Set set, Set parent)
         {
             //
@@ -511,6 +385,42 @@ namespace Samm
             dimImport.Add();
 
             targetSet.Populate();
+        }
+
+        public void Wizard_FilteredTable(Set parent)
+        {
+            //
+            // Create new subset
+            //
+            Set dstSet = new Set("My Table");
+            parent.AddSubset(dstSet);
+
+            //
+            // Show recommendations and let the user choose one of them
+            //
+            FilteredTableBox dlg = new FilteredTableBox();
+            dlg.Owner = this;
+            dlg.SourceTable = parent;
+            dlg.FilteredTable = dstSet;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
+                return;
+
+            Com.Model.Expression expr = dlg.ExpressionModel[0];
+
+            // Populate new set
+            dstSet.WhereExpression = expr;
+            dstSet.Populate();
+
+            // HACK: refresh the view
+            //SetTop mashup = MashupTop;
+            //Mashups.RemoveAt(0);
+            //Mashups.Add(mashup.Root);
         }
 
         public void Wizard_AddAggregation(Set srcSet, Set dstSet, Dim dstDim)
@@ -558,7 +468,99 @@ namespace Samm
             derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
         }
 
+        public void Wizard_AddCalculation(Set srcSet)
+        {
+            if (srcSet == null) return;
+
+            // Show recommendations and let the user choose one of them
+            ArithmeticBox dlg = new ArithmeticBox();
+            dlg.Owner = this;
+            dlg.SourceTable = srcSet;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
+                return;
+
+            Com.Model.Expression expr = expr = dlg.ExpressionModel[0];
+
+            //
+            // Create new derived dimension
+            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            //
+            string derivedDimName = dlg.sourceColumn.Text;
+
+            Set dstSet = expr.OutputSet;
+            Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            derivedDim.SelectExpression = expr;
+            derivedDim.Add();
+
+            // Update new derived dimension
+            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+        }
+
+        public void Wizard_ChangeType(Dim dim, Set newTypeSet)
+        {
+            if (dim == null) return;
+            if (newTypeSet == null) return; // Relevant target types could be proposed in the dialog box (as part of the assistence)
+
+            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name, dim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
+
+            Mapper mapper = new Mapper();
+            mapper.MaxMappingsToBuild = 100;
+            mapper.MapDim(new DimPath(dim), new DimPath(newDim));
+            SetMapping mapping = mapper.Mappings[0];
+
+            //
+            // Parameterize the mapping model
+            //
+            MappingModel model = new MappingModel(dim, newDim);
+            model.Mapping = mapping;
+
+            //
+            // Show mapping editor with recommendations and let the user build the mapping
+            //
+            ChangeRangeBox dlg = new ChangeRangeBox();
+            dlg.Owner = this;
+            dlg.MappingModel = model;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            //
+            // Really changing the range
+            //
+            Com.Model.Expression expr = model.Mapping.GetTargetExpression(dim, newDim);
+            newDim.SelectExpression = expr;
+
+            newDim.ComputeValues(); // Compute the values of the new dimension
+
+            dim.Remove(); // Remove old dimension (detach) and attach new dimension (if not attached)
+            newDim.Add();
+        }
+
         #endregion
+
+        #region Operations (no user interactions)
+
+        public void Operation_OpenTable(Set set)
+        {
+            lblWorkspace.Content = set.Name;
+
+            Label lbl = new Label();
+            lbl.Content = "Content";
+
+            var gridView = new SetGridView(set);
+            GridPanel.Content = gridView.Grid;
+        }
+
+        #endregion
+
     }
 
     public class DragDropHelper
