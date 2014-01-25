@@ -16,16 +16,15 @@ using System.Windows.Shapes;
 using Com.Model;
 using System.Globalization;
 
+using Com.Model;
+
 namespace Samm
 {
     /// <summary>
-    /// Interaction logic for ChangeRangeBox.xaml
+    /// Interaction logic for ChangeTypeBox.xaml
     /// </summary>
-    public partial class ChangeRangeBox : Window
+    public partial class ChangeTypeBox : Window
     {
-        [System.Obsolete("Use MappingModel")]
-        public MatchTree MatchTreeModel { get; set; }
-
         public MappingModel MappingModel { get; set; }
 
         public void RefreshAll()
@@ -41,12 +40,17 @@ namespace Samm
             sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
 
-            this.GetBindingExpression(ChangeRangeBox.DataContextProperty).UpdateTarget();
+            this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
         }
 
-        public ChangeRangeBox()
+        public ChangeTypeBox()
         {
             InitializeComponent();
+        }
+
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
         }
 
         private void recommendButton_Click(object sender, RoutedEventArgs e)
@@ -76,11 +80,6 @@ namespace Samm
 
             MappingModel.SourceTree.NotifyAllOnPropertyChanged("IsMatched");
             MappingModel.TargetTree.NotifyAllOnPropertyChanged("IsMatched");
-        }
-
-        private void okButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = true;
         }
 
     }

@@ -85,7 +85,7 @@ namespace Samm
 
         public SubsetTreeControl()
         {
-            if (App.Current != null && App.Current.MainWindow != null)
+            if (App.Current != null && App.Current.MainWindow != null) // Note: If we do not do it, then this control will raise exception at design time (at run time everything is ok)
             {
                 ddHelper = ((MainWindow)App.Current.MainWindow).DragDropHelper;
             }

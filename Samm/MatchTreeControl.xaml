@@ -11,7 +11,9 @@
     <UserControl.Resources>
         <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
-<!--
+        <local:MatchTreeDataTemplateSelector x:Key="matchTreeDataTemplateSelector"/>
+
+        <!--
         <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Left"></Setter>
         </Style>
@@ -37,7 +39,7 @@
                     <Setter Property="Opacity" Value="160"></Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=CanMatch}" Value="false">
-                    <Setter Property="Background" Value="Transparent"></Setter>
+                    <Setter Property="Background" Value="Red"></Setter>
                     <Setter Property="Opacity" Value="100"></Setter>
                 </DataTrigger>
             </Style.Triggers>
@@ -46,33 +48,55 @@
         <Style x:Key="IsMatchedStyle" TargetType="{x:Type TextBlock}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=IsMatched}" Value="true">
-                    <Setter Property="Background" Value="LightGreen"></Setter>
+                    <Setter Property="Foreground" Value="DarkGreen"></Setter>
                     <Setter Property="Opacity" Value="160"></Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Path=IsMatched}" Value="false">
-                    <Setter Property="Background" Value="Transparent"></Setter>
+                    <Setter Property="Foreground" Value="Transparent"></Setter>
                     <Setter Property="Opacity" Value="100"></Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
-        <HierarchicalDataTemplate DataType="{x:Type com:MatchTreeNode}">
+        <!-- This is how tree items representing a source elements of the mapping -->
+        <HierarchicalDataTemplate x:Key="sourceItemTemplate" DataType="{x:Type com:MatchTreeNode}">
             <HierarchicalDataTemplate.ItemsSource>
+                <Binding Path="."/>
+<!--
                 <MultiBinding  Converter="{StaticResource SubConv}">
                     <Binding Path="Children"/>
                 </MultiBinding>
+-->
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
+                <TextBlock Text="x" Style="{StaticResource IsMatchedStyle}" />
+                <TextBlock Text="" Width="10"/>
                 <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
                 <TextBlock Text=" : " Width="10"/>
                 <TextBlock Text="{Binding Path=Set.Name}"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
+        <!-- This is how tree items representing a target elements of the mapping -->
+        <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+            <HierarchicalDataTemplate.ItemsSource>
+                <Binding Path="."/>
+<!--
+                <MultiBinding  Converter="{StaticResource SubConv}">
+                    <Binding Path="Children"/>
+                </MultiBinding>
+-->
+            </HierarchicalDataTemplate.ItemsSource>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="x" Style="{StaticResource IsMatchedStyle}" />
+                <TextBlock Text="" Width="10"/>
+                <TextBlock Text="   " Style="{StaticResource CanMatchStyle}"/>
+                <TextBlock Text="" Width="10"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
                 <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=IsMatched}" Style="{StaticResource IsMatchedStyle}" />
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=CanMatch, Mode=Default, UpdateSourceTrigger=Default}" Style="{StaticResource CanMatchStyle}"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=MatchRelevance}"/>
-                <!-- <ComboBox Name="TargetSets" ItemsSource="{Binding Path=Matches.Alternatives}" SelectedItem="{Binding Path=Matches.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource DimTreeFragment}" HorizontalAlignment="Stretch" /> -->
+                <TextBlock Text="{Binding Path=Set.Name}"/>
+                <!-- <TextBlock Text="" Width="10"/>
+                <TextBlock Text="{Binding Path=MatchRelevance}"/> NOTE IMPLEMENTED YET -->
             </StackPanel>
         </HierarchicalDataTemplate>
 
@@ -88,6 +112,7 @@
             Name="MatchTree" 
             Grid.Column="0" Grid.Row="0" 
             ItemsSource="{Binding Path=.}" 
+            ItemTemplateSelector="{StaticResource matchTreeDataTemplateSelector}"
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
             Margin="5" 

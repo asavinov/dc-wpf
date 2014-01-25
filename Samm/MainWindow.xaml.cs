@@ -370,7 +370,7 @@ namespace Samm
             MappingModel model = new MappingModel(mapping);
 
             //
-            // Show dialog with recommended mappings for import
+            // Show dialog with recommended mappings for import and the possibility to edit the mappings
             //
             ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
             dlg.Owner = this;
@@ -523,7 +523,7 @@ namespace Samm
             //
             // Show mapping editor with recommendations and let the user build the mapping
             //
-            ChangeRangeBox dlg = new ChangeRangeBox();
+            ChangeTypeBox dlg = new ChangeTypeBox();
             dlg.Owner = this;
             dlg.MappingModel = model;
             dlg.RefreshAll();

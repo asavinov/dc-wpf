@@ -94,8 +94,8 @@
     <Compile Include="ArithmeticBox.xaml.cs">
       <DependentUpon>ArithmeticBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ChangeRangeBox.xaml.cs">
-      <DependentUpon>ChangeRangeBox.xaml</DependentUpon>
+    <Compile Include="ChangeTypeBox.xaml.cs">
+      <DependentUpon>ChangeTypeBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="FilteredTableBox.xaml.cs">
       <DependentUpon>FilteredTableBox.xaml</DependentUpon>
@@ -128,7 +128,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ChangeRangeBox.xaml">
+    <Page Include="ChangeTypeBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

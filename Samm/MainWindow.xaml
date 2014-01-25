@@ -138,14 +138,14 @@
                 </RibbonGroup>
             </RibbonTab>
 
-            <RibbonTab Header="Data" KeyTip="D" >
-                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Tables">
-                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" Command="{StaticResource FilteredTableCommand}" />
+            <RibbonTab Header="Refactor" KeyTip="R" >
+                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Refactor Tables">
+                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Delete Table with All Columns" KeyTip="D" />
                 </RibbonGroup>
-                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Columns">
+                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Refactor Columns">
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
