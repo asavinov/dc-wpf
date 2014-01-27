@@ -225,7 +225,7 @@ namespace Samm
 
         private void ChangeTypeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Set newTypeSet = MashupRoot.FindSubset("Employees"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
+            Set newTypeSet = MashupRoot.FindSubset("Suppliers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
             Wizard_ChangeType(SelectedMashupDim, newTypeSet);
         }
 
@@ -365,14 +365,14 @@ namespace Samm
             Mapper mapper = new Mapper();
             mapper.SetCreationThreshold = 1.0;
             mapper.MapSet(set, parent.Top);
-            SetMapping mapping = mapper.GetBestMapping(set, parent.Top);
+            Mapping mapping = mapper.GetBestMapping(set, parent.Top);
 
             MappingModel model = new MappingModel(mapping);
 
             //
             // Show dialog with recommended mappings for import and the possibility to edit the mappings
             //
-            ImportTableBox dlg = new ImportTableBox(); // Instantiate the dialog box
+            MappingBox dlg = new MappingBox(); // Instantiate the dialog box
             dlg.Owner = this;
             dlg.MappingModel = model;
             dlg.RefreshAll();
@@ -507,12 +507,12 @@ namespace Samm
             if (dim == null) return;
             if (newTypeSet == null) return; // Relevant target types could be proposed in the dialog box (as part of the assistence)
 
-            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name, dim.LesserSet); // TODO: set also other properties so that new dim is identical to the old one
+            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name + " (1)", dim.LesserSet);
 
             Mapper mapper = new Mapper();
             mapper.MaxMappingsToBuild = 100;
             mapper.MapDim(new DimPath(dim), new DimPath(newDim));
-            SetMapping mapping = mapper.Mappings[0];
+            Mapping mapping = mapper.Mappings[0];
 
             //
             // Parameterize the mapping model
@@ -523,7 +523,7 @@ namespace Samm
             //
             // Show mapping editor with recommendations and let the user build the mapping
             //
-            ChangeTypeBox dlg = new ChangeTypeBox();
+            MappingBox dlg = new MappingBox();
             dlg.Owner = this;
             dlg.MappingModel = model;
             dlg.RefreshAll();
@@ -535,13 +535,14 @@ namespace Samm
             //
             // Really changing the range
             //
-            Com.Model.Expression expr = model.Mapping.GetTargetExpression(dim, newDim);
-            newDim.SelectExpression = expr;
 
-            newDim.ComputeValues(); // Compute the values of the new dimension
+            // The result mapping is between two types (new and old) but in the dim def it must be from newDim.LesserSet to newDim.GreaterSet
+            // So insert a prefix
+            model.Mapping.InsertFirst(new DimPath(dim), null);
 
-            dim.Remove(); // Remove old dimension (detach) and attach new dimension (if not attached)
+            newDim.Mapping = model.Mapping;
             newDim.Add();
+            newDim.ComputeValues(); // Compute the values of the new dimension
         }
 
         #endregion

@@ -71,9 +71,11 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="x" Style="{StaticResource IsMatchedStyle}" />
                 <TextBlock Text="" Width="10"/>
-                <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
-                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
+                <!-- <TextBlock Text=" : " Width="10"/> -->
+                <TextBlock Text=" ("/>
                 <TextBlock Text="{Binding Path=Set.Name}"/>
+                <TextBlock Text=")"/>
             </StackPanel>
         </HierarchicalDataTemplate>
 
@@ -92,9 +94,11 @@
                 <TextBlock Text="" Width="10"/>
                 <TextBlock Text="   " Style="{StaticResource CanMatchStyle}"/>
                 <TextBlock Text="" Width="10"/>
-                <TextBlock Text="{Binding Path=Dim.Name}" Foreground="Blue"/>
-                <TextBlock Text=" : " Width="10"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
+                <!-- <TextBlock Text=" : " Width="10"/> -->
+                <TextBlock Text=" ("/>
                 <TextBlock Text="{Binding Path=Set.Name}"/>
+                <TextBlock Text=")"/>
                 <!-- <TextBlock Text="" Width="10"/>
                 <TextBlock Text="{Binding Path=MatchRelevance}"/> NOTE IMPLEMENTED YET -->
             </StackPanel>

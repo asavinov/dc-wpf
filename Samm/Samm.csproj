@@ -100,9 +100,9 @@
     <Compile Include="FilteredTableBox.xaml.cs">
       <DependentUpon>FilteredTableBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImportTableBox.xaml.cs">
+    <Compile Include="MappingBox.xaml.cs">
       <SubType>Code</SubType>
-      <DependentUpon>ImportTableBox.xaml</DependentUpon>
+      <DependentUpon>MappingBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="MatchTreeControl.xaml.cs">
       <DependentUpon>MatchTreeControl.xaml</DependentUpon>
@@ -136,7 +136,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImportTableBox.xaml">
+    <Page Include="MappingBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

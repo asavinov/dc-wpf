@@ -63,10 +63,10 @@
             </DataTemplate.Triggers>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
-                <TextBlock Text=" : " Width="10"/>
+                <!-- <TextBlock Text="" Width="10"/> -->
+                <TextBlock Text=" ("/>
                 <TextBlock Text="{Binding Path=Dim.GreaterSet.Name}"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=Dim.IsIdentity}"/>
+                <TextBlock Text=")"/>
             </StackPanel>
         </DataTemplate>
 

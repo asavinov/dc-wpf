@@ -1,8 +1,8 @@
-﻿<Window x:Class="Samm.ImportTableBox"
+﻿<Window x:Class="Samm.MappingBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Samm"
-        Title="ImportTableBox" Height="400" Width="400"
+        Title="MappingBox" Height="400" Width="400"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >

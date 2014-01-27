@@ -18,9 +18,9 @@ using Com.Model;
 namespace Samm
 {
     /// <summary>
-    /// Interaction logic for ImportTableBox.xaml
+    /// Interaction logic for MappingBox.xaml
     /// </summary>
-    public partial class ImportTableBox : Window
+    public partial class MappingBox : Window
     {
         public MappingModel MappingModel { get; set; }
 
@@ -40,7 +40,7 @@ namespace Samm
             this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
         }
 
-        public ImportTableBox()
+        public MappingBox()
         {
             InitializeComponent();
         }
