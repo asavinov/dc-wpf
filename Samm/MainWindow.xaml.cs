@@ -380,10 +380,11 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            Set targetSet = mapping.TargetSet;
+            mapping.AddTargetToSchema(parent.Top);
             DimImport dimImport = new DimImport(mapping); // Configure first set for import
             dimImport.Add();
 
+            Set targetSet = mapping.TargetSet;
             targetSet.Populate();
         }
 
@@ -597,7 +598,7 @@ namespace Samm
             }
 
             //
-            // Conditions for importing a set
+            // Conditions for importing a set: a set is dropped on a root
             //
             if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInSources((Set)dropSource))
             {
@@ -609,9 +610,8 @@ namespace Samm
             }
 
             //
-            // Conditions for new aggregated columns
+            // Conditions for new aggregated column: dimension is dropped on a set
             //
-
             if (dropSource is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropSource))
             {
                 if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
@@ -620,6 +620,18 @@ namespace Samm
                     ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, null, (Dim)dropSource);
                 }
             }
+
+            //
+            // Conditions for type change: a set is dropped on a dimension
+            //
+            if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
+            {
+                if (dropTarget is Dim && !((Dim)dropTarget).IsPrimitive && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropTarget))
+                {
+                    ((MainWindow)App.Current.MainWindow).Wizard_ChangeType((Dim)dropTarget, (Set)dropSource);
+                }
+            }
+
         }
 
         public void DoDoubleClick(object data)
