@@ -381,10 +381,13 @@ namespace Samm
             if (dlg.DialogResult == false) return; // Cancel
 
             mapping.AddTargetToSchema(parent.Top);
-            DimImport dimImport = new DimImport(mapping); // Configure first set for import
+            DimImport dimImport = new DimImport(mapping.SourceSet.Name, mapping.TargetSet, mapping.SourceSet); // Configure first set for import
             dimImport.Add();
 
             Set targetSet = mapping.TargetSet;
+            targetSet.Mapping.Clear();
+            targetSet.Mapping.Add(mapping);
+
             targetSet.Populate();
         }
 

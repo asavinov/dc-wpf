@@ -141,7 +141,8 @@
             <RibbonTab Header="Refactor" KeyTip="R" >
                 <RibbonGroup x:Name="insertTablesMenuGroup" Header="Refactor Tables">
                     <RibbonButton LargeImageSource="Images\add_table.png" Label="Add Filtered Table" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Extract Table" KeyTip="X" /><!-- Create one greater table and a new dimension referencing it. -->
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Delete Table with All Columns" KeyTip="D" />
                 </RibbonGroup>
