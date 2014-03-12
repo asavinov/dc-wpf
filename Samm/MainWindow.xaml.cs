@@ -179,6 +179,12 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_TextDatasource();
+            e.Handled = true;
+        }
+
         private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Wizard_SqlserverDatasource();
@@ -263,6 +269,40 @@ namespace Samm
 
             top.Open();
             top.ImportSchema();
+
+            Sources.Add(top); // Append to the list of data sources
+
+            // And also append to the tree model
+            SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
+            sourceModel.ExpandTree();
+            SourcesModel.Add(sourceModel);
+        }
+
+        public void Wizard_TextDatasource()
+        {
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.Multiselect = false;
+
+            if (ofd.ShowDialog() != true) return;
+
+            string filePath = ofd.FileName;
+            string safeFilePath = ofd.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = safeFilePath.Replace('.', '#');
+
+            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileDir + "; Extended Properties='Text;Excel 12.0;HDR=Yes;FMT=CSVDelimited;'";
+
+            // Initialize a new data source schema
+            SetTopText top = new SetTopText("My Data Source");
+
+            top.ConnectionString = connectionString;
+
+            top.Open();
+            top.ImportSchema(new List<string>(new string[] {tableName}));
 
             Sources.Add(top); // Append to the list of data sources
 

@@ -38,6 +38,7 @@
         <!-- Commands can be (and should be later) defined programmatically as classes -->
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
         <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access Database" />
+        <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
         <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
@@ -51,6 +52,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource OpenTableCommand}" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
@@ -123,6 +125,7 @@
             <RibbonTab Header="Import" KeyTip="I">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Data Sources">
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
@@ -164,7 +167,7 @@
             <RibbonTab Header="Export" KeyTip="E">
                 <RibbonGroup x:Name="exportGroup" Header="Data Sources">
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="CSV" KeyTip="X" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R"/>
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
                 </RibbonGroup>
