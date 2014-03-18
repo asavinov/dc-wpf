@@ -60,6 +60,11 @@
 
         <!-- This is how tree items representing a source elements of the mapping -->
         <HierarchicalDataTemplate x:Key="sourceItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                </DataTrigger>
+            </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!--
@@ -81,6 +86,11 @@
 
         <!-- This is how tree items representing a target elements of the mapping -->
         <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                </DataTrigger>
+            </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!--

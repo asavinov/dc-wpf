@@ -50,6 +50,22 @@ namespace Samm
             this.DialogResult = true;
         }
 
+        private void identityButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MappingModel.TargetTree.SelectedNode != null && MappingModel.TargetTree.SelectedNode.Dim != null) 
+            {
+                if (MappingModel.TargetTree.SelectedNode.Dim.IsIdentity)
+                {
+                    MappingModel.TargetTree.SelectedNode.Dim.IsIdentity = false;
+                }
+                else
+                {
+                    MappingModel.TargetTree.SelectedNode.Dim.IsIdentity = true;
+                }
+                MappingModel.TargetTree.NotifyAllOnPropertyChanged(""); // OPTIMIZE: notify only about IsIdentity property - not all properties
+            }
+        }
+
         private void recommendButton_Click(object sender, RoutedEventArgs e)
         {
 
