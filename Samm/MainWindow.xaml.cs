@@ -205,6 +205,15 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedMashupSet != null) 
+                Wizard_ExtractTable(SelectedMashupSet);
+            else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
+                Wizard_ExtractTable(SelectedMashupDim.LesserSet);
+            e.Handled = true;
+        }
+
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             // Find a set where we want to create a new derived (aggregated) dimension
@@ -421,13 +430,11 @@ namespace Samm
             if (dlg.DialogResult == false) return; // Cancel
 
             mapping.AddTargetToSchema(parent.Top);
-            DimImport dimImport = new DimImport(mapping.SourceSet.Name, mapping.TargetSet, mapping.SourceSet); // Configure first set for import
+            Dim dimImport = new Dim(mapping); // Configure first set for import
             dimImport.Add();
+            dimImport.GreaterSet.ProjectDimensions.Add(dimImport);
 
             Set targetSet = mapping.TargetSet;
-            targetSet.Mapping.Clear();
-            targetSet.Mapping.Add(mapping);
-
             targetSet.Populate();
         }
 
@@ -465,6 +472,56 @@ namespace Samm
             //SetTop mashup = MashupTop;
             //Mashups.RemoveAt(0);
             //Mashups.Add(mashup.Root);
+        }
+
+        public void Wizard_ExtractTable(Set set)
+        {
+            string extractedSetName = "My Extracted Table";
+            string extractedDimName = extractedSetName;
+            List<Dim> projectionDims = new List<Dim>();
+            projectionDims.Add(SelectedMashupDim);
+
+            // Possibly we need a dialog box for the following purposes:
+            // 0. Show the name of the set where we insert a new mapped attribute
+            // 1. selecting multiple projection attributes and change the projected attribute (multi-select does not work in tree view). Here we need a list of all greater dimensions of the set. 
+            // 2. specify a new dimension (name) which will directly connect this and the new set. (What is its definition?)
+            // 3. Name for the new extracted set 
+            // 4. Possibly other parameters like a parent for the new set or more complex mapping for the projection attribute
+
+            //
+            // Create a new (extracted) set
+            //
+            Set extractedSet = new Set(extractedSetName);
+            set.SuperSet.AddSubset(extractedSet);
+
+            //
+            // Create identity dimensions for the extracted set and their mapping to the projection dimensions
+            //
+            Mapping mapping = new Mapping(set, extractedSet);
+            foreach (Dim projDim in projectionDims)
+            {
+                Set idSet = projDim.GreaterSet;
+                Dim idDim = idSet.CreateDefaultLesserDimension(projDim.Name, extractedSet);
+                idDim.IsIdentity = true;
+                idDim.Add();
+
+                mapping.AddMatch(new PathMatch(new DimPath(projDim), new DimPath(idDim))); 
+            }
+
+            //
+            // Create a new (mapped) dimension to the new set
+            //
+            Dim extractedDim = extractedSet.CreateDefaultLesserDimension(extractedSet.Name, set);
+            extractedDim.Mapping = mapping;
+            extractedDim.Add();
+            extractedDim.GreaterSet.ProjectDimensions.Add(extractedDim);
+
+            // 
+            // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
+            //
+            extractedSet.Populate();
+
+            extractedDim.ComputeValues();
         }
 
         public void Wizard_AddAggregation(Set srcSet, Set dstSet, Dim dstDim)
