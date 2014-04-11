@@ -476,22 +476,37 @@ namespace Samm
 
         public void Wizard_ExtractTable(Set set)
         {
-            string extractedSetName = "My Extracted Table";
-            string extractedDimName = extractedSetName;
-            List<Dim> projectionDims = new List<Dim>();
-            projectionDims.Add(SelectedMashupDim);
+            //
+            // Show parameters for set extraction
+            //
+            ExtractTableBox dlg = new ExtractTableBox();
+            dlg.Owner = this;
+            dlg.ProjectedSet = set;
+            dlg.ExtractedDimName = "My Extracted Dimension";
+            dlg.ProjectionDims = new List<Dim>();
+            dlg.ProjectionDims.AddRange(set.GreaterDims);
+            if (SelectedMashupDim != null) dlg.projectionDims.SelectedItem = SelectedMashupDim;
+            dlg.ExtractedSetName = "My Extracted Table";
 
-            // Possibly we need a dialog box for the following purposes:
-            // 0. Show the name of the set where we insert a new mapped attribute
-            // 1. selecting multiple projection attributes and change the projected attribute (multi-select does not work in tree view). Here we need a list of all greater dimensions of the set. 
-            // 2. specify a new dimension (name) which will directly connect this and the new set. (What is its definition?)
-            // 3. Name for the new extracted set 
-            // 4. Possibly other parameters like a parent for the new set or more complex mapping for the projection attribute
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (string.IsNullOrWhiteSpace(dlg.ExtractedSetName) || string.IsNullOrWhiteSpace(dlg.ExtractedDimName) || dlg.projectionDims.SelectedItems.Count == 0) return;
+
+            // Initialize a list of selected dimensions (from the whole list of all greater dimensions
+            List<Dim> projectionDims = new List<Dim>();
+            foreach (var item in dlg.projectionDims.SelectedItems)
+            {
+                projectionDims.Add((Dim)item);
+            }
 
             //
             // Create a new (extracted) set
             //
-            Set extractedSet = new Set(extractedSetName);
+            Set extractedSet = new Set(dlg.ExtractedSetName);
             set.SuperSet.AddSubset(extractedSet);
 
             //
@@ -511,7 +526,7 @@ namespace Samm
             //
             // Create a new (mapped) dimension to the new set
             //
-            Dim extractedDim = extractedSet.CreateDefaultLesserDimension(extractedSet.Name, set);
+            Dim extractedDim = extractedSet.CreateDefaultLesserDimension(dlg.ExtractedDimName, set);
             extractedDim.Mapping = mapping;
             extractedDim.Add();
             extractedDim.GreaterSet.ProjectDimensions.Add(extractedDim);

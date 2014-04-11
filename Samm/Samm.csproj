@@ -97,6 +97,9 @@
     <Compile Include="ChangeTypeBox.xaml.cs">
       <DependentUpon>ChangeTypeBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExtractTableBox.xaml.cs">
+      <DependentUpon>ExtractTableBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FilteredTableBox.xaml.cs">
       <DependentUpon>FilteredTableBox.xaml</DependentUpon>
     </Compile>
@@ -129,6 +132,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ChangeTypeBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExtractTableBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
