@@ -218,7 +218,7 @@ namespace Samm
         {
             // Find a set where we want to create a new derived (aggregated) dimension
             Set srcSet = null;
-            srcSet = MashupRoot.FindSubset("Customers");
+            srcSet = MashupRoot.FindSubset("Categories");
 
             // Find a set and dimension which have to be used in the definition (a dimension the values of which will be aggregated)
             Dim dstDim = SelectedMashupDim;
@@ -467,11 +467,6 @@ namespace Samm
             // Populate new set
             dstSet.WhereExpression = expr;
             dstSet.Populate();
-
-            // HACK: refresh the view
-            //SetTop mashup = MashupTop;
-            //Mashups.RemoveAt(0);
-            //Mashups.Add(mashup.Root);
         }
 
         public void Wizard_ExtractTable(Set set)
@@ -572,16 +567,22 @@ namespace Samm
             // Create new derived dimension
             // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
             //
-            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
             string derivedDimName = dlg.SourceColumn.Text;
+            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
             Com.Model.Expression aggreExpr = recoms.GetExpression();
 
             Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
-            derivedDim.SelectExpression = aggreExpr;
             derivedDim.Add();
 
+            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
+            funcExpr.Statements[0].Input = aggreExpr; // Return statement
+            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
+            funcExpr.Resolve();
+
+            derivedDim.SelectExpression = funcExpr;
+
             // Update new derived dimension
-            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+            derivedDim.ComputeValues();
         }
 
         public void Wizard_AddCalculation(Set srcSet)
@@ -601,21 +602,26 @@ namespace Samm
             if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
                 return;
 
-            Com.Model.Expression expr = expr = dlg.ExpressionModel[0];
-
             //
             // Create new derived dimension
             // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
             //
             string derivedDimName = dlg.sourceColumn.Text;
+            Com.Model.Expression calcExpr = dlg.ExpressionModel[0];
+            Set dstSet = calcExpr.OutputSet;
 
-            Set dstSet = expr.OutputSet;
             Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
-            derivedDim.SelectExpression = expr;
             derivedDim.Add();
 
+            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
+            funcExpr.Statements[0].Input = calcExpr; // Return statement
+            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
+            funcExpr.Resolve();
+
+            derivedDim.SelectExpression = funcExpr;
+
             // Update new derived dimension
-            derivedDim.ComputeValues(); // Call SelectExpression.Evaluate(EvaluationMode.UPDATE);
+            derivedDim.ComputeValues();
         }
 
         public void Wizard_ChangeType(Dim dim, Set newTypeSet)

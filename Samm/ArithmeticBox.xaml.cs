@@ -51,8 +51,8 @@ namespace Samm
     /// UI: should display context like imposed constraints or custom title/message: Choose dimensions from table <My Table> etc.
     /// UI: should have options for closing, say, must select before closing (see FileChooser or FolderChooser). 
     /// UI: should show textual explanation or formula for the current selection/choice like a formula bar, say, for a path it should be a dot function representation like 'this.f1().f2()' or for projection 'this -> f1 -> (Set1) -> f2 (Set2)
-    /// Set constraints for all choosers: super set(s), subset(s), greater sets (easy selection by primitive type), lesser sets, name pattern (starts from, ends with, contains, regular expr pattern, approximate etc.)
-    /// Dimensin constraints for all choosers: first segment(s), last segment(s), name pattern (starts from, ends with, contains, regular expr pattern, approximate etc.)
+    /// Set constraints for all choosers: super set(s), subset(s), greater sets (easy selection by primitive type), lesser sets, name pattern (starts from, ends with, contains, regular calcExpr pattern, approximate etc.)
+    /// Dimensin constraints for all choosers: first segment(s), last segment(s), name pattern (starts from, ends with, contains, regular calcExpr pattern, approximate etc.)
     /// 
     /// 
     /// We want to embed controls in many boxes including a simple dedicated box without own logic. 
