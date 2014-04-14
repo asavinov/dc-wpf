@@ -539,6 +539,8 @@ namespace Samm
             // Source set is where we want to create a new (source) derived dimension
             // Target set and dimension is what we want to use in the definition of the new dimension
 
+            if (dstSet == null && dstDim != null) dstSet = dstDim.LesserSet;
+
             RecommendedAggregations recoms = new RecommendedAggregations();
             recoms.SourceSet = srcSet;
             recoms.TargetSet = dstSet;
@@ -626,28 +628,42 @@ namespace Samm
 
         public void Wizard_ChangeType(Dim dim, Set newTypeSet)
         {
-            if (dim == null) return;
-            if (newTypeSet == null) return; // Relevant target types could be proposed in the dialog box (as part of the assistence)
-
-            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name + " (1)", dim.LesserSet);
-
-            Mapper mapper = new Mapper();
-            mapper.MaxMappingsToBuild = 100;
-            mapper.MapDim(new DimPath(dim), new DimPath(newDim));
-            Mapping mapping = mapper.Mappings[0];
+            if (dim == null) return; // We must know the dimension the type of which we want to change
 
             //
-            // Parameterize the mapping model
+            // Suggest the best new type for the new dimension if it has not been specified
             //
-            MappingModel model = new MappingModel(dim, newDim);
-            model.Mapping = mapping;
+            if (newTypeSet == null)
+            {
+                // Compare quality of mappings from the old type to all possible other sets
+                // The possible sets: not old, not the lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
+                Mapper m = new Mapper();
+                m.MaxMappingsToBuild = 100;
+
+                Set bestSet = null;
+                double bestSimilarity = 0.0;
+                List<Set> newTypes = dim.LesserSet.GetPossibleGreaterSets();
+                foreach (Set set in newTypes)
+                {
+                    Dim dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
+
+                    List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
+                    if (mappings[0].Similarity > bestSimilarity) { bestSet = set; bestSimilarity = mappings[0].Similarity; }
+                    m.Mappings.Clear();
+                }
+
+                newTypeSet = bestSet;
+            }
+
+            if (newTypeSet == null) return; // New type is not found (say, because of having no other tables)
+
+            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name, dim.LesserSet); // The task is to build a mapping for this new dimension (it is not added yet)
 
             //
-            // Show mapping editor with recommendations and let the user build the mapping
+            // Show type change dialog
             //
-            MappingBox dlg = new MappingBox();
+            ChangeTypeBox dlg = new ChangeTypeBox(dim, newDim);
             dlg.Owner = this;
-            dlg.MappingModel = model;
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
@@ -658,11 +674,11 @@ namespace Samm
             // Really changing the range
             //
 
-            // The result mapping is between two types (new and old) but in the dim def it must be from newDim.LesserSet to newDim.GreaterSet
-            // So insert a prefix
-            model.Mapping.InsertFirst(new DimPath(dim), null);
+            // The result mapping is between two types (new and old sets) but in the dim def it must be from newDim.LesserSet to newDim.GreaterSet
+            // So insert a prefix to the mappings
+            dlg.MappingModel.Mapping.InsertFirst(new DimPath(dim), null);
 
-            newDim.Mapping = model.Mapping;
+            newDim.Mapping = dlg.MappingModel.Mapping;
             newDim.Add();
             newDim.ComputeValues(); // Compute the values of the new dimension
         }
@@ -738,7 +754,7 @@ namespace Samm
                 if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
                     // Note that here source and target have opposite interpretations
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, null, (Dim)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
                 }
             }
 
@@ -747,8 +763,9 @@ namespace Samm
             //
             if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
             {
-                if (dropTarget is Dim && !((Dim)dropTarget).IsPrimitive && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropTarget))
+                if (dropTarget is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropTarget))
                 {
+//                    ((MainWindow)App.Current.MainWindow).Wizard_ChangeType((Dim)dropTarget, (Set)dropSource);
                     ((MainWindow)App.Current.MainWindow).Wizard_ChangeType((Dim)dropTarget, (Set)dropSource);
                 }
             }

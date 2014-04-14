@@ -37,7 +37,7 @@ namespace Samm
             sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
 
-            this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
+            this.GetBindingExpression(MappingBox.DataContextProperty).UpdateTarget();
         }
 
         public MappingBox()

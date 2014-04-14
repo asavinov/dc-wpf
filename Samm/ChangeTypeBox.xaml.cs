@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,9 +15,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 using Com.Model;
-using System.Globalization;
-
-using Com.Model;
 
 namespace Samm
 {
@@ -27,20 +25,67 @@ namespace Samm
     {
         public MappingModel MappingModel { get; set; }
 
+        public Dim OldDim { get; set; }
+        public Dim NewDim { get; set; }
+
+        public List<Set> NewTypeSets { get; set; }
+
+        private Mapper mapper; // We use it for building mappings
+
+        public void SetNewType(Set newType) // Reconfigure the dialog objects for mapping to this new type
+        {
+            if (newType == null)
+            {
+                MappingModel = null;
+                return;
+            }
+
+            // Store the new type in parameters
+            NewDim.GreaterSet = newType;
+
+            // Compute/suggest new mappings for the new set
+            mapper.Mappings.Clear();
+            mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+
+            // Update the model to be shown in UI
+            MappingModel = new MappingModel(OldDim, NewDim); // We simply create new (update is more difficult)
+            MappingModel.Mapping = mapper.Mappings[0];
+        }
+
         public void RefreshAll()
         {
+            this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
+
             sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            sourceColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            oldColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            oldType.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
             sourceTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
+            targetTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
 
-            targetTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            newColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            newTypes.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            newTypes.SelectedItem = NewDim.GreaterSet;
 
             // !!! Use it for other controls where we update the data context and need to refresh the view
             sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
+        }
 
-            this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
+        public ChangeTypeBox(Dim oldDim, Dim newDim)
+            : this()
+        {
+            OldDim = oldDim;
+            NewDim = newDim;
+
+            mapper = new Mapper();
+            mapper.MaxMappingsToBuild = 100;
+            mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+
+            MappingModel = new MappingModel(OldDim, NewDim);
+            MappingModel.Mapping = mapper.Mappings[0];
+
+            NewTypeSets = OldDim.LesserSet.GetPossibleGreaterSets();
         }
 
         public ChangeTypeBox()
@@ -80,6 +125,18 @@ namespace Samm
 
             MappingModel.SourceTree.NotifyAllOnPropertyChanged("IsMatched");
             MappingModel.TargetTree.NotifyAllOnPropertyChanged("IsMatched");
+        }
+
+        private void NewTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = (ComboBox)e.Source; // or sender
+            var set = cb.SelectedItem; // or SelectedValue
+
+            if (set == null) return;
+
+            SetNewType((Set)set);
+
+            RefreshAll(); // Refresh
         }
 
     }
