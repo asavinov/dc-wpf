@@ -216,19 +216,14 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            // Find a set where we want to create a new derived (aggregated) dimension
-            Set srcSet = null;
-            srcSet = MashupRoot.FindSubset("Categories");
-
-            // Find a set and dimension which have to be used in the definition (a dimension the values of which will be aggregated)
-            Dim dstDim = SelectedMashupDim;
-            Set dstSet = SelectedMashupSet;
-            if(dstSet == null && dstDim != null)
+            Dim selDim = SelectedMashupDim;
+            Set srcSet = SelectedMashupSet;
+            if (srcSet == null && selDim != null)
             {
-                dstSet = dstDim.LesserSet;
+                srcSet = selDim.LesserSet;
             }
 
-            Wizard_AddAggregation(srcSet, dstSet, dstDim);
+            Wizard_AddAggregation_NEW(srcSet, null, null);
             e.Handled = true;
         }
 
@@ -587,6 +582,49 @@ namespace Samm
             derivedDim.ComputeValues();
         }
 
+        public void Wizard_AddAggregation_NEW(Set srcSet, Set dstSet, Dim dstDim)
+        {
+            // Source set is where we want to create a new (source) derived dimension
+            // Target set and dimension is what we want to use in the definition of the new dimension
+
+            if (dstSet == null && dstDim != null) dstSet = dstDim.LesserSet;
+
+            //
+            // Show recommendations and let the user choose one of them
+            //
+            AggregationBox dlg = new AggregationBox(srcSet, dstSet, dstDim);
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+            dlg.RefreshAll();
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (dlg.Recommendations.IsValidExpression() != null) return;
+
+            RecommendedAggregations recoms = dlg.Recommendations;
+
+            //
+            // Create new derived dimension
+            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            //
+            string derivedDimName = dlg.SourceColumn.Text;
+            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
+            Com.Model.Expression aggreExpr = recoms.GetExpression();
+
+            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            derivedDim.Add();
+
+            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
+            funcExpr.Statements[0].Input = aggreExpr; // Return statement
+            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
+            funcExpr.Resolve();
+
+            derivedDim.SelectExpression = funcExpr;
+
+            // Update new derived dimension
+            derivedDim.ComputeValues();
+        }
+
         public void Wizard_AddCalculation(Set srcSet)
         {
             if (srcSet == null) return;
@@ -753,8 +791,8 @@ namespace Samm
             {
                 if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-                    // Note that here source and target have opposite interpretations
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
+                    // Note that here source and target in terms of DnD have opposite interpretations to the aggregation method
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation_NEW((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
                 }
             }
 

@@ -29,35 +29,87 @@ namespace Samm
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public List<Set> TargetSets { get; set; }
+
         // It is a number of lists representing fragments the user should choose from
-        private RecommendedAggregations _recommendations;
-        public RecommendedAggregations Recommendations
+        public RecommendedAggregations Recommendations { get; set; }
+
+        public void NewTargetSet(Set newTargetSet) // Reconfigure the dialog objects for this new target set
         {
-            get { return _recommendations; }
-            set
+            if (newTargetSet == null)
             {
-                _recommendations = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("Recommendations"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("GroupingPaths"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("FactSets"));
-                    PropertyChanged(this, new PropertyChangedEventArgs("MeasurePaths"));
-                }
+                return;
             }
+
+            Recommendations.TargetSet = newTargetSet;
+
+            // Compute/suggest new recommendations for the new target set
+            Recommendations.Clear();
+            Recommendations.Recommend();
+
+            // Update the model to be shown in UI
+            RefreshAll();
         }
 
         public void RefreshAll()
         {
+            SourceSet.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Recommendations"));
+                PropertyChanged(this, new PropertyChangedEventArgs("GroupingPaths"));
+                PropertyChanged(this, new PropertyChangedEventArgs("FactSets"));
+                PropertyChanged(this, new PropertyChangedEventArgs("MeasurePaths"));
+                PropertyChanged(this, new PropertyChangedEventArgs("MeasureTables"));
+                PropertyChanged(this, new PropertyChangedEventArgs("MeasureDimensions"));
+            }
+
             GroupingPaths.Items.Refresh();
             FactSets.Items.Refresh();
             MeasurePaths.Items.Refresh();
+            MeasureTables.Items.Refresh();
             MeasureDimensions.Items.Refresh();
             AggregationFunctions.Items.Refresh();
         }
 
+        public AggregationBox(Set srcSet, Set dstSet, Dim dstDim)
+            : this()
+        {
+            // Initialize possible target (measure) tables.
+            List<Set> all = srcSet.Root.GetAllSubsets();
+            foreach(Set set in all) 
+            {
+                if(set == srcSet) continue;
+                if(set.IsPrimitive) continue;
+                if(set.IsGreater(srcSet)) continue;
+                if(set.IsLesser(srcSet)) continue;
+
+                TargetSets.Add(set);
+            }
+
+            Recommendations.SourceSet = srcSet;
+            Recommendations.TargetSet = dstSet;
+            Recommendations.FactSet = null; // Any
+
+            Recommendations.Clear();
+            Recommendations.Recommend(); // Generate recommendation
+
+            MeasureTables.SelectedItem = dstSet;
+
+            if (dstDim != null) // Try to set the current measure to the specified dimension
+            {
+                Recommendations.MeasureDimensions.SelectedObject = dstDim;
+            }
+
+            RefreshAll();
+        }
+
         public AggregationBox()
         {
+            Recommendations = new RecommendedAggregations();
+            TargetSets = new List<Set>();
+
             InitializeComponent();
         }
 
@@ -101,6 +153,16 @@ namespace Samm
             // Refresh
             RefreshAll();
             Recommendations = Recommendations;
+        }
+
+        private void MeasureTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = (ComboBox)e.Source; // or sender
+            var set = cb.SelectedItem; // or SelectedValue
+
+            if (set == null) return;
+
+            NewTargetSet((Set)set);
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)

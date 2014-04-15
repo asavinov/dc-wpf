@@ -43,7 +43,7 @@
         </Grid.RowDefinitions>
 
         <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Path=Recommendations.SourceSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="SourceSet" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Recommendations.SourceSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="SourceColumn" Grid.Column="1" Grid.Row="1" Text="My Column" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
@@ -58,8 +58,9 @@
         <ComboBox Name="MeasurePaths" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=Recommendations.MeasurePaths.Alternatives}" SelectedItem="{Binding Path=Recommendations.MeasurePaths.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasurePaths_SelectionChanged"/>
         <!-- <local:PathListControl Grid.Column="1" Grid.Row="3" x:Name="measurePath" DataContext="{Binding MeasurePath}" /> -->
 
-        <Label  Grid.Column="0" Grid.Row="5" Content="Measure Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
-        <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Path=Recommendations.TargetSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="5" Content="Measure Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
+        <ComboBox Name="MeasureTables" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding Path=TargetSets}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasureTables_SelectionChanged"/>
+        <!-- <TextBox Grid.Column="1" Grid.Row="5" Text="{Binding Path=Recommendations.TargetSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" /> -->
 
         <Label  Grid.Column="0" Grid.Row="6" Content="Measure Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ComboBox Name="MeasureDimensions" Grid.Column="1" Grid.Row="6" ItemsSource="{Binding Path=Recommendations.MeasureDimensions.Alternatives}" SelectedItem="{Binding Path=Recommendations.MeasureDimensions.SelectedFragment, Mode=TwoWay}" ItemTemplate="{StaticResource PathFragment}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top"/>
