@@ -10,8 +10,14 @@
         <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Left"></Setter>
         </Style>
-        
+
         <DataTemplate x:Key="PathFragment">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding DisplayName}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PathWithRelevanceFragment">
             <Grid ShowGridLines="False">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"></ColumnDefinition>

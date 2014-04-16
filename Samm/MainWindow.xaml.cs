@@ -223,7 +223,7 @@ namespace Samm
                 srcSet = selDim.LesserSet;
             }
 
-            Wizard_AddAggregation_NEW(srcSet, null, null);
+            Wizard_AddAggregation(srcSet, null, null);
             e.Handled = true;
         }
 
@@ -536,59 +536,6 @@ namespace Samm
 
             if (dstSet == null && dstDim != null) dstSet = dstDim.LesserSet;
 
-            RecommendedAggregations recoms = new RecommendedAggregations();
-            recoms.SourceSet = srcSet;
-            recoms.TargetSet = dstSet;
-            recoms.FactSet = null; // Any
-
-            recoms.Recommend();
-
-            if (dstDim != null) // Try to set the current measure to the specified dimension
-            {
-                recoms.MeasureDimensions.SelectedObject = dstDim;
-            }
-
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            AggregationBox dlg = new AggregationBox();
-            dlg.Owner = this;
-            dlg.Recommendations = recoms;
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            if (recoms.IsValidExpression() != null) return;
-
-            //
-            // Create new derived dimension
-            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
-            //
-            string derivedDimName = dlg.SourceColumn.Text;
-            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
-            Com.Model.Expression aggreExpr = recoms.GetExpression();
-
-            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
-            derivedDim.Add();
-
-            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
-            funcExpr.Statements[0].Input = aggreExpr; // Return statement
-            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
-            funcExpr.Resolve();
-
-            derivedDim.SelectExpression = funcExpr;
-
-            // Update new derived dimension
-            derivedDim.ComputeValues();
-        }
-
-        public void Wizard_AddAggregation_NEW(Set srcSet, Set dstSet, Dim dstDim)
-        {
-            // Source set is where we want to create a new (source) derived dimension
-            // Target set and dimension is what we want to use in the definition of the new dimension
-
-            if (dstSet == null && dstDim != null) dstSet = dstDim.LesserSet;
-
             //
             // Show recommendations and let the user choose one of them
             //
@@ -792,7 +739,7 @@ namespace Samm
                 if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
                     // Note that here source and target in terms of DnD have opposite interpretations to the aggregation method
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation_NEW((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
                 }
             }
 

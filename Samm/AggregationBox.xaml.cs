@@ -78,14 +78,22 @@ namespace Samm
         {
             // Initialize possible target (measure) tables.
             List<Set> all = srcSet.Root.GetAllSubsets();
-            foreach(Set set in all) 
+            foreach(Set lSet in all) 
             {
-                if(set == srcSet) continue;
-                if(set.IsPrimitive) continue;
-                if(set.IsGreater(srcSet)) continue;
-                if(set.IsLesser(srcSet)) continue;
+                if (!lSet.IsLesser(srcSet)) continue; // We want to find all lesser (fact) sets
 
-                TargetSets.Add(set);
+                // Find all greater sets of this fact set
+                foreach (Set gSet in all)
+                {
+                    if (!gSet.IsGreater(lSet)) continue; // We want to find all greater (measure) sets
+
+                    if (gSet == srcSet) continue;
+                    if (gSet.IsPrimitive) continue;
+
+                    if (TargetSets.Contains(gSet)) continue;
+
+                    TargetSets.Add(gSet);
+                }
             }
 
             Recommendations.SourceSet = srcSet;
