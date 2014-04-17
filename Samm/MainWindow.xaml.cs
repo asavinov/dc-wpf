@@ -472,11 +472,16 @@ namespace Samm
             ExtractTableBox dlg = new ExtractTableBox();
             dlg.Owner = this;
             dlg.ProjectedSet = set;
-            dlg.ExtractedDimName = "My Extracted Dimension";
             dlg.ProjectionDims = new List<Dim>();
             dlg.ProjectionDims.AddRange(set.GreaterDims);
-            if (SelectedMashupDim != null) dlg.projectionDims.SelectedItem = SelectedMashupDim;
             dlg.ExtractedSetName = "My Extracted Table";
+            dlg.ExtractedDimName = "My Extracted Dimension";
+            if (SelectedMashupDim != null)
+            {
+                dlg.projectionDims.SelectedItem = SelectedMashupDim;
+                dlg.ExtractedSetName = SelectedMashupDim.Name + " Group"; // The new table will have the same name as the only extracted dimension
+                dlg.ExtractedDimName = SelectedMashupDim.Name + " Group";
+            }
 
             dlg.RefreshAll();
 

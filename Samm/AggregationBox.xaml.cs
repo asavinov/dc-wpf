@@ -108,6 +108,7 @@ namespace Samm
             if (dstDim != null) // Try to set the current measure to the specified dimension
             {
                 Recommendations.MeasureDimensions.SelectedObject = dstDim;
+                SourceColumn.Text = dstDim.Name;
             }
 
             RefreshAll();
