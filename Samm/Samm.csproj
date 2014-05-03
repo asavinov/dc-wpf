@@ -254,6 +254,41 @@
   <ItemGroup>
     <Resource Include="Images\default.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\import_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_odata.png" />
+    <Resource Include="Images\add_sql_server.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\update_all.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\remove_connection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\update_column.png" />
+    <Resource Include="Images\update_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\filtered_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\extract_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\delete_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_calculation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\change_type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\delete_column.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
