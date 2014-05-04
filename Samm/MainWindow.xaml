@@ -127,7 +127,7 @@
             <RibbonTab Header="Import" KeyTip="I">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Data Sources">
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_table.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="R"/>
                     <RibbonButton LargeImageSource="Images\remove_connection.png" Label="Remove Data Source" KeyTip="R"/>
@@ -154,7 +154,7 @@
                 <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Refactor Columns">
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton LargeImageSource="Images\add_calculation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
-                    <RibbonButton LargeImageSource="Images\change_type.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
+                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
                     <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete Column" KeyTip="D" />

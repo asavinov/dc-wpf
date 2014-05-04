@@ -243,9 +243,6 @@
     <Resource Include="Images\co.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_table.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\add_aggregation.png" />
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +285,34 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\delete_column.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_csv.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_csv.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_access.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_column.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_root.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_column_key.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\change_type2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\node_column_number.png" />
+    <Resource Include="Images\node_column_string.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

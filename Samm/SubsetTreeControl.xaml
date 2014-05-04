@@ -15,8 +15,6 @@
 
         <!-- This is how tree root will be displayed (no matter where they appear in this window) -->
         <HierarchicalDataTemplate x:Key="rootItemTemplate" DataType="{x:Type com:SubsetTree}">
-            <DataTemplate.Triggers>
-            </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!--
@@ -28,17 +26,24 @@
 -->
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
+                <Image x:Name="node_icon" Source="Images\node_root.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
                 <TextBlock Text="{Binding Path=Dim.LesserSet.Top.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="LOCAL">
+                    <Setter Property="Source" Value="Images\node_root.png" TargetName="node_icon"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="OLEDB">
+                    <Setter Property="Source" Value="Images\node_access.png" TargetName="node_icon"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="CSV">
+                    <Setter Property="Source" Value="Images\node_csv.png" TargetName="node_icon"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a subset will be displayed (no matter where they appear in this window) -->
         <HierarchicalDataTemplate x:Key="setItemTemplate" DataType="{x:Type com:SubsetTree}">
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.LesserSet.IsPrimitive}" Value="true">
-                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
-                </DataTrigger>
-            </DataTemplate.Triggers>
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!-- 
@@ -50,24 +55,32 @@
 -->
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
+                <Image Source="Images\node_table.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
                 <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Dim.LesserSet.IsPrimitive}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a greater dimension will be displayed (no matter where they appear in this window) -->
         <DataTemplate x:Key="dimensionItemTemplate" DataType="{x:Type com:SubsetTree}">
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
-                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
-                </DataTrigger>
-            </DataTemplate.Triggers>
             <StackPanel Orientation="Horizontal">
+                <Image x:Name="node_icon" Source="Images\node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left" />
                 <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
                 <!-- <TextBlock Text="" Width="10"/> -->
                 <TextBlock Text=" ("/>
                 <TextBlock Text="{Binding Path=Dim.GreaterSet.Name}"/>
                 <TextBlock Text=")"/>
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                    <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
+                    <Setter Property="Source" Value="Images\node_column_key.png" TargetName="node_icon" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
     </UserControl.Resources>
