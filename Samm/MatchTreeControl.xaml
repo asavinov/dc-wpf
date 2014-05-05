@@ -45,6 +45,30 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="CanMatchNameStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=CanMatch}" Value="true">
+                    <Setter Property="FontWeight" Value="SemiBold"></Setter>
+                    <Setter Property="Foreground" Value="Blue" ></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=CanMatch}" Value="false">
+                    <Setter Property="FontWeight" Value="Normal"></Setter>
+                    <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CanMatchTypeStyle" TargetType="{x:Type TextBlock}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                    <Setter Property="Foreground" Value="Red" ></Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="false">
+                    <Setter Property="Foreground" Value="Black"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="IsMatchedStyle" TargetType="{x:Type TextBlock}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=IsMatched}" Value="true">
@@ -76,21 +100,23 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="x" Style="{StaticResource IsMatchedStyle}" />
                 <TextBlock Text="" Width="10"/>
-                <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" Style="{StaticResource CanMatchNameStyle}" />
                 <!-- <TextBlock Text=" : " Width="10"/> -->
                 <TextBlock Text=" ("/>
-                <TextBlock Text="{Binding Path=Set.Name}"/>
+                <TextBlock Text="{Binding Path=Set.Name}" Style="{StaticResource CanMatchTypeStyle}"/>
                 <TextBlock Text=")"/>
             </StackPanel>
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a target elements of the mapping -->
         <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+<!--
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
                 </DataTrigger>
             </DataTemplate.Triggers>
+-->
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!--
@@ -104,10 +130,10 @@
                 <TextBlock Text="" Width="10"/>
                 <TextBlock Text="   " Style="{StaticResource CanMatchStyle}"/>
                 <TextBlock Text="" Width="10"/>
-                <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
+                <TextBlock Text="{Binding Path=Dim.Name}" Style="{StaticResource CanMatchNameStyle}" />
                 <!-- <TextBlock Text=" : " Width="10"/> -->
                 <TextBlock Text=" ("/>
-                <TextBlock Text="{Binding Path=Set.Name}"/>
+                <TextBlock Text="{Binding Path=Set.Name}" Style="{StaticResource CanMatchTypeStyle}"/>
                 <TextBlock Text=")"/>
                 <!-- <TextBlock Text="" Width="10"/>
                 <TextBlock Text="{Binding Path=MatchRelevance}"/> NOTE IMPLEMENTED YET -->
