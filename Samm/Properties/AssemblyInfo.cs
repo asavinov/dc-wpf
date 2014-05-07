@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Samm")]
-[assembly: AssemblyDescription("ConceptMix is a self-service too for analytical data integration.")]
+[assembly: AssemblyTitle("ConceptMix")]
+[assembly: AssemblyDescription("Self-service analytical data integration")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Concept-Oriented Software")]
-[assembly: AssemblyProduct("Samm")]
-[assembly: AssemblyCopyright("Copyright © Alexandr Savinov 2013")]
+[assembly: AssemblyCompany("http://conceptoriented.com")]
+[assembly: AssemblyProduct("ConceptMix")]
+[assembly: AssemblyCopyright("Copyright © Alexandr Savinov 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

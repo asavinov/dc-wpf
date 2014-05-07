@@ -40,6 +40,7 @@
         <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access Database" />
         <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
+        <RoutedUICommand x:Key="RemoveDatasourceCommand" Text="Remove Data Source" />
         <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
@@ -55,6 +56,7 @@
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource RemoveDatasourceCommand}" Executed="RemoveDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" Executed="ExtractTableCommand_Executed" />
@@ -110,17 +112,17 @@
                     <RibbonButton SmallImageSource="Images\cut.png" Label="Cut" KeyTip="X" />
                     <RibbonButton SmallImageSource="Images\copy.png" Label="Copy" KeyTip="C" />
                 </RibbonGroup>
-                <RibbonGroup Header="Connections">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Add Connection" KeyTip="A"/>
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Search for Data Source" KeyTip="S"/>
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Connection" KeyTip="R"/>
-                </RibbonGroup>
             </RibbonTab>
 
             <!-- Ribbon Tab View -->
             <RibbonTab Header="View" KeyTip="V">
                 <RibbonGroup x:Name="windowGroup" Header="Window">
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Window" KeyTip="W" />
+                </RibbonGroup>
+                <RibbonGroup Header="Selection Propagation">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
                 </RibbonGroup>
             </RibbonTab>
 
@@ -130,7 +132,7 @@
                     <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="R"/>
-                    <RibbonButton LargeImageSource="Images\remove_connection.png" Label="Remove Data Source" KeyTip="R"/>
+                    <RibbonButton LargeImageSource="Images\remove_connection.png" Label="Remove Data Source" KeyTip="R" Command="{StaticResource RemoveDatasourceCommand}" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="importTableGroup" Header="Import">
                     <RibbonButton LargeImageSource="Images\import_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
@@ -158,11 +160,6 @@
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
                     <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete Column" KeyTip="D" />
-                </RibbonGroup>
-                <RibbonGroup Header="Selection Propagation">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
                 </RibbonGroup>
             </RibbonTab>
 

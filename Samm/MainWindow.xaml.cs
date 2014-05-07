@@ -191,6 +191,25 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void RemoveDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            SetTop top = null;
+            if (SelectedSourceDim != null) top = SelectedSourceDim.LesserSet.Top;
+            else if (SelectedSourceSet != null) top = SelectedSourceSet.Top;
+            else return;
+            
+            Sources.Remove(top); // Remove from the list of data sources
+
+            // And also removew from the tree model
+            SubsetTree sourceModel = SourcesModel.FirstOrDefault(x => x.GreaterSet == top);
+            if (sourceModel != null)
+            {
+                SourcesModel.Remove(sourceModel);
+            }
+            
+            e.Handled = true;
+        }
+
         private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedSourceSet == null) return;

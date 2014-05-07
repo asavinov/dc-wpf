@@ -24,7 +24,7 @@
             <Label Name="labelCopyright" Content="{Binding Path=AssemblyCopyright}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5,5,5,5"/>
             <Label Name="labelCompanyName" Content="{Binding Path=AssemblyCompany}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5,5,5,5"/>
             <TextBox Name="textBoxDescription" Text="{Binding Path=AssemblyDescription}" HorizontalAlignment="Stretch" Height="100" TextWrapping="Wrap" />
-            <Button Name="okButton" Content="_OK" Margin="5" IsDefault="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100"/>
+            <Button Name="okButton" Content="_OK" Margin="5" IsDefault="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" IsCancel="True" />
         </StackPanel>
     </Grid>
 </Window>
