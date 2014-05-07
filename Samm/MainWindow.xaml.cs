@@ -233,6 +233,27 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Set set = null;
+            if (SelectedMashupSet != null)
+                set = SelectedMashupSet;
+            else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
+                set = SelectedMashupDim.LesserSet;
+            else if (SelectedSourceSet != null)
+                set = SelectedSourceSet;
+            else return;
+
+            // Remove all connections of this set with the schema by deleting all its dimensions
+            set.SuperDims.ToArray().ToList().ForEach(x => x.Remove());
+            set.SubDims.ToArray().ToList().ForEach(x => x.Remove());
+
+            set.GreaterDims.ToArray().ToList().ForEach(x => x.Remove());
+            set.LesserDims.ToArray().ToList().ForEach(x => x.Remove());
+
+            e.Handled = true;
+        }
+
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Dim selDim = SelectedMashupDim;
