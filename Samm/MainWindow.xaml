@@ -37,28 +37,28 @@
 
         <!-- Commands can be (and should be later) defined programmatically as classes -->
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
-        <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access Database" />
+
         <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
-        <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server Database" />
-        <RoutedUICommand x:Key="RemoveDatasourceCommand" Text="Remove Data Source" />
-        <RoutedUICommand x:Key="ImportTableCommand" Text="Import Table" />
+        <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access table" />
+        <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server table" />
+
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
+
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
         <RoutedUICommand x:Key="ChangeRangeCommand" Text="Change Column Type" />
+
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
     </RibbonWindow.Resources>
 
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource OpenTableCommand}" Executed="OpenTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
-        <CommandBinding Command="{StaticResource RemoveDatasourceCommand}" Executed="RemoveDatasourceCommand_Executed" />
-        <CommandBinding Command="{StaticResource ImportTableCommand}" Executed="ImportTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" Executed="ExtractTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" Executed="DeleteTableCommand_Executed" />
@@ -130,14 +130,10 @@
 
             <RibbonTab Header="Import" KeyTip="I">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Data Sources">
-                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Database" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="X" Command="{StaticResource SqlserverDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="R"/>
-                    <RibbonButton LargeImageSource="Images\remove_connection.png" Label="Remove Data Source" KeyTip="R" Command="{StaticResource RemoveDatasourceCommand}" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="importTableGroup" Header="Import">
-                    <RibbonButton LargeImageSource="Images\import_table.png" Label="Import Table" KeyTip="I" Command="{StaticResource ImportTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Table" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server Table" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData Table" KeyTip="O"/>
                 </RibbonGroup>
                 <RibbonGroup Header="Update">
                     <RibbonButton LargeImageSource="Images\update_all.png" Label="Update All" KeyTip="A" />
@@ -191,26 +187,22 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-            <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-
-            <!-- Data source panel -->
-            <Grid Name="DsPanel" Grid.Column="0">
+            <!-- Mashup panel -->
+            <Grid Name="MashupPanel" Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblDatasources" Grid.Row="0" FontSize="16" Margin="5" >Data sources</Label>
+                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
 
                 <local:SubsetTreeControl 
-                    x:Name="SourcesView" 
+                    x:Name="MashupsView" 
                     Grid.Column="0" Grid.Row="1" 
-                    DataContext="{Binding Path=SourcesModel}" 
+                    DataContext="{Binding Path=MashupsModel}" 
                     />
             </Grid>
 
@@ -225,43 +217,6 @@
 
                 <ContentControl Name="GridPanel" Grid.Row="1">
                 </ContentControl>
-            </Grid>
-
-            <!-- Mashup panel -->
-            <Grid Name="MashupPanel" Grid.Column="4" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
-
-                <local:SubsetTreeControl 
-                    x:Name="MashupsView" 
-                    Grid.Column="0" Grid.Row="1" 
-                    DataContext="{Binding Path=MashupsModel}" 
-                    />
-
-<!--
-                <TreeView 
-                    Name="SubsetTree" 
-                    Grid.Column="0" Grid.Row="2" 
-                    ItemsSource="{Binding Path=MashupTreeTop}" 
-                    BorderThickness="5" 
-                    ScrollViewer.VerticalScrollBarVisibility="Visible" 
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                    >
-
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Path=.}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" />
-                            </StackPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-
-                </TreeView>
--->
             </Grid>
 
         </Grid>

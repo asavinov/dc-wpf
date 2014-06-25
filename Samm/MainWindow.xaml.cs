@@ -30,26 +30,8 @@ namespace Samm
         //
         // Data sources
         //
-        public ObservableCollection<SetTop> Sources { get; set; }
 
-        public ObservableCollection<SubsetTree> SourcesModel { get; set; } // What is shown in SubsetTree for data sources
-
-        public bool IsInSources(Set set) // Determine if the specified set belongs to some data source
-        {
-            if (set == null || Sources == null) return false;
-            foreach (SetTop t in Sources) { if (set.Top == t) return true; }
-            return false;
-        }
-        public bool IsInSources(Dim dim) // Determine if the specified dimension belongs to some data source
-        {
-            if (dim == null || Sources == null) return false;
-            if (IsInSources(dim.LesserSet) && IsInSources(dim.GreaterSet)) return true;
-            return false;
-        }
-        public SubsetTree SelectedSourceItem { get { if (SourcesView == null || SourcesView.SubsetTree == null) return null; return (SubsetTree)SourcesView.SubsetTree.SelectedItem; } }
-        public Set SelectedSourceSet { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
-        public Dim SelectedSourceDim { get { SubsetTree item = SelectedSourceItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
-        public bool IsSourcesFocused { get { return SourcesView.SubsetTree.IsFocused; } } // TODO: Does not work
+        // TODO: we need to represent connections and source tables
 
         //
         // Mashups (only one is used)
@@ -88,15 +70,6 @@ namespace Samm
             //
             // Initialize data sources
             //
-            Sources = new ObservableCollection<SetTop>();
-            SourcesModel = new ObservableCollection<SubsetTree>();
-
-            SetTop sourceTop = CreateSampleSchema(); // For testing
-            Sources.Add(sourceTop);
-
-            SubsetTree sourceModel = new SubsetTree(sourceTop.Root.SuperDim);
-            sourceModel.ExpandTree();
-            SourcesModel.Add(sourceModel);
 
             //
             // Initialize mashups (one empty mashup)
@@ -173,47 +146,21 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_AccessDatasource();
-            e.Handled = true;
-        }
-
         private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Wizard_TextDatasource();
             e.Handled = true;
         }
 
+        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AccessDatasource();
+            e.Handled = true;
+        }
+
         private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Wizard_SqlserverDatasource();
-            e.Handled = true;
-        }
-
-        private void RemoveDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            SetTop top = null;
-            if (SelectedSourceDim != null) top = SelectedSourceDim.LesserSet.Top;
-            else if (SelectedSourceSet != null) top = SelectedSourceSet.Top;
-            else return;
-            
-            Sources.Remove(top); // Remove from the list of data sources
-
-            // And also removew from the tree model
-            SubsetTree sourceModel = SourcesModel.FirstOrDefault(x => x.GreaterSet == top);
-            if (sourceModel != null)
-            {
-                SourcesModel.Remove(sourceModel);
-            }
-            
-            e.Handled = true;
-        }
-
-        private void ImportTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedSourceSet == null) return;
-            Wizard_ImportTable(SelectedSourceSet, MashupRoot);
             e.Handled = true;
         }
 
@@ -240,8 +187,6 @@ namespace Samm
                 set = SelectedMashupSet;
             else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
                 set = SelectedMashupDim.LesserSet;
-            else if (SelectedSourceSet != null)
-                set = SelectedSourceSet;
             else return;
 
             // Remove all connections of this set with the schema by deleting all its dimensions
@@ -314,12 +259,12 @@ namespace Samm
             top.Open();
             top.ImportSchema();
 
-            Sources.Add(top); // Append to the list of data sources
+            //Sources.Add(top); // Append to the list of data sources
 
             // And also append to the tree model
             SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
             sourceModel.ExpandTree();
-            SourcesModel.Add(sourceModel);
+            //SourcesModel.Add(sourceModel);
         }
 
         public void Wizard_TextDatasource()
@@ -348,12 +293,12 @@ namespace Samm
             top.Open();
             top.ImportSchema(new List<string>(new string[] {tableName}));
 
-            Sources.Add(top); // Append to the list of data sources
+            //Sources.Add(top); // Append to the list of data sources
 
             // And also append to the tree model
             SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
             sourceModel.ExpandTree();
-            SourcesModel.Add(sourceModel);
+            //SourcesModel.Add(sourceModel);
         }
 
         private static void Wizard_SqlserverDatasource()
@@ -439,38 +384,6 @@ namespace Samm
             //readOledbSchema(connectionString); //For testing purposes
 
             dcs.SaveConfiguration(dcd);
-        }
-
-        public void Wizard_ImportTable(Set set, Set parent)
-        {
-            //
-            // Compute suggested mapping(s) for importing
-            //
-            Mapper mapper = new Mapper();
-            mapper.SetCreationThreshold = 1.0;
-            mapper.MapSet(set, parent.Top);
-            Mapping mapping = mapper.GetBestMapping(set, parent.Top);
-
-            MappingModel model = new MappingModel(mapping);
-
-            //
-            // Show dialog with recommended mappings for import and the possibility to edit the mappings
-            //
-            MappingBox dlg = new MappingBox(); // Instantiate the dialog box
-            dlg.Owner = this;
-            dlg.MappingModel = model;
-            dlg.RefreshAll();
-            dlg.ShowDialog();
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            mapping.AddTargetToSchema(parent.Top);
-            Dim dimImport = new Dim(mapping); // Configure first set for import
-            dimImport.Add();
-            dimImport.GreaterSet.ProjectDimensions.Add(dimImport);
-
-            Set targetSet = mapping.TargetSet;
-            targetSet.Populate();
         }
 
         public void Wizard_FilteredTable(Set parent)
@@ -762,18 +675,6 @@ namespace Samm
             {
                 if (((SubsetTree)dropTarget).IsSubsetNode) dropTarget = ((SubsetTree)dropTarget).LesserSet;
                 else if (((SubsetTree)dropTarget).IsDimensionNode) dropTarget = ((SubsetTree)dropTarget).Dim;
-            }
-
-            //
-            // Conditions for importing a set: a set is dropped on a root
-            //
-            if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInSources((Set)dropSource))
-            {
-                if (dropTarget is SetRoot && ((MainWindow)App.Current.MainWindow).IsInMashups((SetRoot)dropTarget))
-                {
-                    // Some table from a data source is dropped to the mashup: import table
-                    ((MainWindow)App.Current.MainWindow).Wizard_ImportTable((Set)dropSource, (SetRoot)dropTarget);
-                }
             }
 
             //
