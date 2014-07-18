@@ -128,12 +128,18 @@
                 </RibbonGroup>
             </RibbonTab>
 
-            <RibbonTab Header="Import" KeyTip="I">
-                <RibbonGroup x:Name="importDatasourceGroup" Header="Data Sources">
+            <RibbonTab Header="Data" KeyTip="D">
+                <RibbonGroup x:Name="importDatasourceGroup" Header="Import">
                     <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Table" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server Table" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" />
                     <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData Table" KeyTip="O"/>
+                </RibbonGroup>
+                <RibbonGroup x:Name="exportGroup" Header="Export">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R"/>
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
                 </RibbonGroup>
                 <RibbonGroup Header="Update">
                     <RibbonButton LargeImageSource="Images\update_all.png" Label="Update All" KeyTip="A" />
@@ -143,33 +149,29 @@
                 </RibbonGroup>
             </RibbonTab>
 
-            <RibbonTab Header="Refactor" KeyTip="R" >
-                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Refactor Tables">
-                    <RibbonButton LargeImageSource="Images\filtered_table.png" Label="Add Filtered Table" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\extract_table.png" Label="Extract Table" KeyTip="X" Command="{StaticResource ExtractTableCommand}" /><!-- Create one greater table and a new dimension referencing it. -->
+            <RibbonTab Header="Table" KeyTip="T" >
+                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Create">
+                    <RibbonButton LargeImageSource="Images\filtered_table.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Product" KeyTip="P" />
+                    <RibbonButton LargeImageSource="Images\extract_table.png" Label="From Columns" KeyTip="X" Command="{StaticResource ExtractTableCommand}" /><!-- Create one greater table and a new dimension referencing it. -->
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
-                    <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete Table with All Columns" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />
                 </RibbonGroup>
-                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Refactor Columns">
-                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Add Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_calculation.png" Label="Add Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
-                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Change Column Type" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
-                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
-                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete Column" KeyTip="D" />
+                <RibbonGroup x:Name="deleteTablesMenuGroup" Header="Delete">
+                    <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete Table" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />
                 </RibbonGroup>
             </RibbonTab>
 
-            <RibbonTab Header="Export" KeyTip="E">
-                <RibbonGroup x:Name="exportGroup" Header="Data Sources">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R"/>
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
+            <RibbonTab Header="Column" KeyTip="C" >
+                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Create">
+                    <RibbonButton LargeImageSource="Images\add_calculation.png" Label="Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
+                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Link Column" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Split Column" KeyTip="S" />
+                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
                 </RibbonGroup>
-                <RibbonGroup x:Name="exportTableGroup" Header="Export">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Export Table" KeyTip="E" />
+                <RibbonGroup x:Name="deleteColumnsMenuGroup" Header="Delete">
+                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete Column" KeyTip="D" />
                 </RibbonGroup>
             </RibbonTab>
 
