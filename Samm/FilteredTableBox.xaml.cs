@@ -28,7 +28,7 @@ namespace Samm
     {
         public Set SourceTable { get; set; }
         public Set FilteredTable { get; set; }
-        public ObservableCollection<Com.Model.Expression> ExpressionModel { get; set; }
+        public ObservableCollection<ExprNode> ExpressionModel { get; set; }
 
         public void RefreshAll()
         {
@@ -44,11 +44,11 @@ namespace Samm
 
         public FilteredTableBox()
         {
-            ExpressionModel = new ObservableCollection<Com.Model.Expression>();
+            ExpressionModel = new ObservableCollection<ExprNode>();
 
             InitializeComponent();
 
-            Operations.ItemsSource = Enum.GetValues(typeof(Operation));
+            Operations.ItemsSource = Enum.GetValues(typeof(ActionType));
         }
 
         private void AddOperation_Click(object sender, RoutedEventArgs e)
@@ -56,21 +56,22 @@ namespace Samm
             //
             // Determine parent expression
             //
-            Com.Model.Expression parentExpr;
-            parentExpr = (Com.Model.Expression)expressionModel.ExpressionTree.SelectedItem;
+            ExprNode parentExpr;
+            parentExpr = (ExprNode)expressionModel.ExpressionTree.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
             // Determine operation and create child expression
             //
-            Operation op = (Operation)Operations.SelectedItem;
+            ActionType op = (ActionType)Operations.SelectedItem;
             if (op == null) return; // WARNING: never happens
 
-            var expr = new Com.Model.Expression(op.ToString());
-            expr.Operation = op;
-            expr.OutputSet = SourceTable.Top.GetPrimitiveSubset("Double");
-            expr.OutputSetName = expr.OutputSet.Name;
-            expr.OutputIsSetValued = false;
+            var expr = new ExprNode();
+            expr.Name = op.ToString();
+            expr.Action = op;
+            expr.Result.TypeTable = SourceTable.Top.GetPrimitive("Double");
+            expr.Result.TypeName = expr.Result.TypeTable.Name;
+            //expr.OutputIsSetValued = false;
 
             //
             // Insert new child expression
@@ -99,8 +100,8 @@ namespace Samm
             //
             // Determine parent expression
             //
-            Com.Model.Expression parentExpr;
-            parentExpr = (Com.Model.Expression)expressionModel.ExpressionTree.SelectedItem;
+            ExprNode parentExpr;
+            parentExpr = (ExprNode)expressionModel.ExpressionTree.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
@@ -109,7 +110,7 @@ namespace Samm
             Dim op = (Dim)Operands.SelectedItem;
             if (op == null) return;
 
-            var expr = Com.Model.Expression.CreateProjectExpression(new List<Dim> { FilteredTable.SuperDim, op }, Operation.DOT);
+            var expr = ExprNode.CreateProjectExpression(new List<Dim> { FilteredTable.SuperDim, op }, Operation.DOT);
 
             //
             // Insert new child expression

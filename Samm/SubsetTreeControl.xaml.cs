@@ -300,7 +300,7 @@ namespace Samm
                 if (item is SubsetTree)
                 {
                     SubsetTree nodeItem = item as SubsetTree;
-                    if (nodeItem.Dim.LesserSet.IsRoot)
+                    if (nodeItem.Dim.LesserSet.Name == "Root")
                     {
                         return element.FindResource("rootItemTemplate") as DataTemplate;
                     }

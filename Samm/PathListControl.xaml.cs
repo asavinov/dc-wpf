@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Com.Model;
+
 namespace Samm
 {
     /// <summary>
@@ -47,23 +49,23 @@ namespace Samm
     /// </summary>
     public class Segments : IEnumerable<Segment>, IEnumerator<Segment>
     {
-        public Com.Model.Expression Root { get; private set; }
+        public ExprNode Root { get; private set; }
 
-        private Com.Model.Expression _current;
+        private ExprNode _current;
 
-        public Segments(Com.Model.Expression root)
+        public Segments(ExprNode root)
         {
             Root = root;
             _current = null;
         }
 
-        public Com.Model.Expression FirstSegment
+        public ExprNode FirstSegment
         {
             get
             {
                 if (Root == null) return null;
 
-                Com.Model.Expression seg = Root;
+                ExprNode seg = Root;
                 while (seg.Input != null)
                 {
                     if (seg.Input.Operation != Com.Model.Operation.DOT && seg.Input.Operation != Com.Model.Operation.PROJECTION && seg.Input.Operation != Com.Model.Operation.DEPROJECTION)
@@ -73,7 +75,7 @@ namespace Samm
                 return seg; 
             }
         }
-        public Com.Model.Expression LastSegment
+        public ExprNode LastSegment
         {
             get
             {
@@ -144,9 +146,9 @@ namespace Samm
 
     public class Segment
     {
-        public Com.Model.Expression Expression { get; private set; }
+        public ExprNode Expression { get; private set; }
 
-        public Segment(Com.Model.Expression expr)
+        public Segment(ExprNode expr)
         {
             Expression = expr;
         }

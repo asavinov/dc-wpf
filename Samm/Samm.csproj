@@ -32,7 +32,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -88,30 +88,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AggregationBox.xaml.cs">
-      <DependentUpon>AggregationBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ArithmeticBox.xaml.cs">
-      <DependentUpon>ArithmeticBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ChangeTypeBox.xaml.cs">
-      <DependentUpon>ChangeTypeBox.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ExtractTableBox.xaml.cs">
       <DependentUpon>ExtractTableBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="FilteredTableBox.xaml.cs">
-      <DependentUpon>FilteredTableBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MappingBox.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>MappingBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MatchTreeControl.xaml.cs">
-      <DependentUpon>MatchTreeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PathListControl.xaml.cs">
-      <DependentUpon>PathListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SetGridView.cs" />
     <Compile Include="AboutBox.xaml.cs">
@@ -123,29 +101,9 @@
     <Compile Include="TupleTreeControl.xaml.cs">
       <DependentUpon>TupleTreeControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="AggregationBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ArithmeticBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ChangeTypeBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ExtractTableBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="FilteredTableBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MappingBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -165,14 +123,6 @@
     <Page Include="AboutBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MatchTreeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PathListControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="SubsetTreeControl.xaml">
       <SubType>Designer</SubType>
@@ -313,6 +263,9 @@
   <ItemGroup>
     <Resource Include="Images\node_column_number.png" />
     <Resource Include="Images\node_column_string.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\product_table.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

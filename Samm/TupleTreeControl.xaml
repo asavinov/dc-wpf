@@ -26,7 +26,7 @@
         - Possible actions (add, delete etc.) depend on the operation/expression type
           - Primitive expressions (primitive dim & ToSet) cannot be expanded (we cannot add new child tuple/values) - only a primitive value
         -->
-        <HierarchicalDataTemplate DataType="{x:Type com:Expression}">
+        <HierarchicalDataTemplate DataType="{x:Type com:ExprNode}">
             <HierarchicalDataTemplate.ItemsSource>
                 <MultiBinding  Converter="{StaticResource SubConv}">
                     <Binding Path="Input"/>

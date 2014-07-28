@@ -74,7 +74,7 @@ namespace Samm
     public partial class ArithmeticBox : Window
     {
         public Set SourceTable { get; set; }
-        public ObservableCollection<Com.Model.Expression> ExpressionModel { get; set; }
+        public ObservableCollection<ExprNode> ExpressionModel { get; set; }
 
         public void RefreshAll()
         {
@@ -89,7 +89,7 @@ namespace Samm
 
         public ArithmeticBox()
         {
-            ExpressionModel = new ObservableCollection<Com.Model.Expression>();
+            ExpressionModel = new ObservableCollection<ExprNode>();
 
             InitializeComponent();
 
@@ -101,8 +101,8 @@ namespace Samm
             //
             // Determine parent expression
             //
-            Com.Model.Expression parentExpr;
-            parentExpr = (Com.Model.Expression)expressionModel.ExpressionTree.SelectedItem;
+            ExprNode parentExpr;
+            parentExpr = (ExprNode)expressionModel.ExpressionTree.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
@@ -111,7 +111,7 @@ namespace Samm
             Operation op = (Operation)Operations.SelectedItem;
             if (op == null) return; // WARNING: never happens
 
-            var expr = new Com.Model.Expression(op.ToString());
+            var expr = new ExprNode(op.ToString());
             expr.Operation = op;
             expr.OutputSet = SourceTable.Top.GetPrimitiveSubset("Double");
             expr.OutputSetName = expr.OutputSet.Name;
@@ -144,8 +144,8 @@ namespace Samm
             //
             // Determine parent expression
             //
-            Com.Model.Expression parentExpr;
-            parentExpr = (Com.Model.Expression)expressionModel.ExpressionTree.SelectedItem;
+            ExprNode parentExpr;
+            parentExpr = (ExprNode)expressionModel.ExpressionTree.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
@@ -154,7 +154,7 @@ namespace Samm
             Dim op = (Dim)Operands.SelectedItem;
             if (op == null) return;
 
-            var expr = Com.Model.Expression.CreateProjectExpression(new List<Dim> { op }, Operation.DOT);
+            var expr = ExprNode.CreateProjectExpression(new List<Dim> { op }, Operation.DOT);
 
             //
             // Insert new child expression

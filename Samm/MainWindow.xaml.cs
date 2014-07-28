@@ -36,28 +36,28 @@ namespace Samm
         //
         // Mashups (only one is used)
         //
-        public ObservableCollection<SetTop> Mashups { get; set; }
-        public SetTop MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
-        public SetRoot MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
+        public ObservableCollection<CsSchema> Mashups { get; set; }
+        public CsSchema MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
+        public CsTable MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
 
         public ObservableCollection<SubsetTree> MashupsModel { get; set; } // What is shown in SubsetTree for mashups
         public SubsetTree MashupModelRoot { get { return MashupsModel.Count != 0 ? (SubsetTree)MashupsModel[0] : null; } }
 
-        public bool IsInMashups(Set set) // Determine if the specified set belongs to some mashup
+        public bool IsInMashups(CsTable set) // Determine if the specified set belongs to some mashup
         {
             if (set == null || Mashups == null) return false;
-            foreach (SetTop t in Mashups) { if (set.Top == t) return true; }
+            foreach (CsSchema t in Mashups) { if (set.Top == t) return true; }
             return false;
         }
-        public bool IsInMashups(Dim dim) // Determine if the specified dimension belongs to some mashup
+        public bool IsInMashups(CsColumn dim) // Determine if the specified dimension belongs to some mashup
         {
             if (dim == null || Mashups == null) return false;
             if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
             return false;
         }
         public SubsetTree SelectedMashupItem { get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; } }
-        public Set SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
-        public Dim SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
+        public CsTable SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
+        public CsColumn SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
 
 
         //
@@ -74,10 +74,10 @@ namespace Samm
             //
             // Initialize mashups (one empty mashup)
             //
-            Mashups = new ObservableCollection<SetTop>();
+            Mashups = new ObservableCollection<CsSchema>();
             MashupsModel = new ObservableCollection<SubsetTree>();
 
-            SetTop mashupTop = new SetTop("My Mashup");
+            CsSchema mashupTop = CreateSampleSchema(); // new SetTop("New Mashup");
             Mashups.Add(mashupTop);
 
             SubsetTree mashupModel = new SubsetTree(mashupTop.Root.SuperDim);
@@ -90,52 +90,44 @@ namespace Samm
             InitializeComponent();
         }
 
-        public SetTop CreateSampleSchema()
+        public CsSchema CreateSampleSchema()
         {
-            SetTop ds = new SetTop("My Data Source");
-            Dim dim;
+            CsSchema ds = new SetTop("Sample Mashup");
+            CsColumn d1, d2, d3, d4;
 
-            Set departments = new Set("Departments");
-            ds.Root.AddSubset(departments);
+            CsTable departments = ds.CreateTable("Departments");
+            ds.AddTable(departments, null, null);
 
-            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", departments);
-            dim.IsIdentity = true;
-            dim.Add();
-            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("location", departments);
-            dim.Add();
+            d1 = ds.CreateColumn("name", departments, ds.GetPrimitive("String"), true);
+            d1.Add();
+            d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), true);
+            d2.Add();
 
-            departments.Append();
-            departments.SetValue("name", 0, "SALES");
-            departments.SetValue("location", 0, "Dresden");
-            departments.Append();
-            departments.SetValue("name", 1, "HR");
-            departments.SetValue("location", 1, "Walldorf");
+            departments.TableData.Append(new CsColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
+            departments.TableData.Append(new CsColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
 
-            Set employees = new Set("Employees");
-            ds.Root.AddSubset(employees);
+            CsTable employees = ds.CreateTable("Employees");
+            ds.AddTable(employees, null, null);
 
-            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("name", employees);
-            dim.IsIdentity = true;
-            dim.Add();
-            dim = ds.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("age", employees);
-            dim.Add();
-            dim = ds.GetPrimitiveSubset("Double").CreateDefaultLesserDimension("salary", employees);
-            dim.Add();
-            dim = departments.CreateDefaultLesserDimension("dept", employees);
-            dim.Add();
+            d1 = ds.CreateColumn("name", employees, ds.GetPrimitive("String"), true);
+            d1.Add();
+            d2 = ds.CreateColumn("age", employees, ds.GetPrimitive("Double"), true);
+            d2.Add();
+            d3 = ds.CreateColumn("salary", employees, ds.GetPrimitive("Double"), true);
+            d3.Add();
+            d4 = ds.CreateColumn("dept", employees, departments, true);
+            d4.Add();
 
-            Set managers = new Set("Managers");
-            employees.AddSubset(managers);
+            CsTable managers = ds.CreateTable("Managers");
+            ds.AddTable(managers, employees, null);
 
-            dim.Add();
-            dim = ds.GetPrimitiveSubset("String").CreateDefaultLesserDimension("title", managers);
-            dim.Add();
-            dim = ds.GetPrimitiveSubset("Boolean").CreateDefaultLesserDimension("is project manager", managers);
-            dim.Add();
+            d1 = ds.CreateColumn("title", managers, ds.GetPrimitive("String"), false);
+            d1.Add();
+            d2 = ds.CreateColumn("is project manager", managers, ds.GetPrimitive("Boolean"), false);
+            d2.Add();
 
             return ds;
         }
-
 
         # region Command_Executed (call backs from Commands)
 
@@ -182,7 +174,7 @@ namespace Samm
 
         private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Set set = null;
+            CsTable set = null;
             if (SelectedMashupSet != null)
                 set = SelectedMashupSet;
             else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
@@ -190,7 +182,7 @@ namespace Samm
             else return;
 
             // Remove all connections of this set with the schema by deleting all its dimensions
-            set.SuperDims.ToArray().ToList().ForEach(x => x.Remove());
+            set.SuperDim.Remove();
             set.SubDims.ToArray().ToList().ForEach(x => x.Remove());
 
             set.GreaterDims.ToArray().ToList().ForEach(x => x.Remove());
@@ -201,8 +193,8 @@ namespace Samm
 
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Dim selDim = SelectedMashupDim;
-            Set srcSet = SelectedMashupSet;
+            CsColumn selDim = SelectedMashupDim;
+            CsTable srcSet = SelectedMashupSet;
             if (srcSet == null && selDim != null)
             {
                 srcSet = selDim.LesserSet;
@@ -220,7 +212,7 @@ namespace Samm
 
         private void ChangeTypeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Set newTypeSet = MashupRoot.FindSubset("Suppliers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
+            CsTable newTypeSet = MashupTop.FindTable("Suppliers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
             Wizard_ChangeType(SelectedMashupDim, newTypeSet);
         }
 
@@ -234,6 +226,54 @@ namespace Samm
         #endregion
 
         #region Wizards (with user interactions)
+
+        public void Wizard_TextDatasource()
+        {
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.Multiselect = false;
+
+            if (ofd.ShowDialog() != true) return;
+
+            string filePath = ofd.FileName;
+            string safeFilePath = ofd.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = safeFilePath.Replace('.', '#');
+
+            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileDir + "; Extended Properties='Text;Excel 12.0;HDR=Yes;FMT=CSVDelimited;'";
+
+            //
+            // Initialize a new data source schema
+            //
+            ConnectionOledb conn = new ConnectionOledb();
+            conn.ConnectionString = connectionString;
+
+            SetTopOledb top = new SetTopOledb("");
+            top.connection = conn;
+            top.LoadSchema(); // Load complete schema
+            CsTable sourceTable = top.FindTable(tableName);
+
+            //
+            // Configure import by creating a mapping for import dimensions
+            //
+
+            CsSchema schema = MashupTop;
+            CsTable targetTable = schema.CreateTable(tableName);
+            schema.AddTable(targetTable, null, null);
+
+            Mapper mapper = new Mapper(); // Create mapping for an import dimension
+            Mapping map = mapper.CreatePrimitive(sourceTable, targetTable); // Complete mapping (all to all)
+            map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
+
+            CsColumn dim = new Dim(map); // Create generating/import column with this mapping
+            dim.Add();
+
+            // Populate this new table (in fact, can be done separately during Update)
+            targetTable.TableDefinition.Populate();
+        }
 
         public void Wizard_AccessDatasource()
         {
@@ -254,44 +294,10 @@ namespace Samm
             // Initialize a new data source schema
             SetTopOledb top = new SetTopOledb("My Data Source");
 
-            top.ConnectionString = connectionString;
+            //top.ConnectionString = connectionString;
 
-            top.Open();
-            top.ImportSchema();
-
-            //Sources.Add(top); // Append to the list of data sources
-
-            // And also append to the tree model
-            SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
-            sourceModel.ExpandTree();
-            //SourcesModel.Add(sourceModel);
-        }
-
-        public void Wizard_TextDatasource()
-        {
-            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
-            ofd.RestoreDirectory = true;
-            ofd.CheckFileExists = true;
-            ofd.Multiselect = false;
-
-            if (ofd.ShowDialog() != true) return;
-
-            string filePath = ofd.FileName;
-            string safeFilePath = ofd.SafeFileName;
-            string fileDir = System.IO.Path.GetDirectoryName(filePath);
-            string tableName = safeFilePath.Replace('.', '#');
-
-            string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileDir + "; Extended Properties='Text;Excel 12.0;HDR=Yes;FMT=CSVDelimited;'";
-
-            // Initialize a new data source schema
-            SetTopText top = new SetTopText("My Data Source");
-
-            top.ConnectionString = connectionString;
-
-            top.Open();
-            top.ImportSchema(new List<string>(new string[] {tableName}));
+            //top.Open();
+            //top.ImportSchema();
 
             //Sources.Add(top); // Append to the list of data sources
 
@@ -386,12 +392,13 @@ namespace Samm
             dcs.SaveConfiguration(dcd);
         }
 
-        public void Wizard_FilteredTable(Set parent)
+        public void Wizard_FilteredTable(CsTable parent)
         {
+            /*
             //
             // Create new subset
             //
-            Set dstSet = new Set("My Table");
+            CsTable dstSet = new Set("My Table");
             parent.AddSubset(dstSet);
 
             //
@@ -415,10 +422,12 @@ namespace Samm
             // Populate new set
             dstSet.WhereExpression = expr;
             dstSet.Populate();
+            */
         }
 
-        public void Wizard_ExtractTable(Set set)
+        public void Wizard_ExtractTable(CsTable set)
         {
+            /*
             //
             // Show parameters for set extraction
             //
@@ -463,8 +472,8 @@ namespace Samm
             Mapping mapping = new Mapping(set, extractedSet);
             foreach (Dim projDim in projectionDims)
             {
-                Set idSet = projDim.GreaterSet;
-                Dim idDim = idSet.CreateDefaultLesserDimension(projDim.Name, extractedSet);
+                CsTable idSet = projDim.GreaterSet;
+                CsColumn idDim = idSet.CreateDefaultLesserDimension(projDim.Name, extractedSet);
                 idDim.IsIdentity = true;
                 idDim.Add();
 
@@ -474,7 +483,7 @@ namespace Samm
             //
             // Create a new (mapped) dimension to the new set
             //
-            Dim extractedDim = extractedSet.CreateDefaultLesserDimension(dlg.ExtractedDimName, set);
+            CsColumn extractedDim = extractedSet.CreateDefaultLesserDimension(dlg.ExtractedDimName, set);
             extractedDim.Mapping = mapping;
             extractedDim.Add();
             extractedDim.GreaterSet.ProjectDimensions.Add(extractedDim);
@@ -485,10 +494,12 @@ namespace Samm
             extractedSet.Populate();
 
             extractedDim.ComputeValues();
+            */
         }
 
-        public void Wizard_AddAggregation(Set srcSet, Set dstSet, Dim dstDim)
+        public void Wizard_AddAggregation(CsTable srcSet, CsTable dstSet, CsColumn dstDim)
         {
+            /*
             // Source set is where we want to create a new (source) derived dimension
             // Target set and dimension is what we want to use in the definition of the new dimension
 
@@ -513,10 +524,10 @@ namespace Samm
             // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
             //
             string derivedDimName = dlg.SourceColumn.Text;
-            Dim aggregDim = (Dim)recoms.MeasureDimensions.SelectedObject;
+            CsColumn aggregDim = (CsColumn)recoms.MeasureDimensions.SelectedObject;
             Com.Model.Expression aggreExpr = recoms.GetExpression();
 
-            Dim derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            CsColumn derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
             derivedDim.Add();
 
             var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
@@ -528,10 +539,12 @@ namespace Samm
 
             // Update new derived dimension
             derivedDim.ComputeValues();
+            */
         }
 
-        public void Wizard_AddCalculation(Set srcSet)
+        public void Wizard_AddCalculation(CsTable srcSet)
         {
+            /*
             if (srcSet == null) return;
 
             // Show recommendations and let the user choose one of them
@@ -553,9 +566,9 @@ namespace Samm
             //
             string derivedDimName = dlg.sourceColumn.Text;
             Com.Model.Expression calcExpr = dlg.ExpressionModel[0];
-            Set dstSet = calcExpr.OutputSet;
+            CsTable dstSet = calcExpr.OutputSet;
 
-            Dim derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            CsColumn derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
             derivedDim.Add();
 
             var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
@@ -567,10 +580,12 @@ namespace Samm
 
             // Update new derived dimension
             derivedDim.ComputeValues();
+            */
         }
 
-        public void Wizard_ChangeType(Dim dim, Set newTypeSet)
+        public void Wizard_ChangeType(CsColumn dim, CsTable newTypeSet)
         {
+            /*
             if (dim == null) return; // We must know the dimension the type of which we want to change
 
             //
@@ -583,12 +598,12 @@ namespace Samm
                 Mapper m = new Mapper();
                 m.MaxMappingsToBuild = 100;
 
-                Set bestSet = null;
+                CsTable bestSet = null;
                 double bestSimilarity = 0.0;
-                List<Set> newTypes = dim.LesserSet.GetPossibleGreaterSets();
-                foreach (Set set in newTypes)
+                List<CsTable> newTypes = dim.LesserSet.GetPossibleGreaterSets();
+                foreach (CsTable set in newTypes)
                 {
-                    Dim dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
+                   CsColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
 
                     List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
                     if (mappings[0].Similarity > bestSimilarity) { bestSet = set; bestSimilarity = mappings[0].Similarity; }
@@ -624,13 +639,14 @@ namespace Samm
             newDim.Mapping = dlg.MappingModel.Mapping;
             newDim.Add();
             newDim.ComputeValues(); // Compute the values of the new dimension
+            */
         }
 
         #endregion
 
         #region Operations (no user interactions)
 
-        public void Operation_OpenTable(Set set)
+        public void Operation_OpenTable(CsTable set)
         {
             lblWorkspace.Content = set.Name;
 
@@ -682,7 +698,7 @@ namespace Samm
             //
             if (dropSource is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropSource))
             {
-                if (dropTarget is Set && !(dropTarget is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
+                if (dropTarget is Set && !(((Set)dropTarget).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
                     // Note that here source and target in terms of DnD have opposite interpretations to the aggregation method
                     ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
@@ -692,7 +708,7 @@ namespace Samm
             //
             // Conditions for type change: a set is dropped on a dimension
             //
-            if (dropSource is Set && !(dropSource is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
+            if (dropSource is Set && !(((Set)dropSource).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
             {
                 if (dropTarget is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropTarget))
                 {
@@ -712,8 +728,8 @@ namespace Samm
             //
             if (data is SubsetTree && ((SubsetTree)data).IsSubsetNode) 
             {
-                Set set = ((SubsetTree)data).LesserSet;
-                if(!(set is SetRoot) && ((MainWindow)App.Current.MainWindow).IsInMashups(set)) 
+                CsTable set = ((SubsetTree)data).LesserSet;
+                if(!(set.Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups(set)) 
                 {
                     // Call a direct operation method for opening a table with the necessary parameters (rather than a command)
                     ((MainWindow)App.Current.MainWindow).Operation_OpenTable(set);

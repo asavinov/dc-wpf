@@ -14,7 +14,7 @@ namespace Samm
 {
     class SetGridView
     {
-        public Set Set { get; set; } // It is a model which contains data to be visualized
+        public CsTable Set { get; set; } // It is a model which contains data to be visualized
         public DataGrid Grid { get; set; } // It is a view where the data is visualized
 
         /*
@@ -39,7 +39,7 @@ namespace Samm
                     Or we could simply return from Current an array of string values to be shown in the grid (which has by definition an indexer).
                     -+ values are copied and transformed into string which is good if they are anyway copied, + formatting and options can be controled by the set parameters
         */
-        public SetGridView(Set _set) 
+        public SetGridView(CsTable _set) 
         {
             Set = _set;
 
@@ -51,7 +51,7 @@ namespace Samm
             // Create columns for each dimension
             for(int i=0; i < Set.GreaterDims.Count; i++) 
             {
-                Dim dim = Set.GreaterDims[i];
+                CsColumn dim = Set.GreaterDims[i];
                 Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
 
                 DataGridColumn col1 = new DataGridTextColumn() { Header = dim.Name, Binding = binding }; // No custom cell template
@@ -88,10 +88,10 @@ namespace Samm
 
     public class Elements : IEnumerable<Element>, IEnumerator<Element>
     {
-        public Set Set { get; set; }
+        public CsTable Set { get; set; }
         public int Offset { get; set; }
 
-        public Elements(Set set)
+        public Elements(CsTable set)
         {
             Set = set;
             Offset = -1;
@@ -132,9 +132,9 @@ namespace Samm
 
         public bool MoveNext()
         {
-            if (Offset < Set.Length) Offset++; // Increement if possible
+            if (Offset < Set.TableData.Length) Offset++; // Increement if possible
 
-            if (Offset >= Set.Length) return false; // Cannot move
+            if (Offset >= Set.TableData.Length) return false; // Cannot move
 
             return true;
         }
@@ -148,16 +148,16 @@ namespace Samm
     public class Element 
     {
         // It should be an enumerator returned by a Set
-        public Set Set { get; set; }
+        public CsTable Set { get; set; }
         public int Offset { get; set; }
 
-        public Element(Set set)
+        public Element(CsTable set)
         {
             Set = set;
             Offset = -1;
         }
 
-        public Element(Set set, int offset)
+        public Element(CsTable set, int offset)
         {
             Set = set;
             Offset = offset;
@@ -169,9 +169,9 @@ namespace Samm
             {
                 int dimCount = Set.GreaterDims.Count;
                 if (index < 0 || index >= dimCount) return null;
-                Dim dim = Set.GreaterDims[index];
+                CsColumn dim = Set.GreaterDims[index];
 
-                object cell = dim.GetValue(Offset);
+                object cell = dim.ColumnData.GetValue(Offset);
 
                 return Convert.ToString(cell);
             }
@@ -179,9 +179,9 @@ namespace Samm
 
         public string Value(string dimName)
         {
-            Dim dim = Set.GetGreaterDim(dimName);
+            CsColumn dim = Set.GetGreaterDim(dimName);
             if (dim == null) return null;
-            return (string)dim.GetValue(Offset);
+            return (string)dim.ColumnData.GetValue(Offset);
         }
     }
 
