@@ -43,6 +43,7 @@
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server table" />
 
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
+        <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
 
@@ -60,6 +61,7 @@
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource ProductTableCommand}" Executed="ProductTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" Executed="ExtractTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
@@ -152,7 +154,7 @@
             <RibbonTab Header="Table" KeyTip="T" >
                 <RibbonGroup x:Name="insertTablesMenuGroup" Header="Create">
                     <RibbonButton LargeImageSource="Images\filtered_table.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\product_table.png" Label="Product" KeyTip="P" />
+                    <RibbonButton LargeImageSource="Images\product_table.png" Label="Product" KeyTip="P" Command="{StaticResource ProductTableCommand}" />
                     <RibbonButton LargeImageSource="Images\extract_table.png" Label="Extract" KeyTip="X" Command="{StaticResource ExtractTableCommand}" /><!-- Create one greater table and a new dimension referencing it. -->
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> --> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->

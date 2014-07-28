@@ -1,0 +1,31 @@
+﻿<Window x:Class="Samm.Dialogs.ProductTableBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Samm"
+        Title="ProductTableBox" Height="300" Width="450"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="60*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label  Grid.Column="0" Grid.Row="0" Content="Source Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ListView Name="greaterTables" Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Path=GreaterTables}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="Product Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="productTableName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=ProductTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>

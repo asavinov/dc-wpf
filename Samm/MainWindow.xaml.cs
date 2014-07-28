@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Microsoft.Data.ConnectionUI;
 
 using Com.Model;
+using Samm.Dialogs;
 
 namespace Samm
 {
@@ -100,7 +101,7 @@ namespace Samm
 
             d1 = ds.CreateColumn("name", departments, ds.GetPrimitive("String"), true);
             d1.Add();
-            d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), true);
+            d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), false);
             d2.Add();
 
             departments.TableData.Append(new CsColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
@@ -111,11 +112,11 @@ namespace Samm
 
             d1 = ds.CreateColumn("name", employees, ds.GetPrimitive("String"), true);
             d1.Add();
-            d2 = ds.CreateColumn("age", employees, ds.GetPrimitive("Double"), true);
+            d2 = ds.CreateColumn("age", employees, ds.GetPrimitive("Double"), false);
             d2.Add();
-            d3 = ds.CreateColumn("salary", employees, ds.GetPrimitive("Double"), true);
+            d3 = ds.CreateColumn("salary", employees, ds.GetPrimitive("Double"), false);
             d3.Add();
-            d4 = ds.CreateColumn("dept", employees, departments, true);
+            d4 = ds.CreateColumn("dept", employees, departments, false);
             d4.Add();
 
             CsTable managers = ds.CreateTable("Managers");
@@ -160,6 +161,13 @@ namespace Samm
         {
             if (SelectedMashupSet == null) return;
             Wizard_FilteredTable(SelectedMashupSet);
+            e.Handled = true;
+        }
+
+        private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedMashupSet == null) return;
+            Wizard_ProductTable(SelectedMashupSet);
             e.Handled = true;
         }
 
@@ -425,6 +433,60 @@ namespace Samm
             */
         }
 
+        public void Wizard_ProductTable(CsTable set)
+        {
+            //
+            // Show parameters for creating a product set
+            //
+            ProductTableBox dlg = new ProductTableBox();
+            dlg.Owner = this;
+            dlg.GreaterTables = new List<CsTable>();
+            dlg.GreaterTables.AddRange(MashupTop.Root.GetAllSubsets()); // Fill the list with potential greater tables
+
+            dlg.ProductTableName = "New Product Table";
+
+            if (SelectedMashupSet != null)
+            {
+                dlg.greaterTables.SelectedItem = SelectedMashupSet;
+            }
+
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            if (string.IsNullOrWhiteSpace(dlg.ProductTableName) || string.IsNullOrWhiteSpace(dlg.ProductTableName) || dlg.greaterTables.SelectedItems.Count == 0) return;
+
+            // Initialize a list of selected dimensions (from the whole list of all greater dimensions
+            List<CsTable> greaterSets = new List<CsTable>();
+            foreach (var item in dlg.greaterTables.SelectedItems)
+            {
+                greaterSets.Add((CsTable)item);
+            }
+
+            //
+            // Create a new (product) set
+            //
+            CsSchema schema = MashupTop;
+            CsTable productSet = schema.CreateTable(dlg.ProductTableName);
+            schema.AddTable(productSet, null, null);
+
+            //
+            // Create identity dimensions for the product set
+            //
+            foreach (CsTable gSet in greaterSets)
+            {
+                CsColumn gDim = schema.CreateColumn(gSet.Name, productSet, gSet, true);
+                gDim.Add();
+            }
+
+            // 
+            // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
+            //
+            productSet.TableDefinition.Populate();
+        }
+
         public void Wizard_ExtractTable(CsTable set)
         {
             //
@@ -435,8 +497,8 @@ namespace Samm
             dlg.ProjectedSet = set;
             dlg.ProjectionDims = new List<CsColumn>();
             dlg.ProjectionDims.AddRange(set.GreaterDims);
-            dlg.ExtractedSetName = "My Extracted Table";
-            dlg.ExtractedDimName = "My Extracted Dimension";
+            dlg.ExtractedSetName = "New Extracted Table";
+            dlg.ExtractedDimName = "Extracted Dimension";
             if (SelectedMashupDim != null)
             {
                 dlg.projectionDims.SelectedItem = SelectedMashupDim;
