@@ -427,14 +427,13 @@ namespace Samm
 
         public void Wizard_ExtractTable(CsTable set)
         {
-            /*
             //
             // Show parameters for set extraction
             //
             ExtractTableBox dlg = new ExtractTableBox();
             dlg.Owner = this;
             dlg.ProjectedSet = set;
-            dlg.ProjectionDims = new List<Dim>();
+            dlg.ProjectionDims = new List<CsColumn>();
             dlg.ProjectionDims.AddRange(set.GreaterDims);
             dlg.ExtractedSetName = "My Extracted Table";
             dlg.ExtractedDimName = "My Extracted Dimension";
@@ -454,27 +453,27 @@ namespace Samm
             if (string.IsNullOrWhiteSpace(dlg.ExtractedSetName) || string.IsNullOrWhiteSpace(dlg.ExtractedDimName) || dlg.projectionDims.SelectedItems.Count == 0) return;
 
             // Initialize a list of selected dimensions (from the whole list of all greater dimensions
-            List<Dim> projectionDims = new List<Dim>();
+            List<CsColumn> projectionDims = new List<CsColumn>();
             foreach (var item in dlg.projectionDims.SelectedItems)
             {
-                projectionDims.Add((Dim)item);
+                projectionDims.Add((CsColumn)item);
             }
 
             //
             // Create a new (extracted) set
             //
-            Set extractedSet = new Set(dlg.ExtractedSetName);
-            set.SuperSet.AddSubset(extractedSet);
+            CsSchema schema = MashupTop;
+            CsTable extractedSet = schema.CreateTable(dlg.ExtractedSetName);
+            schema.AddTable(extractedSet, set.SuperSet, null);
 
             //
             // Create identity dimensions for the extracted set and their mapping to the projection dimensions
             //
             Mapping mapping = new Mapping(set, extractedSet);
-            foreach (Dim projDim in projectionDims)
+            foreach (CsColumn projDim in projectionDims)
             {
                 CsTable idSet = projDim.GreaterSet;
-                CsColumn idDim = idSet.CreateDefaultLesserDimension(projDim.Name, extractedSet);
-                idDim.IsIdentity = true;
+                CsColumn idDim = schema.CreateColumn(projDim.Name, extractedSet, idSet, true);
                 idDim.Add();
 
                 mapping.AddMatch(new PathMatch(new DimPath(projDim), new DimPath(idDim))); 
@@ -483,18 +482,16 @@ namespace Samm
             //
             // Create a new (mapped) dimension to the new set
             //
-            CsColumn extractedDim = extractedSet.CreateDefaultLesserDimension(dlg.ExtractedDimName, set);
-            extractedDim.Mapping = mapping;
+            CsColumn extractedDim = schema.CreateColumn(dlg.ExtractedDimName, set, extractedSet, false);
+            extractedDim.ColumnDefinition.Mapping = mapping;
+            extractedDim.ColumnDefinition.IsGenerating = true;
             extractedDim.Add();
-            extractedDim.GreaterSet.ProjectDimensions.Add(extractedDim);
 
             // 
             // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
             //
-            extractedSet.Populate();
-
-            extractedDim.ComputeValues();
-            */
+            extractedSet.TableDefinition.ProjectDimensions.Add(extractedDim);
+            extractedSet.TableDefinition.Populate();
         }
 
         public void Wizard_AddAggregation(CsTable srcSet, CsTable dstSet, CsColumn dstDim)

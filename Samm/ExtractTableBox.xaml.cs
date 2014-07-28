@@ -21,17 +21,17 @@ namespace Samm
     /// </summary>
     public partial class ExtractTableBox : Window
     {
-        public Set ProjectedSet { get; set; }
+        public CsTable ProjectedSet { get; set; }
 
         public string ExtractedDimName { get; set; }
 
-        public List<Dim> ProjectionDims { get; set; }
+        public List<CsColumn> ProjectionDims { get; set; }
 
         public string ExtractedSetName { get; set; }
 
         public ExtractTableBox()
         {
-            ProjectionDims = new List<Dim>();
+            ProjectionDims = new List<CsColumn>();
 
             InitializeComponent();
         }
