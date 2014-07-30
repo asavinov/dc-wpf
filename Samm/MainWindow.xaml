@@ -49,7 +49,7 @@
 
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
-        <RoutedUICommand x:Key="ChangeRangeCommand" Text="Change Column Type" />
+        <RoutedUICommand x:Key="AddLinkCommand" Text="Add Link" />
 
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
@@ -66,7 +66,7 @@
         <CommandBinding Command="{StaticResource DeleteTableCommand}" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculationCommand}" Executed="AddCalculationCommand_Executed" />
-        <CommandBinding Command="{StaticResource ChangeRangeCommand}" Executed="ChangeTypeCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddLinkCommand}" Executed="AddLinkCommand_Executed" />
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
@@ -167,7 +167,7 @@
             <RibbonTab Header="Column" KeyTip="C" >
                 <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Create">
                     <RibbonButton LargeImageSource="Images\add_calculation.png" Label="Arithmetic Column" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
-                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Link Column" KeyTip="T" Command="{StaticResource ChangeRangeCommand}" />
+                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Link Column" KeyTip="T" Command="{StaticResource AddLinkCommand}" />
                     <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Aggregation Column" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Partition Column" KeyTip="P" />
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->

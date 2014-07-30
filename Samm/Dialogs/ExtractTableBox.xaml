@@ -1,4 +1,4 @@
-﻿<Window x:Class="Samm.ExtractTableBox"
+﻿<Window x:Class="Samm.Dialogs.ExtractTableBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Samm"
@@ -18,17 +18,18 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Label  Grid.Column="0" Grid.Row="0" Content="Original Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
-        <TextBox Name="projectedSet" Grid.Column="1" Grid.Row="0" Text="{Binding Path=ProjectedSet.Name}"  IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="1" Content="Extracted Dimension Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="extractedDimName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=ExtractedDimName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="0" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="2" Content="Extracted Dimensions:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="1" Content="Source Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
+        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="1" Text="{Binding Path=SourceTable.Name}"  IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="2" Content="Source Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ListView Name="projectionDims" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=ProjectionDims}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="Extracted Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="extractedSetName" Grid.Column="1" Grid.Row="3" Text="{Binding Path=ExtractedSetName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="3" Content="New Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="3" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />

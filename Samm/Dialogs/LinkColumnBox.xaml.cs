@@ -16,19 +16,18 @@ using System.Windows.Shapes;
 
 using Com.Model;
 
-namespace Samm
+namespace Samm.Dialogs
 {
     /// <summary>
-    /// Interaction logic for ChangeTypeBox.xaml
+    /// Interaction logic for LinkColumnBox.xaml
     /// </summary>
-    public partial class ChangeTypeBox : Window
+    public partial class LinkColumnBox : Window
     {
+        public string NewColumnName { get; set; }
+
         public MappingModel MappingModel { get; set; }
 
-        public Dim OldDim { get; set; }
-        public Dim NewDim { get; set; }
-
-        public List<Set> NewTypeSets { get; set; }
+        public List<Set> TargetTables { get; set; }
 
         private Mapper mapper; // We use it for building mappings
 
@@ -41,54 +40,79 @@ namespace Samm
             }
 
             // Store the new type in parameters
-            NewDim.GreaterSet = newType;
+            //NewDim.GreaterSet = newType;
 
             // Compute/suggest new mappings for the new set
             mapper.Mappings.Clear();
-            mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+            // mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim)); // From source set to the target set
 
             // Update the model to be shown in UI
-            MappingModel = new MappingModel(OldDim, NewDim); // We simply create new (update is more difficult)
+            //MappingModel = new MappingModel(OldDim, NewDim); // We simply create new (update is more difficult)
             MappingModel.Mapping = mapper.Mappings[0];
         }
 
         public void RefreshAll()
         {
-            this.GetBindingExpression(ChangeTypeBox.DataContextProperty).UpdateTarget();
+            this.GetBindingExpression(LinkColumnBox.DataContextProperty).UpdateTarget();
 
-            sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            oldColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            oldType.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            sourceTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
             sourceTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
             targetTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
 
-            newColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            newTypes.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
-            newTypes.SelectedItem = NewDim.GreaterSet;
+            newColumnName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            targetTables.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            targetTables.SelectedItem = null; // NewColumnName.GreaterSet;
 
             // !!! Use it for other controls where we update the data context and need to refresh the view
             sourceTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
         }
 
-        public ChangeTypeBox(Dim oldDim, Dim newDim)
+        public LinkColumnBox(CsTable sourceTable, List<CsTable> targetTables, CsTable targetTable)
             : this()
         {
-            OldDim = oldDim;
-            NewDim = newDim;
+            if (targetTable != null)
+            {
+                NewColumnName = targetTable.Name;
+            }
+            else
+            {
+                NewColumnName = "New Link Column";
+            }
 
             mapper = new Mapper();
             mapper.MaxMappingsToBuild = 100;
-            mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
 
-            MappingModel = new MappingModel(OldDim, NewDim);
+            MappingModel = new MappingModel(sourceTable, targetTable);
+
+            //
+            // Initialize mapping by recommending best mapping
+            //
+
+            //mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+
             MappingModel.Mapping = mapper.Mappings[0];
 
-            NewTypeSets = OldDim.LesserSet.GetPossibleGreaterSets();
+
+            // !!! Target table is always chosen. 
+
+            // What has priority: MappingModel or Mapping
+            // - MappingModel is constant (the same object) because the dialog is bound to it
+            //   - MappingModel is a mapping and two trees/lists for editing (selecting)
+            // - Mapping could also be constant because some controls could be bound to it in future (say, a list of mappings)
+
+
+            // We need a method which is called when a new target table is chosen
+            // - initialize/configure the mapping
+            // - refresh controls
+            // - ??? should we store somewhere the results of the previous mapping editing which will be used if we return to this target later?
+
+            // We need a method for updating target table (list/tree control and the model) after selection.
+
         }
 
-        public ChangeTypeBox()
+        public LinkColumnBox()
         {
             InitializeComponent();
         }
@@ -127,7 +151,7 @@ namespace Samm
             MappingModel.TargetTree.NotifyAllOnPropertyChanged("IsMatched");
         }
 
-        private void NewTypes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TargetTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var cb = (ComboBox)e.Source; // or sender
             var set = cb.SelectedItem; // or SelectedValue

@@ -14,8 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Com.Model;
+using Samm.Dialogs;
 
-namespace Samm
+namespace Samm.Controls
 {
     /// <summary>
     /// Interaction logic for MatchTreeControl.xaml

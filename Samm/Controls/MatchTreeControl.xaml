@@ -1,17 +1,19 @@
-﻿<UserControl x:Class="Samm.MatchTreeControl"
+﻿<UserControl x:Class="Samm.Controls.MatchTreeControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:com="clr-namespace:Com.Model;assembly=Com"
-             xmlns:local="clr-namespace:Samm"
+             xmlns:samm="clr-namespace:Samm"
+             xmlns:controls="clr-namespace:Samm.Controls"
+             xmlns:dialogs="clr-namespace:Samm.Dialogs"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+        <samm:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
-        <local:MatchTreeDataTemplateSelector x:Key="matchTreeDataTemplateSelector"/>
+        <controls:MatchTreeDataTemplateSelector x:Key="matchTreeDataTemplateSelector"/>
 
         <!--
         <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
@@ -83,7 +85,7 @@
         </Style>
 
         <!-- This is how tree items representing a source elements of the mapping -->
-        <HierarchicalDataTemplate x:Key="sourceItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+        <HierarchicalDataTemplate x:Key="sourceItemTemplate" DataType="{x:Type dialogs:MatchTreeNode}">
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
@@ -109,7 +111,7 @@
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a target elements of the mapping -->
-        <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type com:MatchTreeNode}">
+        <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type dialogs:MatchTreeNode}">
 <!--
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">

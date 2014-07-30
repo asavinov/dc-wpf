@@ -14,20 +14,20 @@ using System.Windows.Shapes;
 
 using Com.Model;
 
-namespace Samm
+namespace Samm.Dialogs
 {
     /// <summary>
     /// Interaction logic for ExtractTableBox.xaml
     /// </summary>
     public partial class ExtractTableBox : Window
     {
-        public CsTable ProjectedSet { get; set; }
+        public string NewColumnName { get; set; }
 
-        public string ExtractedDimName { get; set; }
+        public CsTable SourceTable { get; set; }
 
         public List<CsColumn> ProjectionDims { get; set; }
 
-        public string ExtractedSetName { get; set; }
+        public string NewTableName { get; set; }
 
         public ExtractTableBox()
         {
@@ -40,13 +40,13 @@ namespace Samm
         {
             this.GetBindingExpression(ExtractTableBox.DataContextProperty).UpdateTarget(); // Does not work
 
-            projectedSet.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            newColumnName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
-            extractedDimName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
             projectionDims.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
 
-            extractedSetName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            newTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)

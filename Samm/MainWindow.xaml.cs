@@ -218,10 +218,9 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void ChangeTypeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsTable newTypeSet = MashupTop.FindTable("Suppliers"); // TODO: It is for test purposes. We need a new parameter with the desired target table (new type/range)
-            Wizard_ChangeType(SelectedMashupDim, newTypeSet);
+            Wizard_AddLink(SelectedMashupSet, null);
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -489,21 +488,23 @@ namespace Samm
 
         public void Wizard_ExtractTable(CsTable set)
         {
+            CsSchema schema = MashupTop;
+
             //
             // Show parameters for set extraction
             //
             ExtractTableBox dlg = new ExtractTableBox();
             dlg.Owner = this;
-            dlg.ProjectedSet = set;
+            dlg.SourceTable = set;
             dlg.ProjectionDims = new List<CsColumn>();
             dlg.ProjectionDims.AddRange(set.GreaterDims);
-            dlg.ExtractedSetName = "New Extracted Table";
-            dlg.ExtractedDimName = "Extracted Dimension";
+            dlg.NewTableName = "New Extracted Table";
+            dlg.NewColumnName = "Extracted Dimension";
             if (SelectedMashupDim != null)
             {
                 dlg.projectionDims.SelectedItem = SelectedMashupDim;
-                dlg.ExtractedSetName = SelectedMashupDim.Name + " Group"; // The new table will have the same name as the only extracted dimension
-                dlg.ExtractedDimName = SelectedMashupDim.Name + " Group";
+                dlg.NewTableName = SelectedMashupDim.Name + " Group"; // The new table will have the same name as the only extracted dimension
+                dlg.NewColumnName = SelectedMashupDim.Name + " Group";
             }
 
             dlg.RefreshAll();
@@ -512,7 +513,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (string.IsNullOrWhiteSpace(dlg.ExtractedSetName) || string.IsNullOrWhiteSpace(dlg.ExtractedDimName) || dlg.projectionDims.SelectedItems.Count == 0) return;
+            if (string.IsNullOrWhiteSpace(dlg.NewTableName) || string.IsNullOrWhiteSpace(dlg.NewColumnName) || dlg.projectionDims.SelectedItems.Count == 0) return;
 
             // Initialize a list of selected dimensions (from the whole list of all greater dimensions
             List<CsColumn> projectionDims = new List<CsColumn>();
@@ -524,8 +525,7 @@ namespace Samm
             //
             // Create a new (extracted) set
             //
-            CsSchema schema = MashupTop;
-            CsTable extractedSet = schema.CreateTable(dlg.ExtractedSetName);
+            CsTable extractedSet = schema.CreateTable(dlg.NewTableName);
             schema.AddTable(extractedSet, set.SuperSet, null);
 
             //
@@ -544,7 +544,7 @@ namespace Samm
             //
             // Create a new (mapped) dimension to the new set
             //
-            CsColumn extractedDim = schema.CreateColumn(dlg.ExtractedDimName, set, extractedSet, false);
+            CsColumn extractedDim = schema.CreateColumn(dlg.NewColumnName, set, extractedSet, false);
             extractedDim.ColumnDefinition.Mapping = mapping;
             extractedDim.ColumnDefinition.IsGenerating = true;
             extractedDim.Add();
@@ -642,44 +642,52 @@ namespace Samm
             */
         }
 
-        public void Wizard_ChangeType(CsColumn dim, CsTable newTypeSet)
+        public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
         {
-            /*
-            if (dim == null) return; // We must know the dimension the type of which we want to change
+            if (sourceTable == null) return;
+
+            CsSchema schema = MashupTop;
+
+            //
+            // Compute possible target tables
+            // Possible target sets: not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
+            //
+
+            List<CsTable> targetTables = null; // sourceTable.GetPossibleGreaterSets();
+
+            if (targetTables == null || targetTables.Count == 0)
+            {
+                return; // No good target tables 
+            }
 
             //
             // Suggest the best new type for the new dimension if it has not been specified
             //
-            if (newTypeSet == null)
+            if (targetTable == null)
             {
-                // Compare quality of mappings from the old type to all possible other sets
-                // The possible sets: not old, not the lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
+                // Compare the quality of gest mappings from the the source set to possible target sets
                 Mapper m = new Mapper();
                 m.MaxMappingsToBuild = 100;
 
-                CsTable bestSet = null;
+                CsTable bestTargetTable = null;
                 double bestSimilarity = 0.0;
-                List<CsTable> newTypes = dim.LesserSet.GetPossibleGreaterSets();
-                foreach (CsTable set in newTypes)
+                /*
+                foreach (CsTable set in targetTables)
                 {
                    CsColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
 
                     List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
-                    if (mappings[0].Similarity > bestSimilarity) { bestSet = set; bestSimilarity = mappings[0].Similarity; }
+                    if (mappings[0].Similarity > bestSimilarity) { bestTargetTable = set; bestSimilarity = mappings[0].Similarity; }
                     m.Mappings.Clear();
                 }
-
-                newTypeSet = bestSet;
+                */
+                targetTable = bestTargetTable;
             }
-
-            if (newTypeSet == null) return; // New type is not found (say, because of having no other tables)
-
-            Dim newDim = newTypeSet.CreateDefaultLesserDimension(dim.Name, dim.LesserSet); // The task is to build a mapping for this new dimension (it is not added yet)
 
             //
             // Show type change dialog
             //
-            ChangeTypeBox dlg = new ChangeTypeBox(dim, newDim);
+            LinkColumnBox dlg = new LinkColumnBox(sourceTable, targetTables, targetTable);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -687,18 +695,20 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            //
-            // Really changing the range
-            //
+            targetTable = (CsTable)dlg.targetTables.SelectedItem;
+            if(targetTable == null) return;
 
-            // The result mapping is between two types (new and old sets) but in the dim def it must be from newDim.LesserSet to newDim.GreaterSet
-            // So insert a prefix to the mappings
-            dlg.MappingModel.Mapping.InsertFirst(new DimPath(dim), null);
+            // ??? dlg.MappingModel.Mapping.InsertFirst(new DimPath(dim), null); // Insert a prefix to the mappings
 
-            newDim.Mapping = dlg.MappingModel.Mapping;
-            newDim.Add();
-            newDim.ComputeValues(); // Compute the values of the new dimension
-            */
+            //
+            // Create a new (mapped) dimension using the mapping
+            //
+            CsColumn linkColumn = schema.CreateColumn(dlg.NewColumnName, sourceTable, targetTable, false);
+            linkColumn.ColumnDefinition.Mapping = dlg.MappingModel.Mapping;
+            linkColumn.ColumnDefinition.IsGenerating = false;
+            linkColumn.Add();
+
+            linkColumn.ColumnDefinition.Evaluate();
         }
 
         #endregion
@@ -765,14 +775,13 @@ namespace Samm
             }
 
             //
-            // Conditions for type change: a set is dropped on a dimension
+            // TODO: Conditions for link column: a set is dropped on another set
             //
             if (dropSource is Set && !(((Set)dropSource).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
             {
-                if (dropTarget is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropTarget))
+                if (dropTarget is Set && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-//                    ((MainWindow)App.Current.MainWindow).Wizard_ChangeType((Dim)dropTarget, (Set)dropSource);
-                    ((MainWindow)App.Current.MainWindow).Wizard_ChangeType((Dim)dropTarget, (Set)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((CsTable)dropSource, (CsTable)dropTarget);
                 }
             }
 

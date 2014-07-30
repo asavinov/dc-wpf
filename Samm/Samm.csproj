@@ -88,10 +88,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\MatchTreeControl.xaml.cs">
+      <DependentUpon>MatchTreeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Dialogs\LinkColumnBox.xaml.cs">
+      <DependentUpon>LinkColumnBox.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Dialogs\MappingModel.cs" />
     <Compile Include="Dialogs\ProductTableBox.xaml.cs">
       <DependentUpon>ProductTableBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExtractTableBox.xaml.cs">
+    <Compile Include="Dialogs\ExtractTableBox.xaml.cs">
       <DependentUpon>ExtractTableBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="SetGridView.cs" />
@@ -101,11 +110,19 @@
     <Compile Include="SubsetTreeControl.xaml.cs">
       <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\MatchTreeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LinkColumnBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\ProductTableBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ExtractTableBox.xaml">
+    <Page Include="Dialogs\ExtractTableBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -267,9 +284,7 @@
   <ItemGroup>
     <Resource Include="Images\product_table.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
