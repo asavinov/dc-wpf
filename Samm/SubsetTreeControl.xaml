@@ -4,14 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:com="clr-namespace:Com.Model;assembly=Com"
-             xmlns:local="clr-namespace:Samm"
+             xmlns:samm="clr-namespace:Samm"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <local:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
+        <samm:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
-        <local:SubsetTreeDataTemplateSelector x:Key="subsetTreeDataTemplateSelector"/>
+        <samm:SubsetTreeDataTemplateSelector x:Key="subsetTreeDataTemplateSelector"/>
 
         <!-- This is how tree root will be displayed (no matter where they appear in this window) -->
         <HierarchicalDataTemplate x:Key="rootItemTemplate" DataType="{x:Type com:SubsetTree}">

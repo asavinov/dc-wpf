@@ -644,44 +644,19 @@ namespace Samm
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
         {
+            // !!! TODO: Dialog crashes for nested tables. Example: select Employees and then call this dialog.
+
             if (sourceTable == null) return;
 
             CsSchema schema = MashupTop;
 
             //
             // Compute possible target tables
-            // Possible target sets: not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
             //
-
-            List<CsTable> targetTables = null; // sourceTable.GetPossibleGreaterSets();
-
+            List<CsTable> targetTables = MappingModel.GetPossibleGreaterSets(sourceTable);
             if (targetTables == null || targetTables.Count == 0)
             {
-                return; // No good target tables 
-            }
-
-            //
-            // Suggest the best new type for the new dimension if it has not been specified
-            //
-            if (targetTable == null)
-            {
-                // Compare the quality of gest mappings from the the source set to possible target sets
-                Mapper m = new Mapper();
-                m.MaxMappingsToBuild = 100;
-
-                CsTable bestTargetTable = null;
-                double bestSimilarity = 0.0;
-                /*
-                foreach (CsTable set in targetTables)
-                {
-                   CsColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
-
-                    List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
-                    if (mappings[0].Similarity > bestSimilarity) { bestTargetTable = set; bestSimilarity = mappings[0].Similarity; }
-                    m.Mappings.Clear();
-                }
-                */
-                targetTable = bestTargetTable;
+                return; // No suitable target tables for linking
             }
 
             //
@@ -697,8 +672,6 @@ namespace Samm
 
             targetTable = (CsTable)dlg.targetTables.SelectedItem;
             if(targetTable == null) return;
-
-            // ??? dlg.MappingModel.Mapping.InsertFirst(new DimPath(dim), null); // Insert a prefix to the mappings
 
             //
             // Create a new (mapped) dimension using the mapping

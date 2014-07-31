@@ -27,14 +27,15 @@
         <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewColumnName}" IsReadOnly="False" HorizontalAlignment="Stretch" Height="25" Margin="5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="sourceTableName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=SourceTable.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" Height="25" Margin="5" TextWrapping="NoWrap" VerticalAlignment="Top" />
+        <TextBox Name="sourceTableName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=MappingModel.SourceSet.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" Height="25" Margin="5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Source Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <controls:MatchTreeControl x:Name="sourceTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding Path=MappingModel.SourceTree}" />
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="New Type:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="3" Content="Target Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ComboBox Name="targetTables" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetTables}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="TargetTables_SelectionChanged"/>
 
+        <Label  Grid.Column="0" Grid.Row="4" Content="Target Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <controls:MatchTreeControl x:Name="targetTree" Grid.Column="1" Grid.Row="4" DataContext="{Binding Path=MappingModel.TargetTree}" />
 
         <StackPanel Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">

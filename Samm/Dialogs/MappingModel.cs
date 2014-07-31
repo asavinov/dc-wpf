@@ -20,6 +20,8 @@ namespace Samm.Dialogs
         public MatchTree SourceTree { get; private set; }
         public MatchTree TargetTree { get; private set; }
 
+        private Mapper mapper; // We use it for recommending mappings
+
         public Mapping Mapping { get; set; } // It is the current state of the mapping. And it is what is initialized and returned. 
 
         private CsTable _sourceSet;
@@ -55,8 +57,16 @@ namespace Samm.Dialogs
 
                 Mapping.TargetSet = TargetSet; // Update mapper
 
+                //
+                // Initialize mapping by recommending best mapping
+                //
+                mapper.Mappings.Clear();
+                //mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+                //MappingModel.Mapping = mapper.Mappings[0];
+                Mapping = new Mapping(SourceSet, TargetSet);
+
                 // Update tree
-                TargetTree.Children.Clear();
+                TargetTree.Clear();
                 MatchTreeNode node = new MatchTreeNode(TargetSet);
                 node.ExpandTree();
                 node.AddTargetPaths(Mapping);
@@ -169,6 +179,26 @@ namespace Samm.Dialogs
 
             Mapping.RemoveMatch(SourceTree.SelectedPath, TargetTree.SelectedPath); // Also other matches can be removed
         }
+
+
+        public static List<CsTable> GetPossibleGreaterSets(CsTable table)
+        {
+            // Possible target sets: all sets from the schema excepting: 
+            // not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
+
+            List<CsTable> all = table.Top.Root.GetAllSubsets();
+            List<CsTable> result = new List<CsTable>();
+            foreach (CsTable set in all)
+            {
+                if (set == table) continue; // We cannot point to itself
+                if (set.IsLesser(table)) continue; // We cannot point to a lesser set (cycle)
+
+                result.Add(set);
+            }
+
+            return result;
+        }
+
         public MappingModel(CsColumn sourceDim, CsColumn targetDim)
             : this(sourceDim.GreaterSet, targetDim.GreaterSet)
         {
@@ -178,6 +208,9 @@ namespace Samm.Dialogs
 
         public MappingModel(CsTable sourceSet, CsTable targetSet)
         {
+            mapper = new Mapper();
+            mapper.MaxMappingsToBuild = 100;
+
             Mapping = new Mapping(sourceSet, targetSet);
 
             SourceTree = new MatchTree(this);
@@ -191,6 +224,9 @@ namespace Samm.Dialogs
 
         public MappingModel(Mapping mapping)
         {
+            mapper = new Mapper();
+            mapper.MaxMappingsToBuild = 100;
+
             Mapping = mapping;
 
             SourceTree = new MatchTree(this);

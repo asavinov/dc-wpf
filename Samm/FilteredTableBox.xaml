@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Samm.FilteredTableBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:Samm"
+        xmlns:samm="clr-namespace:Samm"
         Title="FilteredTableBox" Height="300" Width="400"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -26,7 +26,7 @@
         <TextBox Name="filteredTable" Grid.Column="1" Grid.Row="1" Text="{Binding Path=FilteredTable.Name}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Expression:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <local:TupleTreeControl x:Name="expressionModel" Grid.Column="1" Grid.Row="2" DataContext="{Binding Path=ExpressionModel}" />
+        <samm:TupleTreeControl x:Name="expressionModel" Grid.Column="1" Grid.Row="2" DataContext="{Binding Path=ExpressionModel}" />
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Operation:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <Grid Grid.Column="1" Grid.Row="3">
