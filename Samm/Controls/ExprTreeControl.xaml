@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Samm.TupleTreeControl"
+﻿<UserControl x:Class="Samm.Controls.ExprTreeControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -29,18 +29,13 @@
         <HierarchicalDataTemplate DataType="{x:Type com:ExprNode}">
             <HierarchicalDataTemplate.ItemsSource>
                 <MultiBinding  Converter="{StaticResource SubConv}">
-                    <Binding Path="Input"/>
-                    <Binding Path="Operands"/>
+                    <Binding Path="Children"/>
                 </MultiBinding>
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Path=Operation}" Foreground="Blue"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=Name}"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=OutputSetName}"/>
-                <TextBlock Text=" : " Width="10"/>
-                <TextBlock Text="{Binding Path=OutputSet.IsPrimitive}"/>
+                <TextBlock Text=" [" />
+                <TextBlock Text="{Binding Path=Name}" Foreground="Blue"/>
+                <TextBlock Text="] " />
             </StackPanel>
         </HierarchicalDataTemplate>
 
@@ -52,7 +47,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView Name="ExpressionTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <TreeView Name="ExprTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
         </TreeView>
 
 <!--

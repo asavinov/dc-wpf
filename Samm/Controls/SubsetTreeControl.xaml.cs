@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 using Com.Model;
 
-namespace Samm
+namespace Samm.Controls
 {
     /// <summary>
     /// Interaction logic for SubsetTreeControl.xaml
@@ -290,6 +290,10 @@ namespace Samm
     // http://msdn.microsoft.com/en-us/library/system.windows.controls.datatemplateselector.aspx
     public class SubsetTreeDataTemplateSelector : DataTemplateSelector
     {
+        public DataTemplate RootItemTemplate { get; set; }
+        public DataTemplate SetItemTemplate { get; set; }
+        public DataTemplate DimensionItemTemplate { get; set; }
+
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
             // Here we can also choose appropriate templates depending on item properties (like item.IsPrimitive) and not only on its class as it is done in XAML
@@ -302,26 +306,31 @@ namespace Samm
                     SubsetTree nodeItem = item as SubsetTree;
                     if (nodeItem.Dim.LesserSet.Name == "Root")
                     {
-                        return element.FindResource("rootItemTemplate") as DataTemplate;
+                        return RootItemTemplate;
+                        //return element.FindResource("rootItemTemplate") as DataTemplate;
                     }
                     else if (nodeItem.IsSubsetNode)
                     {
-                        return element.FindResource("setItemTemplate") as DataTemplate;
+                        return SetItemTemplate;
+                        //return element.FindResource("setItemTemplate") as DataTemplate;
                     }
                     else if (nodeItem.IsDimensionNode)
                     {
-                        return element.FindResource("dimensionItemTemplate") as DataTemplate;
+                        return DimensionItemTemplate;
+                        //return element.FindResource("dimensionItemTemplate") as DataTemplate;
                     }
                 }
                 else if (item is Set)
                 {
                     Set setItem = item as Set;
-                    return element.FindResource("setItemTemplate") as DataTemplate;
+                    return SetItemTemplate;
+                    //return element.FindResource("setItemTemplate") as DataTemplate;
                 }
                 else if (item is Dim)
                 {
                     Dim dimItem = item as Dim;
-                    return element.FindResource("dimensionItemTemplate") as DataTemplate;
+                    return DimensionItemTemplate;
+                    //return element.FindResource("dimensionItemTemplate") as DataTemplate;
                 }
                 else if (item.GetType().IsGenericType) // It is used for TreeNode<T> (where T is Set or Dim) or other generic item types
                 {

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Samm
+namespace Samm.Controls
 {
     /// <summary>
-    /// Interaction logic for TupleTreeControl.xaml
+    /// Interaction logic for ExprTreeControl.xaml
     /// </summary>
-    public partial class TupleTreeControl : UserControl
+    public partial class ExprTreeControl : UserControl
     {
-        public TupleTreeControl()
+        public ExprTreeControl()
         {
             InitializeComponent();
         }

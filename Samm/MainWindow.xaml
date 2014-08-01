@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:com="clr-namespace:Com.Model;assembly=Com"
         xmlns:samm="clr-namespace:Samm"
+        xmlns:controls="clr-namespace:Samm.Controls"
         x:Name="UI"
         Title="ConceptMix Application" 
         Icon="Images\default.ico"
@@ -203,7 +204,7 @@
 
                 <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
 
-                <samm:SubsetTreeControl 
+                <controls:SubsetTreeControl 
                     x:Name="MashupsView" 
                     Grid.Column="0" Grid.Row="1" 
                     DataContext="{Binding Path=MashupsModel}" 

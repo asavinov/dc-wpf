@@ -88,9 +88,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ExprTreeControl.xaml.cs">
+      <DependentUpon>ExprTreeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MatchTreeControl.xaml.cs">
       <DependentUpon>MatchTreeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\SubsetTreeControl.xaml.cs">
+      <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ArithmeticBox.xaml.cs">
+      <DependentUpon>ArithmeticBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\LinkColumnBox.xaml.cs">
       <DependentUpon>LinkColumnBox.xaml</DependentUpon>
@@ -103,16 +113,29 @@
     <Compile Include="Dialogs\ExtractTableBox.xaml.cs">
       <DependentUpon>ExtractTableBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SetGridView.cs" />
     <Compile Include="AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SubsetTreeControl.xaml.cs">
-      <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
-    </Compile>
+    <Page Include="Controls\ExprTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\MatchTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SubsetTreeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ArithmeticBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\LinkColumnBox.xaml">
       <SubType>Designer</SubType>
@@ -126,10 +149,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -137,15 +156,11 @@
     <Compile Include="CompositeCollectionConverter.cs" />
     <Compile Include="Connections\DataConnectionConfiguration.cs" />
     <Compile Include="Connections\IDataConnectionConfiguration.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="AboutBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SubsetTreeControl.xaml">
+    <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

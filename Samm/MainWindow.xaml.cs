@@ -603,13 +603,13 @@ namespace Samm
 
         public void Wizard_AddCalculation(CsTable srcSet)
         {
-            /*
             if (srcSet == null) return;
 
-            // Show recommendations and let the user choose one of them
-            ArithmeticBox dlg = new ArithmeticBox();
+            CsSchema schema = MashupTop;
+
+            // Show dialog for authoring arithmetic expression
+            ArithmeticBox dlg = new ArithmeticBox(srcSet, true);
             dlg.Owner = this;
-            dlg.SourceTable = srcSet;
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
@@ -620,26 +620,23 @@ namespace Samm
                 return;
 
             //
-            // Create new derived dimension
-            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            // Create a correct expression
             //
-            string derivedDimName = dlg.sourceColumn.Text;
-            Com.Model.Expression calcExpr = dlg.ExpressionModel[0];
-            CsTable dstSet = calcExpr.OutputSet;
+            string derivedDimName = dlg.newColumnName.Text;
+            ExprNode calcExpr = dlg.ExpressionModel[0];
 
-            CsColumn derivedDim = dstSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            // Derive output type. 
+            // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
+            calcExpr.Resolve(schema, new List<CsVariable>() { new Variable("this", srcSet) });
+            
+            //
+            // Create column with this definition
+            //
+            CsColumn derivedDim = schema.CreateColumn(derivedDimName, srcSet, calcExpr.Result.TypeTable, false);
+            derivedDim.ColumnDefinition.Formula = calcExpr;
             derivedDim.Add();
 
-            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
-            funcExpr.Statements[0].Input = calcExpr; // Return statement
-            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
-            funcExpr.Resolve();
-
-            derivedDim.SelectExpression = funcExpr;
-
-            // Update new derived dimension
-            derivedDim.ComputeValues();
-            */
+            derivedDim.ColumnDefinition.Evaluate();
         }
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
@@ -660,7 +657,7 @@ namespace Samm
             }
 
             //
-            // Show type change dialog
+            // Show link column dialog
             //
             LinkColumnBox dlg = new LinkColumnBox(sourceTable, targetTables, targetTable);
             dlg.Owner = this;
