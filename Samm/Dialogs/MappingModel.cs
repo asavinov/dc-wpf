@@ -37,7 +37,7 @@ namespace Samm.Dialogs
                 Mapping.SourceSet = SourceSet; // Update mapper
 
                 // Update tree
-                SourceTree.Children.Clear();
+                SourceTree.Clear();
                 MatchTreeNode node = new MatchTreeNode(SourceSet);
                 SourceTree.AddChild(node);
                 node.ExpandTree();
@@ -192,6 +192,24 @@ namespace Samm.Dialogs
             {
                 if (set == table) continue; // We cannot point to itself
                 if (set.IsLesser(table)) continue; // We cannot point to a lesser set (cycle)
+
+                result.Add(set);
+            }
+
+            return result;
+        }
+
+        public static List<CsTable> GetPossibleLesserSets(CsTable table) // Fact sets
+        {
+            // Possible target sets: all sets from the schema excepting: 
+            // not source, not greater, there is lesser path
+
+            List<CsTable> all = table.Top.Root.GetAllSubsets();
+            List<CsTable> result = new List<CsTable>();
+            foreach (CsTable set in all)
+            {
+                if (set == table) continue; // We cannot point to itself
+                if (!set.IsLesser(table)) continue;
 
                 result.Add(set);
             }

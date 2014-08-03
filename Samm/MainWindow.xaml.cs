@@ -60,7 +60,6 @@ namespace Samm
         public CsTable SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
         public CsColumn SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
 
-
         //
         // Operations and behavior
         //
@@ -208,7 +207,7 @@ namespace Samm
                 srcSet = selDim.LesserSet;
             }
 
-            Wizard_AddAggregation(srcSet, null, null);
+            Wizard_AddAggregation(srcSet, null);
             e.Handled = true;
         }
 
@@ -556,49 +555,51 @@ namespace Samm
             extractedSet.TableDefinition.Populate();
         }
 
-        public void Wizard_AddAggregation(CsTable srcSet, CsTable dstSet, CsColumn dstDim)
+        public void Wizard_AddAggregation(CsTable srcSet, CsColumn dstDim)
         {
-            /*
-            // Source set is where we want to create a new (source) derived dimension
-            // Target set and dimension is what we want to use in the definition of the new dimension
+            if (srcSet == null) return;
 
-            if (dstSet == null && dstDim != null) dstSet = dstDim.LesserSet;
+            CsSchema schema = MashupTop;
 
             //
             // Show recommendations and let the user choose one of them
             //
-            AggregationBox dlg = new AggregationBox(srcSet, dstSet, dstDim);
+            AggregationBox dlg = new AggregationBox(srcSet, dstDim);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
             dlg.RefreshAll();
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (dlg.Recommendations.IsValidExpression() != null) return;
-
-            RecommendedAggregations recoms = dlg.Recommendations;
-
             //
-            // Create new derived dimension
-            // Example: (Customers) <- (Orders) <- (Order Details) -> (Products) -> List Price
+            // Create new aggregated dimension
             //
-            string derivedDimName = dlg.SourceColumn.Text;
-            CsColumn aggregDim = (CsColumn)recoms.MeasureDimensions.SelectedObject;
-            Com.Model.Expression aggreExpr = recoms.GetExpression();
+            string derivedDimName = dlg.newColumnName.Text;
+            CsTable targetTable = dlg.MeasurePath.GreaterSet; // The same as the measure path
 
-            CsColumn derivedDim = aggregDim.GreaterSet.CreateDefaultLesserDimension(derivedDimName, srcSet);
+            CsColumn derivedDim = schema.CreateColumn(derivedDimName, srcSet, targetTable, false);
+            derivedDim.ColumnDefinition.FactTable = dlg.FactTable;
+            derivedDim.ColumnDefinition.GroupPaths.Add(dlg.GroupingPath);
+            derivedDim.ColumnDefinition.MeasurePaths.Add(dlg.MeasurePath);
+            derivedDim.ColumnDefinition.Updater = dlg.AggregationFunction;
+
             derivedDim.Add();
 
-            var funcExpr = ExpressionScope.CreateFunctionDeclaration(derivedDim.Name, derivedDim.LesserSet.Name, derivedDim.GreaterSet.Name);
-            funcExpr.Statements[0].Input = aggreExpr; // Return statement
-            funcExpr.ResolveFunction(derivedDim.LesserSet.Top);
-            funcExpr.Resolve();
+            derivedDim.ColumnDefinition.Evaluate();
 
-            derivedDim.SelectExpression = funcExpr;
 
-            // Update new derived dimension
-            derivedDim.ComputeValues();
-            */
+            // TODO:
+            // - Measure for COUNT. Measure is null in this case (ignored or list is emptied).
+            // - Target type for COUNT is Integer.
+            // - Selecting automatically a single element in a list (now does not work).
+
+            // Conceptual:
+            // - Separate fact feeder description (fact table, group, measure)
+            // - Aggr column has only updater + ref to a feeder object (by name or by ref.) Or a feeder referendes several aggr columns. 
+            // - Several aggr columns can reference one feeder.
+            // - Evaluation is done by running a loop over a feeder by filling several aggr columns
+            // - Initializer for aggr column before evaluation. Can be arbitrary complex expr. 
+            // - Finalizer for aggre column after evaluation. Is a normal expr, also, quite complex, say, devide by another column (COUNT).
         }
 
         public void Wizard_AddCalculation(CsTable srcSet)
@@ -740,7 +741,7 @@ namespace Samm
                 if (dropTarget is Set && !(((Set)dropTarget).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
                     // Note that here source and target in terms of DnD have opposite interpretations to the aggregation method
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, ((Dim)dropSource).LesserSet, (Dim)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, (Dim)dropSource);
                 }
             }
 

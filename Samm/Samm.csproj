@@ -99,6 +99,9 @@
       <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Dialogs\AggregationBox.xaml.cs">
+      <DependentUpon>AggregationBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\ArithmeticBox.xaml.cs">
       <DependentUpon>ArithmeticBox.xaml</DependentUpon>
     </Compile>
@@ -132,6 +135,10 @@
     <Page Include="Controls\SubsetTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\AggregationBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\ArithmeticBox.xaml">
       <Generator>MSBuild:Compile</Generator>

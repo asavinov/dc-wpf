@@ -1,0 +1,81 @@
+﻿<Window x:Class="Samm.Dialogs.AggregationBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:samm="clr-namespace:Samm"
+        Title="AggregationBox" Height="378" Width="500"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+
+    <Window.Resources>
+        <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="TextAlignment" Value="Left"></Setter>
+        </Style>
+
+        <DataTemplate x:Key="setItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="../Images/node_table.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="pathItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image x:Name="node_icon" Source="../Images/node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding Path=ComplexName}" FontWeight="SemiBold" Foreground="Blue"/>
+                <!-- <TextBlock Text="" Width="10"/> -->
+                <TextBlock Text=" ("/>
+                <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                <TextBlock Text=")"/>
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=FirstSegment.IsIdentity}" Value="true">
+                    <Setter Property="ListItem.Foreground" Value="Red"></Setter>
+                    <Setter Property="Source" Value="../Images/node_column_key.png" TargetName="node_icon" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="25*"/>
+            <ColumnDefinition Width="57*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label  Grid.Column="0" Grid.Row="0" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="My Column" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="sourceTableName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=SourceTable.Name}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="2" Content="Fact Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ListView Name="factTables" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=FactTables}" SelectedItem="{Binding Path=FactTable, Mode=TwoWay}" ItemTemplate="{StaticResource setItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" SelectionChanged="FactTables_SelectionChanged"/>
+
+        <Label  Grid.Column="0" Grid.Row="3" Content="Grouping Paths:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="groupingPaths" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=GroupingPaths}" SelectedItem="{Binding Path=GroupingPath, Mode=TwoWay}" ItemTemplate="{StaticResource pathItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="GroupingPaths_SelectionChanged"/>
+
+        <Label  Grid.Column="0" Grid.Row="4" Content="Measure Paths:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="measurePaths" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=MeasurePaths}" SelectedItem="{Binding Path=MeasurePath, Mode=TwoWay}" ItemTemplate="{StaticResource pathItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasurePaths_SelectionChanged"/>
+        <!-- <samm:PathListControl Grid.Column="1" Grid.Row="3" x:Name="measurePath" DataContext="{Binding MeasurePath}" /> -->
+
+        <Label  Grid.Column="0" Grid.Row="5" Content="Aggregation Functions:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="aggregationFunctions" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding Path=AggregationFunctions}" SelectedItem="{Binding Path=AggregationFunction, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <StackPanel Grid.Column="1" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+
+</Window>
