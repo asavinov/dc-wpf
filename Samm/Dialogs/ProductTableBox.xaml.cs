@@ -23,8 +23,6 @@ namespace Samm.Dialogs
     {
         public List<CsTable> GreaterTables { get; set; }
 
-        public string ProductTableName { get; set; }
-
         public ProductTableBox()
         {
             GreaterTables = new List<CsTable>();
@@ -38,7 +36,7 @@ namespace Samm.Dialogs
 
             greaterTables.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
 
-            productTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            //newTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)

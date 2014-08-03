@@ -139,10 +139,10 @@
                     <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData Table" KeyTip="O"/>
                 </RibbonGroup>
                 <RibbonGroup x:Name="exportGroup" Header="Export">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R"/>
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R"/>
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R" IsEnabled="False" />
                 </RibbonGroup>
                 <RibbonGroup Header="Update">
                     <RibbonButton LargeImageSource="Images\update_all.png" Label="Update All" KeyTip="A" />
@@ -202,7 +202,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblMashup" Grid.Row="0" FontSize="16" Margin="5">Data mashup</Label>
+                <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
+                <Label Name="lblMashup" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">STRUCTURE</Label>
 
                 <controls:SubsetTreeControl 
                     x:Name="MashupsView" 
@@ -218,7 +219,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Label Name="lblWorkspace" Grid.Row="0" FontSize="16" Margin="5">WORKSPACE PANEL</Label>
+                <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
+                <Label Name="lblWorkspace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
 
                 <ContentControl Name="GridPanel" Grid.Row="1">
                 </ContentControl>

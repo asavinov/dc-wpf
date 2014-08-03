@@ -441,7 +441,7 @@ namespace Samm
             dlg.GreaterTables = new List<CsTable>();
             dlg.GreaterTables.AddRange(MashupTop.Root.GetAllSubsets()); // Fill the list with potential greater tables
 
-            dlg.ProductTableName = "New Product Table";
+            dlg.newTableName.Text = "New Product Table";
 
             if (SelectedMashupSet != null)
             {
@@ -454,7 +454,8 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (string.IsNullOrWhiteSpace(dlg.ProductTableName) || string.IsNullOrWhiteSpace(dlg.ProductTableName) || dlg.greaterTables.SelectedItems.Count == 0) return;
+            string productTableName = dlg.newTableName.Text;
+            if (string.IsNullOrWhiteSpace(productTableName) || string.IsNullOrWhiteSpace(productTableName) || dlg.greaterTables.SelectedItems.Count == 0) return;
 
             // Initialize a list of selected dimensions (from the whole list of all greater dimensions
             List<CsTable> greaterSets = new List<CsTable>();
@@ -467,16 +468,39 @@ namespace Samm
             // Create a new (product) set
             //
             CsSchema schema = MashupTop;
-            CsTable productSet = schema.CreateTable(dlg.ProductTableName);
+            CsTable productSet = schema.CreateTable(productTableName);
             schema.AddTable(productSet, null, null);
 
-            //
             // Create identity dimensions for the product set
-            //
             foreach (CsTable gSet in greaterSets)
             {
                 CsColumn gDim = schema.CreateColumn(gSet.Name, productSet, gSet, true);
                 gDim.Add();
+            }
+
+            //
+            // Add filter expression for the new table
+            //
+
+            // Show dialog for authoring arithmetic expression
+            ArithmeticBox whereDlg = new ArithmeticBox(productSet, true);
+            whereDlg.Owner = this;
+            whereDlg.RefreshAll();
+            whereDlg.ShowDialog(); // Open the dialog box modally 
+
+            // if cancelled then remove the new set and all its columns
+            if (whereDlg.DialogResult == false) 
+            {
+                schema.RemoveTable(productSet);
+                return;
+            }
+
+            if (whereDlg.ExpressionModel != null && whereDlg.ExpressionModel.Count > 0)
+            {
+                ExprNode whereExpr = whereDlg.ExpressionModel[0];
+                whereExpr.Result.TypeName = "Boolean";
+                whereExpr.Result.TypeTable = schema.GetPrimitive("Boolean");
+                productSet.TableDefinition.WhereExpression = whereExpr;
             }
 
             // 
@@ -575,7 +599,15 @@ namespace Samm
             // Create new aggregated dimension
             //
             string derivedDimName = dlg.newColumnName.Text;
-            CsTable targetTable = dlg.MeasurePath.GreaterSet; // The same as the measure path
+            CsTable targetTable = null;
+            if(dlg.AggregationFunction == "COUNT") 
+            {
+                targetTable = schema.GetPrimitive("Integer"); ;
+            }
+            else 
+            {
+                targetTable = dlg.MeasurePath.GreaterSet; // The same as the measure path
+            }
 
             CsColumn derivedDim = schema.CreateColumn(derivedDimName, srcSet, targetTable, false);
             derivedDim.ColumnDefinition.FactTable = dlg.FactTable;
@@ -586,20 +618,6 @@ namespace Samm
             derivedDim.Add();
 
             derivedDim.ColumnDefinition.Evaluate();
-
-
-            // TODO:
-            // - Measure for COUNT. Measure is null in this case (ignored or list is emptied).
-            // - Target type for COUNT is Integer.
-            // - Selecting automatically a single element in a list (now does not work).
-
-            // Conceptual:
-            // - Separate fact feeder description (fact table, group, measure)
-            // - Aggr column has only updater + ref to a feeder object (by name or by ref.) Or a feeder referendes several aggr columns. 
-            // - Several aggr columns can reference one feeder.
-            // - Evaluation is done by running a loop over a feeder by filling several aggr columns
-            // - Initializer for aggr column before evaluation. Can be arbitrary complex expr. 
-            // - Finalizer for aggre column after evaluation. Is a normal expr, also, quite complex, say, devide by another column (COUNT).
         }
 
         public void Wizard_AddCalculation(CsTable srcSet)
@@ -609,7 +627,7 @@ namespace Samm
             CsSchema schema = MashupTop;
 
             // Show dialog for authoring arithmetic expression
-            ArithmeticBox dlg = new ArithmeticBox(srcSet, true);
+            ArithmeticBox dlg = new ArithmeticBox(srcSet, false);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -617,7 +635,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
+            if (dlg.ExpressionModel == null || dlg.ExpressionModel.Count == 0)
                 return;
 
             //
@@ -642,8 +660,6 @@ namespace Samm
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
         {
-            // !!! TODO: Dialog crashes for nested tables. Example: select Employees and then call this dialog.
-
             if (sourceTable == null) return;
 
             CsSchema schema = MashupTop;

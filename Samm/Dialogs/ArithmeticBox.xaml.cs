@@ -42,7 +42,8 @@ namespace Samm.Dialogs
     public partial class ArithmeticBox : Window
     {
         public CsTable SourceTable { get; set; }
-        public CsTable TargetTable { get; set; }
+
+        public List<DimPath> SourcePaths { get; set; }
 
         public ObservableCollection<ExprNode> ExpressionModel { get; set; }
 
@@ -53,15 +54,17 @@ namespace Samm.Dialogs
             //operations.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
             operations.Items.Refresh();
 
-            //operands.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            operands.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
             operands.Items.Refresh();
 
             expressionModel.ExprTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
             expressionModel.ExprTree.Items.Refresh();
         }
 
-        public ArithmeticBox(CsTable sourceTable, bool withLogicalOperations)
+        public ArithmeticBox(CsTable sourceTable, bool whereExpression)
         {
+            CsSchema schema = sourceTable.Top;
+
             SourceTable = sourceTable;
 
             ExpressionModel = new ObservableCollection<ExprNode>();
@@ -70,8 +73,11 @@ namespace Samm.Dialogs
 
             // Initialize a list of possible operations
             ActionType[] ops;
-            if (withLogicalOperations)
+            if (whereExpression)
             {
+                // Other ways: to collapse a grid row: http://stackoverflow.com/questions/2502178/wpf-hide-grid-row
+                Controls.RowDefinitions[0].Height = new GridLength(0);
+
                 ops = new ActionType[] 
                 { 
                     ActionType.MUL, ActionType.DIV, ActionType.ADD, ActionType.SUB, 
@@ -82,12 +88,20 @@ namespace Samm.Dialogs
             }
             else
             {
+                Controls.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+
                 ops = new ActionType[] { ActionType.MUL, ActionType.DIV, ActionType.ADD, ActionType.SUB };
             }
             operations.ItemsSource = ops;
 
-            // Initialize a list of possible column accesses (either direct columns or all paths)
-            operands.ItemsSource = SourceTable.GreaterDims;
+            // Initialize a list of possible column accesses
+            var paths = new PathEnumerator(
+                new List<CsTable>(new CsTable[] { SourceTable }),
+                new List<CsTable>(new CsTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }), 
+                false, 
+                DimensionType.IDENTITY_ENTITY
+               );
+            SourcePaths = paths.ToList();
         }
 
         private void AddOperation_Click(object sender, RoutedEventArgs e)
@@ -155,10 +169,10 @@ namespace Samm.Dialogs
             //
             // Determine dimension (function) and create child expression
             //
-            CsColumn column = (CsColumn)operands.SelectedItem;
-            if (column == null) return;
+            DimPath path = (DimPath)operands.SelectedItem;
+            if (path == null) return;
 
-            var expr = ExprNode.CreateReader(column, false);
+            var expr = ExprNode.CreateReader(path, false);
             expr = (ExprNode)expr.Root;
 
             //

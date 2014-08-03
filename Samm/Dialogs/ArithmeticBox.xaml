@@ -7,7 +7,8 @@
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
-    <Grid>
+
+    <Grid x:Name="Controls">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
             <ColumnDefinition Width="60*"/>
@@ -52,7 +53,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <ComboBox Name="operands" Grid.Column="0" ItemsSource="{Binding Path=SourceTable.GreaterDims}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+            <ComboBox Name="operands" Grid.Column="0" ItemsSource="{Binding Path=SourcePaths}" ItemTemplate="{StaticResource DimPathListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
             <Button Name="AddOperand" Grid.Column="1" Content="Add" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="AddOperand_Click"/>
         </Grid>
 

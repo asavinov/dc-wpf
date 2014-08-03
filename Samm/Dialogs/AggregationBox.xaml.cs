@@ -21,8 +21,10 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for AggregationBox.xaml
     /// TODO:
-    /// - Sort fragments by relevance. Non-relevant items at the end and possibly greyed. 
-    /// - Display non-relevant fragments as a separate group (at the end of the list): http://stackoverflow.com/questions/4114385/wpf-refine-the-look-of-a-grouped-combobox-vs-a-grouped-datagrid-sample-attach
+    /// - Automatically selecting the best alternative and a single alternative. 
+    /// - Computing alternatives depending on aggregation function. Say, for COUNT, measure path is not used at all and should be disabled.
+    /// - Sort alternatives by relevance. Non-relevant items at the end. 
+    /// - Mark/visualize relevance. Non-relevant items gray or visualized in a separate (last) group in the list: http://stackoverflow.com/questions/4114385/wpf-refine-the-look-of-a-grouped-combobox-vs-a-grouped-datagrid-sample-attach
     /// </summary>
     public partial class AggregationBox : Window, INotifyPropertyChanged
     {
@@ -79,7 +81,12 @@ namespace Samm.Dialogs
                 // Find at least one fact table that has a measure path to this measure column
                 foreach (CsTable table in FactTables)
                 {
-                    var pathEnum = new PathEnumerator(table, measureColumn.GreaterSet, DimensionType.IDENTITY_ENTITY);
+                    var pathEnum = new PathEnumerator(
+                        table, 
+                        measureColumn.GreaterSet, 
+                        DimensionType.IDENTITY_ENTITY
+                        );
+
                     var paths = pathEnum.ToList();
                     if (paths.Count() == 0) continue;
 
@@ -107,7 +114,14 @@ namespace Samm.Dialogs
             if (GroupingPaths.Count == 1) GroupingPath = GroupingPaths[0];
 
             // Paths from the fact set to numeric sets
-            var mePaths = new PathEnumerator((CsTable)factTable, DimensionType.IDENTITY_ENTITY);
+            CsSchema schema = ((CsTable)factTable).Top;
+            var mePaths = new PathEnumerator(
+                new List<CsTable>(new CsTable[] { (CsTable)factTable }),
+                new List<CsTable>(new CsTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
+                false,
+                DimensionType.IDENTITY_ENTITY
+               );
+
             MeasurePaths = mePaths.ToList<DimPath>();
             if (MeasurePaths.Count == 1) MeasurePath = MeasurePaths[0];
 

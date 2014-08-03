@@ -6,6 +6,7 @@
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
@@ -14,22 +15,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="50*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Label  Grid.Column="0" Grid.Row="0" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="0" Content="New Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="1" Content="Source Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
-        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="1" Text="{Binding Path=SourceTable.Name}"  IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="1" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=NewColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="2" Content="Source Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ListView Name="projectionDims" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=ProjectionDims}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="2" Content="Source Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5" />
+        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="2" Text="{Binding Path=SourceTable.Name}"  IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="New Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="3" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <Label  Grid.Column="0" Grid.Row="3" Content="Source Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ListView Name="projectionDims" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=ProjectionDims}" ItemTemplate="{StaticResource ColumnListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />

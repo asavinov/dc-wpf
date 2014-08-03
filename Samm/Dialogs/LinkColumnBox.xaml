@@ -33,7 +33,7 @@
         <controls:MatchTreeControl x:Name="sourceTree" Grid.Column="1" Grid.Row="2" DataContext="{Binding Path=MappingModel.SourceTree}" />
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Target Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="targetTables" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetTables}" DisplayMemberPath="Name" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="TargetTables_SelectionChanged"/>
+        <ComboBox Name="targetTables" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetTables}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="TargetTables_SelectionChanged"/>
 
         <Label  Grid.Column="0" Grid.Row="4" Content="Target Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <controls:MatchTreeControl x:Name="targetTree" Grid.Column="1" Grid.Row="4" DataContext="{Binding Path=MappingModel.TargetTree}" />
