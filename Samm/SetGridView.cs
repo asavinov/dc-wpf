@@ -171,9 +171,15 @@ namespace Samm
                 if (index < 0 || index >= dimCount) return null;
                 CsColumn dim = Set.GreaterDims[index];
 
-                object cell = dim.ColumnData.GetValue(Offset);
-
-                return Convert.ToString(cell);
+                if (dim.ColumnData.IsNull(Offset))
+                {
+                    return "";
+                }
+                else
+                {
+                    object cell = dim.ColumnData.GetValue(Offset);
+                    return Convert.ToString(cell);
+                }
             }
         }
 

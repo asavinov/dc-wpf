@@ -88,7 +88,7 @@ namespace Samm.Dialogs
             }
             else
             {
-                Controls.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+                Controls.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Auto);
 
                 ops = new ActionType[] { ActionType.MUL, ActionType.DIV, ActionType.ADD, ActionType.SUB };
             }

@@ -56,9 +56,20 @@ namespace Samm
             if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
             return false;
         }
-        public SubsetTree SelectedMashupItem { get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; } }
-        public CsTable SelectedMashupSet { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; } }
-        public CsColumn SelectedMashupDim { get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; } }
+        public SubsetTree SelectedMashupItem 
+        { 
+            get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; }
+        }
+        public CsTable SelectedMashupSet 
+        { 
+            get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; }
+            set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); } 
+        }
+        public CsColumn SelectedMashupDim 
+        { 
+            get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; }
+            set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); }
+        }
 
         //
         // Operations and behavior
@@ -279,6 +290,8 @@ namespace Samm
 
             // Populate this new table (in fact, can be done separately during Update)
             targetTable.TableDefinition.Populate();
+
+            SelectedMashupSet = targetTable;
         }
 
         public void Wizard_AccessDatasource()
@@ -507,6 +520,8 @@ namespace Samm
             // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
             //
             productSet.TableDefinition.Populate();
+
+            SelectedMashupSet = productSet;
         }
 
         public void Wizard_ExtractTable(CsTable set)
@@ -516,20 +531,8 @@ namespace Samm
             //
             // Show parameters for set extraction
             //
-            ExtractTableBox dlg = new ExtractTableBox();
+            ExtractTableBox dlg = new ExtractTableBox(set, SelectedMashupDim);
             dlg.Owner = this;
-            dlg.SourceTable = set;
-            dlg.ProjectionDims = new List<CsColumn>();
-            dlg.ProjectionDims.AddRange(set.GreaterDims);
-            dlg.NewTableName = "New Extracted Table";
-            dlg.NewColumnName = "Extracted Dimension";
-            if (SelectedMashupDim != null)
-            {
-                dlg.projectionDims.SelectedItem = SelectedMashupDim;
-                dlg.NewTableName = SelectedMashupDim.Name + " Group"; // The new table will have the same name as the only extracted dimension
-                dlg.NewColumnName = SelectedMashupDim.Name + " Group";
-            }
-
             dlg.RefreshAll();
 
             dlg.ShowDialog(); // Open the dialog box modally 
@@ -577,6 +580,8 @@ namespace Samm
             //
             extractedSet.TableDefinition.ProjectDimensions.Add(extractedDim);
             extractedSet.TableDefinition.Populate();
+
+            SelectedMashupSet = extractedSet;
         }
 
         public void Wizard_AddAggregation(CsTable srcSet, CsColumn dstDim)
@@ -618,6 +623,8 @@ namespace Samm
             derivedDim.Add();
 
             derivedDim.ColumnDefinition.Evaluate();
+
+            SelectedMashupDim = derivedDim;
         }
 
         public void Wizard_AddCalculation(CsTable srcSet)
@@ -656,6 +663,8 @@ namespace Samm
             derivedDim.Add();
 
             derivedDim.ColumnDefinition.Evaluate();
+
+            SelectedMashupDim = derivedDim;
         }
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
@@ -696,6 +705,8 @@ namespace Samm
             linkColumn.Add();
 
             linkColumn.ColumnDefinition.Evaluate();
+
+            SelectedMashupDim = linkColumn;
         }
 
         #endregion
@@ -768,7 +779,7 @@ namespace Samm
             {
                 if (dropTarget is Set && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((CsTable)dropSource, (CsTable)dropTarget);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((CsTable)dropTarget, (CsTable)dropSource);
                 }
             }
 

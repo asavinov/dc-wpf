@@ -29,11 +29,26 @@ namespace Samm.Dialogs
 
         public string NewTableName { get; set; }
 
-        public ExtractTableBox()
+        public ExtractTableBox(CsTable set, CsColumn dim)
         {
             ProjectionDims = new List<CsColumn>();
+            ProjectionDims.AddRange(set.GreaterDims);
+            ProjectionDims.Remove(set.SuperDim);
+
+            SourceTable = set;
 
             InitializeComponent();
+
+            NewTableName = "New Extracted Table";
+            NewColumnName = "Extracted Dimension";
+
+            if (dim != null)
+            {
+                projectionDims.SelectedItem = dim;
+                NewTableName = dim.Name + " Group"; // The new table will have the same name as the only extracted dimension
+                NewColumnName = dim.Name + " Group";
+            }
+
         }
 
         public void RefreshAll()
