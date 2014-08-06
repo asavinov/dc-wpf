@@ -222,15 +222,35 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void AddCalculationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Wizard_AddCalculation(SelectedMashupSet);
+            Wizard_AddArithmetic(SelectedMashupSet);
             e.Handled = true;
         }
 
         private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Wizard_AddLink(SelectedMashupSet, null);
+        }
+
+        private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            CsColumn selDim = SelectedMashupDim;
+            if (selDim != null)
+            {
+                Wizard_EditColumn(selDim);
+            }
+            e.Handled = true;
+        }
+
+        private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            CsColumn selDim = SelectedMashupDim;
+            if (selDim == null) return;
+
+            selDim.Remove();
+
+            e.Handled = true;
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -495,10 +515,12 @@ namespace Samm
             // Add filter expression for the new table
             //
 
+            // Create a new column (temporary, just to store a where expression)
+            CsColumn column = schema.CreateColumn("Where Expression", productSet, schema.GetPrimitive("Boolean"), false);
+
             // Show dialog for authoring arithmetic expression
-            ArithmeticBox whereDlg = new ArithmeticBox(productSet, true);
+            ArithmeticBox whereDlg = new ArithmeticBox(column, true);
             whereDlg.Owner = this;
-            whereDlg.RefreshAll();
             whereDlg.ShowDialog(); // Open the dialog box modally 
 
             // if cancelled then remove the new set and all its columns
@@ -508,6 +530,9 @@ namespace Samm
                 return;
             }
 
+            // TODO: The dialog knows that we want to edit table Where expression because of the input flat (whereExpression). 
+            // Alternatively, we can remove this flag, and use a CsTable constructor for editing Where expressions of tables.
+            // TODO: Either the dialog itself or we here copy expression from the temporary column to the table Where definition
             if (whereDlg.ExpressionModel != null && whereDlg.ExpressionModel.Count > 0)
             {
                 ExprNode whereExpr = whereDlg.ExpressionModel[0];
@@ -584,87 +609,29 @@ namespace Samm
             SelectedMashupSet = extractedSet;
         }
 
-        public void Wizard_AddAggregation(CsTable srcSet, CsColumn dstDim)
+        public void Wizard_AddArithmetic(CsTable srcSet)
         {
             if (srcSet == null) return;
 
             CsSchema schema = MashupTop;
 
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            AggregationBox dlg = new AggregationBox(srcSet, dstDim);
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
-            dlg.RefreshAll();
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            //
-            // Create new aggregated dimension
-            //
-            string derivedDimName = dlg.newColumnName.Text;
-            CsTable targetTable = null;
-            if(dlg.AggregationFunction == "COUNT") 
-            {
-                targetTable = schema.GetPrimitive("Integer"); ;
-            }
-            else 
-            {
-                targetTable = dlg.MeasurePath.GreaterSet; // The same as the measure path
-            }
-
-            CsColumn derivedDim = schema.CreateColumn(derivedDimName, srcSet, targetTable, false);
-            derivedDim.ColumnDefinition.FactTable = dlg.FactTable;
-            derivedDim.ColumnDefinition.GroupPaths.Add(dlg.GroupingPath);
-            derivedDim.ColumnDefinition.MeasurePaths.Add(dlg.MeasurePath);
-            derivedDim.ColumnDefinition.Updater = dlg.AggregationFunction;
-
-            derivedDim.Add();
-
-            derivedDim.ColumnDefinition.Evaluate();
-
-            SelectedMashupDim = derivedDim;
-        }
-
-        public void Wizard_AddCalculation(CsTable srcSet)
-        {
-            if (srcSet == null) return;
-
-            CsSchema schema = MashupTop;
+            // Create a new column
+            CsColumn column = schema.CreateColumn("New Column", srcSet, null, false); // We do not know its output type
 
             // Show dialog for authoring arithmetic expression
-            ArithmeticBox dlg = new ArithmeticBox(srcSet, false);
+            ArithmeticBox dlg = new ArithmeticBox(column, false);
             dlg.Owner = this;
-            dlg.RefreshAll();
-
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (dlg.ExpressionModel == null || dlg.ExpressionModel.Count == 0)
-                return;
-
-            //
-            // Create a correct expression
-            //
-            string derivedDimName = dlg.newColumnName.Text;
-            ExprNode calcExpr = dlg.ExpressionModel[0];
-
-            // Derive output type. 
-            // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
-            calcExpr.Resolve(schema, new List<CsVariable>() { new Variable("this", srcSet) });
+            if (column.ColumnDefinition.Formula == null) return; // No formula
             
-            //
-            // Create column with this definition
-            //
-            CsColumn derivedDim = schema.CreateColumn(derivedDimName, srcSet, calcExpr.Result.TypeTable, false);
-            derivedDim.ColumnDefinition.Formula = calcExpr;
-            derivedDim.Add();
+            column.Add();
 
-            derivedDim.ColumnDefinition.Evaluate();
+            column.ColumnDefinition.Evaluate();
 
-            SelectedMashupDim = derivedDim;
+            SelectedMashupDim = column;
         }
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
@@ -673,40 +640,86 @@ namespace Samm
 
             CsSchema schema = MashupTop;
 
-            //
-            // Compute possible target tables
-            //
-            List<CsTable> targetTables = MappingModel.GetPossibleGreaterSets(sourceTable);
-            if (targetTables == null || targetTables.Count == 0)
-            {
-                return; // No suitable target tables for linking
-            }
+            // Create a new (mapped) dimension using the mapping
+            CsColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
 
-            //
             // Show link column dialog
-            //
-            LinkColumnBox dlg = new LinkColumnBox(sourceTable, targetTables, targetTable);
+            LinkColumnBox dlg = new LinkColumnBox(column);
             dlg.Owner = this;
-            dlg.RefreshAll();
-
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            targetTable = (CsTable)dlg.targetTables.SelectedItem;
-            if(targetTable == null) return;
+            column.Add();
 
-            //
-            // Create a new (mapped) dimension using the mapping
-            //
-            CsColumn linkColumn = schema.CreateColumn(dlg.NewColumnName, sourceTable, targetTable, false);
-            linkColumn.ColumnDefinition.Mapping = dlg.MappingModel.Mapping;
-            linkColumn.ColumnDefinition.IsGenerating = false;
-            linkColumn.Add();
+            column.ColumnDefinition.Evaluate();
 
-            linkColumn.ColumnDefinition.Evaluate();
+            SelectedMashupDim = column;
+        }
 
-            SelectedMashupDim = linkColumn;
+        public void Wizard_AddAggregation(CsTable srcSet, CsColumn measureColumn)
+        {
+            if (srcSet == null) return;
+
+            CsSchema schema = MashupTop;
+
+            // Create new aggregated column
+            CsColumn column = schema.CreateColumn("My Column", srcSet, null, false);
+
+            // Show recommendations and let the user choose one of them
+            AggregationBox dlg = new AggregationBox(column, measureColumn);
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            column.Add();
+
+            column.ColumnDefinition.Evaluate();
+
+            SelectedMashupDim = column;
+        }
+
+        public void Wizard_EditColumn(CsColumn column)
+        {
+            if (column == null) return;
+
+            CsSchema schema = MashupTop;
+
+            if (true) // Arithmetic
+            {
+                ArithmeticBox dlg = new ArithmeticBox(column, false);
+                dlg.Owner = this;
+                dlg.ShowDialog(); // Open the dialog box modally 
+
+                if (dlg.DialogResult == false) return; // Cancel
+
+            }
+            else if (true) // Link
+            {
+                LinkColumnBox dlg = new LinkColumnBox(column);
+                dlg.Owner = this;
+                dlg.ShowDialog(); // Open the dialog box modally 
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+            else if (true) // Aggregation
+            {
+                AggregationBox dlg = new AggregationBox(column, null);
+                dlg.Owner = this;
+                dlg.ShowDialog(); // Open the dialog box modally 
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+
+            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
+            column.ColumnDefinition.Evaluate();
+
+            SelectedMashupDim = column;
+
+            // TODO: 
+            // Introduce mode for dialogs: Create, Edit_Name, Edit_Definition, Edit_Target etc. Also think about tables.
+            // Use these masks to initialize a dialog: disable/enable controls. Also, use it for the logic.
         }
 
         #endregion

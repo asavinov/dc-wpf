@@ -32,7 +32,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -88,8 +88,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CompositeCollectionConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controls\ExprTreeControl.xaml.cs">
       <DependentUpon>ExprTreeControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\MatchTreeControl.xaml.cs">
       <DependentUpon>MatchTreeControl.xaml</DependentUpon>
@@ -125,8 +129,8 @@
       <DependentUpon>AboutBox.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\ExprTreeControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\MatchTreeControl.xaml">
       <SubType>Designer</SubType>
@@ -160,7 +164,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CompositeCollectionConverter.cs" />
     <Compile Include="Connections\DataConnectionConfiguration.cs" />
     <Compile Include="Connections\IDataConnectionConfiguration.cs" />
     <Page Include="AboutBox.xaml">

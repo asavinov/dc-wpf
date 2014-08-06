@@ -23,6 +23,10 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class LinkColumnBox : Window
     {
+        bool IsNew { get; set; }
+
+        CsColumn Column { get; set; }
+
         public string NewColumnName { get; set; }
 
         public MappingModel MappingModel { get; set; }
@@ -48,17 +52,29 @@ namespace Samm.Dialogs
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
         }
 
-        public LinkColumnBox(CsTable sourceTable, List<CsTable> targetSets, CsTable targetTable)
-            : this()
+        public LinkColumnBox(CsColumn column)
         {
-            //
-            // TODO: Suggest the best new type for the new dimension if it has not been specified
-            //
+            InitializeComponent();
+
+            if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
+            else IsNew = true;
+
+            Column = column;
+            CsTable sourceTable = column.LesserSet;
+            CsTable targetTable = column.GreaterSet;
+
+            // Name
+            NewColumnName = Column.Name;
+
+            // Compute possible target tables
+            TargetTables = MappingModel.GetPossibleGreaterSets(sourceTable);
+
+            // TODO: Suggest the best target type
             if (targetTable == null)
             {
                 // Compare the quality of gest mappings from the the source set to possible target sets
 
-                CsTable bestTargetTable = targetSets[0];
+                CsTable bestTargetTable = TargetTables[0];
                 double bestSimilarity = 0.0;
                 /*
                 foreach (CsTable set in targetTables)
@@ -72,24 +88,15 @@ namespace Samm.Dialogs
                 */
                 targetTable = bestTargetTable;
             }
-
-            // Target table is always chosen. 
-            NewColumnName = targetTable.Name;
+            targetTables.SelectedItem = targetTable;
 
             MappingModel = new MappingModel(sourceTable, targetTable);
+            if (!IsNew)
+            {
+                MappingModel.Mapping = Column.ColumnDefinition.Mapping;
+            }
 
-            TargetTables = targetSets;
-            targetTables.SelectedItem = targetTable;
-        }
-
-        public LinkColumnBox()
-        {
-            InitializeComponent();
-        }
-
-        private void okButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = true;
+            RefreshAll();
         }
 
         private void recommendButton_Click(object sender, RoutedEventArgs e)
@@ -131,6 +138,23 @@ namespace Samm.Dialogs
             MappingModel.TargetSet = (CsTable)set;
 
             RefreshAll(); // Refresh
+        }
+
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
+            CsSchema schema = Column.LesserSet.Top;
+
+            // Column name
+            Column.Name = newColumnName.Text;
+
+            // Column type
+            Column.GreaterSet = (CsTable)targetTables.SelectedItem;
+
+            // Column definition
+            Column.ColumnDefinition.Mapping = MappingModel.Mapping;
+            Column.ColumnDefinition.IsGenerating = false;
+
+            this.DialogResult = true;
         }
 
     }

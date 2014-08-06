@@ -41,6 +41,10 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class ArithmeticBox : Window
     {
+        bool IsNew { get; set; }
+
+        CsColumn Column { get; set; }
+
         public CsTable SourceTable { get; set; }
 
         public List<DimPath> SourcePaths { get; set; }
@@ -61,15 +65,24 @@ namespace Samm.Dialogs
             expressionModel.ExprTree.Items.Refresh();
         }
 
-        public ArithmeticBox(CsTable sourceTable, bool whereExpression)
+        public ArithmeticBox(CsColumn column, bool whereExpression)
         {
+            InitializeComponent();
+
+            if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
+            else IsNew = true;
+
+            Column = column;
+            CsTable sourceTable = column.LesserSet;
             CsSchema schema = sourceTable.Top;
 
             SourceTable = sourceTable;
 
-            ExpressionModel = new ObservableCollection<ExprNode>();
-
-            InitializeComponent();
+            ExpressionModel = new ObservableCollection<ExprNode>(); // This contains what we will create/edit
+            if (Column.ColumnDefinition.Formula != null)
+            {
+                ExpressionModel.Add(Column.ColumnDefinition.Formula);
+            }
 
             // Initialize a list of possible operations
             ActionType[] ops;
@@ -102,6 +115,8 @@ namespace Samm.Dialogs
                 DimensionType.IDENTITY_ENTITY
                );
             SourcePaths = paths.ToList();
+
+            RefreshAll();
         }
 
         private void AddOperation_Click(object sender, RoutedEventArgs e)
@@ -248,6 +263,29 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
+            CsSchema schema = Column.LesserSet.Top;
+
+            // Column name
+            Column.Name = newColumnName.Text;
+
+            // Column definition
+            ExprNode expr = null;
+            if (ExpressionModel == null || ExpressionModel.Count == 0) 
+            {
+                expr = null;
+            }
+            else 
+            {
+                expr = ExpressionModel[0];
+            }
+            Column.ColumnDefinition.Formula = expr;
+
+            // Column type
+            // Derive output type of the expression and use it to set the type of the column. 
+            // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
+            expr.Resolve(schema, new List<CsVariable>() { new Variable("this", SourceTable) });
+            Column.GreaterSet = expr.Result.TypeTable;
+
             this.DialogResult = true;
         }
     }
