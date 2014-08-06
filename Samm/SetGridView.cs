@@ -52,6 +52,8 @@ namespace Samm
             for(int i=0; i < Set.GreaterDims.Count; i++) 
             {
                 CsColumn dim = Set.GreaterDims[i];
+                if (dim.IsSuper) continue;
+
                 Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
 
                 DataGridColumn col1 = new DataGridTextColumn() { Header = dim.Name, Binding = binding }; // No custom cell template
