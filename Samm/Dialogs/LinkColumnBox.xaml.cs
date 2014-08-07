@@ -89,6 +89,11 @@ namespace Samm.Dialogs
                 targetTable = bestTargetTable;
             }
             targetTables.SelectedItem = targetTable;
+            // In edit mode (for existing column), we do not allow for changing the type
+            if (!IsNew)
+            {
+                targetTables.IsEnabled = false;
+            }
 
             MappingModel = new MappingModel(sourceTable, targetTable);
             if (!IsNew)
@@ -144,11 +149,16 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
+            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.LINK;
+
             // Column name
             Column.Name = newColumnName.Text;
 
             // Column type
-            Column.GreaterSet = (CsTable)targetTables.SelectedItem;
+            if (IsNew)
+            {
+                Column.GreaterSet = (CsTable)targetTables.SelectedItem;
+            }
 
             // Column definition
             Column.ColumnDefinition.Mapping = MappingModel.Mapping;

@@ -686,7 +686,7 @@ namespace Samm
 
             CsSchema schema = MashupTop;
 
-            if (true) // Arithmetic
+            if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.ARITHMETIC)
             {
                 ArithmeticBox dlg = new ArithmeticBox(column, false);
                 dlg.Owner = this;
@@ -695,7 +695,7 @@ namespace Samm
                 if (dlg.DialogResult == false) return; // Cancel
 
             }
-            else if (true) // Link
+            else if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.LINK)
             {
                 LinkColumnBox dlg = new LinkColumnBox(column);
                 dlg.Owner = this;
@@ -703,7 +703,7 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
             }
-            else if (true) // Aggregation
+            else if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.AGGREGATION)
             {
                 AggregationBox dlg = new AggregationBox(column, null);
                 dlg.Owner = this;
@@ -711,15 +711,18 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
             }
+            else
+            {
+                throw new NotImplementedException("A column must have a definition of certain type.");
+            }
 
+            // Notify visual components about changes in this column
+            MashupModelRoot.NotifyAllOnPropertyChanged("");
+            
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             column.ColumnDefinition.Evaluate();
 
             SelectedMashupDim = column;
-
-            // TODO: 
-            // Introduce mode for dialogs: Create, Edit_Name, Edit_Definition, Edit_Target etc. Also think about tables.
-            // Use these masks to initialize a dialog: disable/enable controls. Also, use it for the logic.
         }
 
         #endregion

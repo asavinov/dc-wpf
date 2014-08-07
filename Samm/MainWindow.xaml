@@ -182,10 +182,10 @@
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
                 </RibbonGroup>
                 <RibbonGroup x:Name="editColumnsMenuGroup" Header="Edit">
-                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Edit" KeyTip="E" />
+                    <RibbonButton LargeImageSource="Images\edit_column.png" Label="Edit" KeyTip="E" Command="{StaticResource EditColumnCommand}" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="deleteColumnsMenuGroup" Header="Delete">
-                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete" KeyTip="D" />
+                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete" KeyTip="D" Command="{StaticResource DeleteColumnCommand}" />
                 </RibbonGroup>
             </RibbonTab>
 

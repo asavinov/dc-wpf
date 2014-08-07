@@ -32,7 +32,7 @@
         <ListView Name="factTables" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=FactTables}" SelectedItem="{Binding Path=FactTable, Mode=TwoWay}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" SelectionChanged="FactTables_SelectionChanged"/>
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Grouping Paths:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="groupingPaths" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=GroupingPaths}" SelectedItem="{Binding Path=GroupingPath, Mode=TwoWay}" ItemTemplate="{StaticResource DimPathListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="GroupingPaths_SelectionChanged"/>
+        <ComboBox Name="groupingPaths" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=GroupingPaths}" SelectedItem="{Binding Path=GroupingPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ItemTemplate="{StaticResource DimPathListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="GroupingPaths_SelectionChanged"/>
 
         <Label  Grid.Column="0" Grid.Row="4" Content="Measure Paths:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ComboBox Name="measurePaths" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=MeasurePaths}" SelectedItem="{Binding Path=MeasurePath, Mode=TwoWay}" ItemTemplate="{StaticResource DimPathListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="MeasurePaths_SelectionChanged"/>

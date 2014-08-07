@@ -55,17 +55,30 @@ namespace Samm.Dialogs
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs("FactTables"));
+                PropertyChanged(this, new PropertyChangedEventArgs("FactTable"));
+
                 PropertyChanged(this, new PropertyChangedEventArgs("GroupingPaths"));
                 PropertyChanged(this, new PropertyChangedEventArgs("GroupingPath"));
                 PropertyChanged(this, new PropertyChangedEventArgs("MeasurePaths"));
                 PropertyChanged(this, new PropertyChangedEventArgs("MeasurePath"));
                 PropertyChanged(this, new PropertyChangedEventArgs("AggregationFunctions"));
+                PropertyChanged(this, new PropertyChangedEventArgs("AggregationFunction"));
             }
 
-            factTables.Items.Refresh();
-            groupingPaths.Items.Refresh();
-            measurePaths.Items.Refresh();
-            aggregationFunctions.Items.Refresh();
+            factTables.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
+            //factTables.Items.Refresh();
+
+            groupingPaths.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            groupingPaths.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+            //groupingPaths.Items.Refresh();
+
+            measurePaths.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            measurePaths.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+            //measurePaths.Items.Refresh();
+
+            aggregationFunctions.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            aggregationFunctions.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+            //aggregationFunctions.Items.Refresh();
         }
 
         public AggregationBox(CsColumn column, CsColumn measureColumn)
@@ -78,6 +91,8 @@ namespace Samm.Dialogs
             Column = column;
             SourceTable = column.LesserSet;
 
+            newColumnName.Text = Column.Name;
+
             // Initialize all possible fact tables (lesser tables)
             FactTables = MappingModel.GetPossibleLesserSets(SourceTable);
             if (!IsNew)
@@ -88,30 +103,10 @@ namespace Samm.Dialogs
             {
                 if (FactTables.Count == 1) FactTable = FactTables[0];
             }
+            // By setting a fact table here we trigger item selection event where two controls will be filled: grouping paths and measure paths.
 
-            // Initialize all possible grouping paths
-            GroupingPaths = new List<DimPath>();
-            if (!IsNew)
-            {
-                GroupingPath = Column.ColumnDefinition.GroupPaths[0];
-            }
-            else
-            {
-                if (GroupingPaths.Count == 1) GroupingPath = GroupingPaths[0];
-            }
-
-            // Initialize all possible measure paths
-            MeasurePaths = new List<DimPath>();
-            if (!IsNew)
-            {
-                MeasurePath = Column.ColumnDefinition.MeasurePaths[0];
-            }
-            else
-            {
-                if (MeasurePaths.Count == 1) MeasurePath = MeasurePaths[0];
-            }
-            
-            if (measureColumn != null)
+            // Use additional parameter for selecting desired measure
+            if (IsNew && measureColumn != null)
             {
                 // Find at least one fact table that has a measure path to this measure column
                 foreach (CsTable table in FactTables)
@@ -151,12 +146,30 @@ namespace Samm.Dialogs
 
             if (factTable == null) return;
 
-            // Paths from the fact set to the source set
+            //
+            // Initialize grouping paths. Paths from the fact set to the source set
+            //
             var grPaths = new PathEnumerator((CsTable)factTable, SourceTable, DimensionType.IDENTITY_ENTITY);
             GroupingPaths = grPaths.ToList<DimPath>();
-            if (GroupingPaths.Count == 1) GroupingPath = GroupingPaths[0];
 
-            // Paths from the fact set to numeric sets
+            // Select some grouping path item
+            if (!IsNew && factTable == Column.ColumnDefinition.FactTable) // If the fact table as defined then grouping path also as defined (i.e., show the current definition)
+            {
+                foreach (var p in GroupingPaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
+                {
+                    if (p.HashName != Column.ColumnDefinition.GroupPaths[0].HashName) continue;
+                    GroupingPath = p;
+                    break;
+                }
+            }
+            else // Recommend best grouping path: single choise, shortest path etc.
+            {
+                if (GroupingPaths.Count == 1) GroupingPath = GroupingPaths[0];
+            }
+
+            //
+            // Initialize measure paths. Paths from the fact set to numeric sets
+            //
             CsSchema schema = ((CsTable)factTable).Top;
             var mePaths = new PathEnumerator(
                 new List<CsTable>(new CsTable[] { (CsTable)factTable }),
@@ -164,11 +177,23 @@ namespace Samm.Dialogs
                 false,
                 DimensionType.IDENTITY_ENTITY
                );
-
             MeasurePaths = mePaths.ToList<DimPath>();
-            if (MeasurePaths.Count == 1) MeasurePath = MeasurePaths[0];
 
-            // Refresh
+            // Select some measure path item
+            if (!IsNew && factTable == Column.ColumnDefinition.FactTable)
+            {
+                foreach (var p in MeasurePaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
+                {
+                    if (p.HashName != Column.ColumnDefinition.MeasurePaths[0].HashName) continue;
+                    MeasurePath = p;
+                    break;
+                }
+            }
+            else
+            {
+                if (MeasurePaths.Count == 1) MeasurePath = MeasurePaths[0];
+            }
+
             RefreshAll();
         }
 
@@ -178,13 +203,6 @@ namespace Samm.Dialogs
             var fragment = cb.SelectedItem; // or SelectedValue
 
             if (fragment == null) return;
-
-            //
-            // TODO: other lists depend on this selection, so update path lists
-            //
-
-            // Refresh
-            RefreshAll();
         }
 
         private void MeasurePaths_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -193,18 +211,13 @@ namespace Samm.Dialogs
             var fragment = cb.SelectedItem; // or SelectedValue
 
             if (fragment == null) return;
-
-            //
-            // TODO: other lists depend on this selection, so update path lists
-            //
-
-            // Refresh
-            RefreshAll();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
             CsSchema schema = Column.LesserSet.Top;
+
+            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.AGGREGATION;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -223,7 +236,9 @@ namespace Samm.Dialogs
 
             // Column definition
             Column.ColumnDefinition.FactTable = FactTable;
+            Column.ColumnDefinition.GroupPaths.Clear();
             Column.ColumnDefinition.GroupPaths.Add(GroupingPath);
+            Column.ColumnDefinition.MeasurePaths.Clear();
             Column.ColumnDefinition.MeasurePaths.Add(MeasurePath);
             Column.ColumnDefinition.Updater = AggregationFunction;
 

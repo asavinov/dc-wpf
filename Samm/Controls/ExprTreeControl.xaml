@@ -47,7 +47,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TreeView Name="ExprTree" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+        <TreeView Name="ExprTreeView" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Path=.}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
         </TreeView>
 
 <!--

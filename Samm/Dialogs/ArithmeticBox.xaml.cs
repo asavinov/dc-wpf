@@ -61,13 +61,12 @@ namespace Samm.Dialogs
             operands.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
             operands.Items.Refresh();
 
-            expressionModel.ExprTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
-            expressionModel.ExprTree.Items.Refresh();
+            expressionModel.ExprTreeView.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
+            expressionModel.ExprTreeView.Items.Refresh();
         }
 
         public ArithmeticBox(CsColumn column, bool whereExpression)
         {
-            InitializeComponent();
 
             if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
             else IsNew = true;
@@ -83,6 +82,10 @@ namespace Samm.Dialogs
             {
                 ExpressionModel.Add(Column.ColumnDefinition.Formula);
             }
+
+            InitializeComponent();
+
+            newColumnName.Text = Column.Name;
 
             // Initialize a list of possible operations
             ActionType[] ops;
@@ -116,6 +119,10 @@ namespace Samm.Dialogs
                );
             SourcePaths = paths.ToList();
 
+            // If we edit an existing column then we do not want to use it in the definition as an operand
+            DimPath columnPath = SourcePaths.FirstOrDefault(p => p.FirstSegment == column);
+            if(columnPath != null) SourcePaths.Remove(columnPath);
+
             RefreshAll();
         }
 
@@ -125,14 +132,14 @@ namespace Samm.Dialogs
             // Determine parent expression node for inserting the selected new operation node
             //
             ExprNode parentExpr;
-            parentExpr = (ExprNode)expressionModel.ExprTree.SelectedItem;
+            parentExpr = (ExprNode)expressionModel.ExprTreeView.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // No parent node
 
             //
             // Determine operation and create child expression node
             //
+            if (operations.SelectedItem == null) return;
             ActionType op = (ActionType)operations.SelectedItem;
-            if (op == null) return; // WARNING: should never happen
 
             var expr = new ExprNode();
             expr.Operation = OperationType.CALL;
@@ -178,7 +185,7 @@ namespace Samm.Dialogs
             // Determine parent expression
             //
             ExprNode parentExpr;
-            parentExpr = (ExprNode)expressionModel.ExprTree.SelectedItem;
+            parentExpr = (ExprNode)expressionModel.ExprTreeView.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
@@ -211,7 +218,7 @@ namespace Samm.Dialogs
             // Determine parent expression
             //
             ExprNode parentExpr;
-            parentExpr = (ExprNode)expressionModel.ExprTree.SelectedItem;
+            parentExpr = (ExprNode)expressionModel.ExprTreeView.SelectedItem;
             if (parentExpr == null && ExpressionModel.Count != 0) return; // Nothing is selected
 
             //
@@ -246,7 +253,7 @@ namespace Samm.Dialogs
             // Determine currently selected expression
             //
             ExprNode selectedNode;
-            selectedNode = (ExprNode)expressionModel.ExprTree.SelectedItem;
+            selectedNode = (ExprNode)expressionModel.ExprTreeView.SelectedItem;
             if (selectedNode == null) return; // Nothing is selected
 
             if (selectedNode.Parent == null) // First exprssion node
@@ -264,6 +271,8 @@ namespace Samm.Dialogs
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
             CsSchema schema = Column.LesserSet.Top;
+
+            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.ARITHMETIC;
 
             // Column name
             Column.Name = newColumnName.Text;
