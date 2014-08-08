@@ -540,20 +540,7 @@ namespace Samm
                 return;
             }
 
-            // TODO: The dialog knows that we want to edit table Where expression because of the input flat (whereExpression). 
-            // Alternatively, we can remove this flag, and use a CsTable constructor for editing Where expressions of tables.
-            // TODO: Either the dialog itself or we here copy expression from the temporary column to the table Where definition
-            if (whereDlg.ExpressionModel != null && whereDlg.ExpressionModel.Count > 0)
-            {
-                ExprNode whereExpr = whereDlg.ExpressionModel[0];
-                whereExpr.Result.TypeName = "Boolean";
-                whereExpr.Result.TypeTable = schema.GetPrimitive("Boolean");
-                productSet.Definition.WhereExpression = whereExpr;
-            }
-
-            // 
             // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
-            //
             productSet.Definition.Populate();
 
             SelectedMashupSet = productSet;
@@ -564,10 +551,13 @@ namespace Samm
             CsSchema schema = MashupTop;
 
             // Create a new (extracted) set
-            CsTable extractedSet = schema.CreateTable("New Table");
+            string newTableName = "New Table";
+            CsTable extractedSet = schema.CreateTable(newTableName);
+            extractedSet.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             // Create a new (mapped, generating) dimension to the new set
-            CsColumn extractedDim = schema.CreateColumn("Mew Column", set, extractedSet, false);
+            string newColumnName = "New Column";
+            CsColumn extractedDim = schema.CreateColumn(newColumnName, set, extractedSet, false);
 
             //
             // Show parameters for set extraction
@@ -579,9 +569,6 @@ namespace Samm
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
-
-
-
 
             // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
             extractedSet.Definition.Populate();
@@ -597,13 +584,23 @@ namespace Samm
 
             if (table.Definition.DefinitionType == TableDefinitionType.PROJECTION)
             {
-                /*
-                ExtractTableBox dlg = new ExtractTableBox(table, null);
+                CsColumn column = table.Definition.GeneratingDimensions[0];
+
+                ExtractTableBox dlg = new ExtractTableBox(column, null);
                 dlg.Owner = this;
                 dlg.ShowDialog(); // Open the dialog box modally 
 
                 if (dlg.DialogResult == false) return; // Cancel
-                */
+            }
+            if (table.Definition.DefinitionType == TableDefinitionType.PRODUCT)
+            {
+                // Create a new column (temporary, just to store a where expression)
+                CsColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);
+
+                // Show dialog for authoring arithmetic expression
+                ArithmeticBox whereDlg = new ArithmeticBox(column, true);
+                whereDlg.Owner = this;
+                whereDlg.ShowDialog(); // Open the dialog box modally 
             }
             else
             {

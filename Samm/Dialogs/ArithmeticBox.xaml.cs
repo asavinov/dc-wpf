@@ -41,6 +41,7 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class ArithmeticBox : Window
     {
+        bool IsWhere { get; set; } // True if we edit Where expression of a table (lesser table of the column parameter)
         bool IsNew { get; set; }
 
         CsColumn Column { get; set; }
@@ -67,6 +68,7 @@ namespace Samm.Dialogs
 
         public ArithmeticBox(CsColumn column, bool whereExpression)
         {
+            IsWhere = whereExpression;
 
             if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
             else IsNew = true;
@@ -78,9 +80,19 @@ namespace Samm.Dialogs
             SourceTable = sourceTable;
 
             ExpressionModel = new ObservableCollection<ExprNode>(); // This contains what we will create/edit
-            if (Column.Definition.Formula != null)
+            if (IsWhere)
             {
-                ExpressionModel.Add(Column.Definition.Formula);
+                if (SourceTable.Definition.WhereExpression != null)
+                {
+                    ExpressionModel.Add(SourceTable.Definition.WhereExpression);
+                }
+            }
+            else
+            {
+                if (Column.Definition.Formula != null)
+                {
+                    ExpressionModel.Add(Column.Definition.Formula);
+                }
             }
 
             InitializeComponent();
@@ -93,6 +105,7 @@ namespace Samm.Dialogs
             {
                 // Other ways: to collapse a grid row: http://stackoverflow.com/questions/2502178/wpf-hide-grid-row
                 Controls.RowDefinitions[0].Height = new GridLength(0);
+                sourceTableName.IsReadOnly = false;
 
                 ops = new ActionType[] 
                 { 
@@ -105,6 +118,7 @@ namespace Samm.Dialogs
             else
             {
                 Controls.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Auto);
+                sourceTableName.IsReadOnly = true;
 
                 ops = new ActionType[] { ActionType.MUL, ActionType.DIV, ActionType.ADD, ActionType.SUB };
             }
@@ -275,7 +289,14 @@ namespace Samm.Dialogs
             Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
 
             // Column name
-            Column.Name = newColumnName.Text;
+            if (IsWhere)
+            {
+                SourceTable.Name = sourceTableName.Text;
+            }
+            else
+            {
+                Column.Name = newColumnName.Text;
+            }
 
             // Column definition
             ExprNode expr = null;
@@ -287,14 +308,28 @@ namespace Samm.Dialogs
             {
                 expr = ExpressionModel[0];
             }
-            Column.Definition.Formula = expr;
 
-            // Column type
-            // Derive output type of the expression and use it to set the type of the column. 
-            // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
-            expr.Resolve(schema, new List<CsVariable>() { new Variable("this", SourceTable) });
-            Column.GreaterSet = expr.Result.TypeTable;
+            if (IsWhere) // Expression is part of the table Where definition
+            {
+                if (expr != null)
+                {
+                    expr.Result.TypeName = "Boolean";
+                    expr.Result.TypeTable = schema.GetPrimitive("Boolean");
+                }
 
+                SourceTable.Definition.WhereExpression = expr;
+            }
+            else // Expression belongs to the column definition
+            {
+                // Column type
+                // Derive output type of the expression and use it to set the type of the column. 
+                // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
+                expr.Resolve(schema, new List<CsVariable>() { new Variable("this", SourceTable) });
+                Column.GreaterSet = expr.Result.TypeTable;
+
+                Column.Definition.Formula = expr;
+            }
+            
             this.DialogResult = true;
         }
     }

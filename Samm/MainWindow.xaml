@@ -171,7 +171,7 @@
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
                 </RibbonGroup>
                 <RibbonGroup x:Name="editTablesMenuGroup" Header="Edit">
-                    <RibbonButton LargeImageSource="Images\delete_table.png" Label="Edit Table" KeyTip="E" Command="{StaticResource EditTableCommand}" />
+                    <RibbonButton LargeImageSource="Images\edit_table.png" Label="Edit Table" KeyTip="E" Command="{StaticResource EditTableCommand}" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="deleteTablesMenuGroup" Header="Delete">
                     <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete Table" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />
