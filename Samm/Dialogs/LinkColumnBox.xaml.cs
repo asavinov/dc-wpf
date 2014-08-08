@@ -98,7 +98,7 @@ namespace Samm.Dialogs
             MappingModel = new MappingModel(sourceTable, targetTable);
             if (!IsNew)
             {
-                MappingModel.Mapping = Column.ColumnDefinition.Mapping;
+                MappingModel.Mapping = Column.Definition.Mapping;
             }
 
             RefreshAll();
@@ -149,7 +149,7 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.LINK;
+            Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -161,8 +161,8 @@ namespace Samm.Dialogs
             }
 
             // Column definition
-            Column.ColumnDefinition.Mapping = MappingModel.Mapping;
-            Column.ColumnDefinition.IsGenerating = false;
+            Column.Definition.Mapping = MappingModel.Mapping;
+            Column.Definition.IsGenerating = false;
 
             this.DialogResult = true;
         }

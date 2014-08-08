@@ -97,7 +97,7 @@ namespace Samm.Dialogs
             FactTables = MappingModel.GetPossibleLesserSets(SourceTable);
             if (!IsNew)
             {
-                FactTable = Column.ColumnDefinition.FactTable;
+                FactTable = Column.Definition.FactTable;
             }
             else
             {
@@ -129,7 +129,7 @@ namespace Samm.Dialogs
             AggregationFunctions = new List<string>(new string[] { "COUNT", "SUM", "MUL" });
             if (!IsNew)
             {
-                AggregationFunction = Column.ColumnDefinition.Updater;
+                AggregationFunction = Column.Definition.Updater;
             }
             else
             {
@@ -153,11 +153,11 @@ namespace Samm.Dialogs
             GroupingPaths = grPaths.ToList<DimPath>();
 
             // Select some grouping path item
-            if (!IsNew && factTable == Column.ColumnDefinition.FactTable) // If the fact table as defined then grouping path also as defined (i.e., show the current definition)
+            if (!IsNew && factTable == Column.Definition.FactTable) // If the fact table as defined then grouping path also as defined (i.e., show the current definition)
             {
                 foreach (var p in GroupingPaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
                 {
-                    if (p.HashName != Column.ColumnDefinition.GroupPaths[0].HashName) continue;
+                    if (p.HashName != Column.Definition.GroupPaths[0].HashName) continue;
                     GroupingPath = p;
                     break;
                 }
@@ -180,11 +180,11 @@ namespace Samm.Dialogs
             MeasurePaths = mePaths.ToList<DimPath>();
 
             // Select some measure path item
-            if (!IsNew && factTable == Column.ColumnDefinition.FactTable)
+            if (!IsNew && factTable == Column.Definition.FactTable)
             {
                 foreach (var p in MeasurePaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
                 {
-                    if (p.HashName != Column.ColumnDefinition.MeasurePaths[0].HashName) continue;
+                    if (p.HashName != Column.Definition.MeasurePaths[0].HashName) continue;
                     MeasurePath = p;
                     break;
                 }
@@ -217,7 +217,7 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.AGGREGATION;
+            Column.Definition.DefinitionType = ColumnDefinitionType.AGGREGATION;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -235,12 +235,12 @@ namespace Samm.Dialogs
             Column.GreaterSet = targetTable;
 
             // Column definition
-            Column.ColumnDefinition.FactTable = FactTable;
-            Column.ColumnDefinition.GroupPaths.Clear();
-            Column.ColumnDefinition.GroupPaths.Add(GroupingPath);
-            Column.ColumnDefinition.MeasurePaths.Clear();
-            Column.ColumnDefinition.MeasurePaths.Add(MeasurePath);
-            Column.ColumnDefinition.Updater = AggregationFunction;
+            Column.Definition.FactTable = FactTable;
+            Column.Definition.GroupPaths.Clear();
+            Column.Definition.GroupPaths.Add(GroupingPath);
+            Column.Definition.MeasurePaths.Clear();
+            Column.Definition.MeasurePaths.Add(MeasurePath);
+            Column.Definition.Updater = AggregationFunction;
 
             this.DialogResult = true;
         }

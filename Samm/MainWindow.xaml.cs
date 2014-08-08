@@ -114,8 +114,8 @@ namespace Samm
             d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), false);
             d2.Add();
 
-            departments.TableData.Append(new CsColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
-            departments.TableData.Append(new CsColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
+            departments.Data.Append(new CsColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
+            departments.Data.Append(new CsColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
 
             CsTable employees = ds.CreateTable("Employees");
             ds.AddTable(employees, null, null);
@@ -187,6 +187,16 @@ namespace Samm
                 Wizard_ExtractTable(SelectedMashupSet);
             else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
                 Wizard_ExtractTable(SelectedMashupDim.LesserSet);
+            e.Handled = true;
+        }
+
+        private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            CsTable table = SelectedMashupSet;
+            if (table != null)
+            {
+                Wizard_EditTable(table);
+            }
             e.Handled = true;
         }
 
@@ -309,7 +319,7 @@ namespace Samm
             dim.Add();
 
             // Populate this new table (in fact, can be done separately during Update)
-            targetTable.TableDefinition.Populate();
+            targetTable.Definition.Populate();
 
             SelectedMashupSet = targetTable;
         }
@@ -538,13 +548,13 @@ namespace Samm
                 ExprNode whereExpr = whereDlg.ExpressionModel[0];
                 whereExpr.Result.TypeName = "Boolean";
                 whereExpr.Result.TypeTable = schema.GetPrimitive("Boolean");
-                productSet.TableDefinition.WhereExpression = whereExpr;
+                productSet.Definition.WhereExpression = whereExpr;
             }
 
             // 
             // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
             //
-            productSet.TableDefinition.Populate();
+            productSet.Definition.Populate();
 
             SelectedMashupSet = productSet;
         }
@@ -553,10 +563,16 @@ namespace Samm
         {
             CsSchema schema = MashupTop;
 
+            // Create a new (extracted) set
+            CsTable extractedSet = schema.CreateTable("New Table");
+
+            // Create a new (mapped, generating) dimension to the new set
+            CsColumn extractedDim = schema.CreateColumn("Mew Column", set, extractedSet, false);
+
             //
             // Show parameters for set extraction
             //
-            ExtractTableBox dlg = new ExtractTableBox(set, SelectedMashupDim);
+            ExtractTableBox dlg = new ExtractTableBox(extractedDim, SelectedMashupDim);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -564,49 +580,43 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (string.IsNullOrWhiteSpace(dlg.NewTableName) || string.IsNullOrWhiteSpace(dlg.NewColumnName) || dlg.projectionDims.SelectedItems.Count == 0) return;
 
-            // Initialize a list of selected dimensions (from the whole list of all greater dimensions
-            List<CsColumn> projectionDims = new List<CsColumn>();
-            foreach (var item in dlg.projectionDims.SelectedItems)
-            {
-                projectionDims.Add((CsColumn)item);
-            }
 
-            //
-            // Create a new (extracted) set
-            //
-            CsTable extractedSet = schema.CreateTable(dlg.NewTableName);
-            schema.AddTable(extractedSet, set.SuperSet, null);
 
-            //
-            // Create identity dimensions for the extracted set and their mapping to the projection dimensions
-            //
-            Mapping mapping = new Mapping(set, extractedSet);
-            foreach (CsColumn projDim in projectionDims)
-            {
-                CsTable idSet = projDim.GreaterSet;
-                CsColumn idDim = schema.CreateColumn(projDim.Name, extractedSet, idSet, true);
-                idDim.Add();
-
-                mapping.AddMatch(new PathMatch(new DimPath(projDim), new DimPath(idDim))); 
-            }
-
-            //
-            // Create a new (mapped) dimension to the new set
-            //
-            CsColumn extractedDim = schema.CreateColumn(dlg.NewColumnName, set, extractedSet, false);
-            extractedDim.ColumnDefinition.Mapping = mapping;
-            extractedDim.ColumnDefinition.IsGenerating = true;
-            extractedDim.Add();
-
-            // 
             // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
-            //
-            extractedSet.TableDefinition.ProjectDimensions.Add(extractedDim);
-            extractedSet.TableDefinition.Populate();
+            extractedSet.Definition.Populate();
 
             SelectedMashupSet = extractedSet;
+        }
+
+        public void Wizard_EditTable(CsTable table)
+        {
+            if (table == null) return;
+
+            CsSchema schema = MashupTop;
+
+            if (table.Definition.DefinitionType == TableDefinitionType.PROJECTION)
+            {
+                /*
+                ExtractTableBox dlg = new ExtractTableBox(table, null);
+                dlg.Owner = this;
+                dlg.ShowDialog(); // Open the dialog box modally 
+
+                if (dlg.DialogResult == false) return; // Cancel
+                */
+            }
+            else
+            {
+                throw new NotImplementedException("A table must have a definition of certain type.");
+            }
+
+            // Notify visual components about changes in this column
+            MashupModelRoot.NotifyAllOnPropertyChanged("");
+
+            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
+            table.Definition.Populate();
+
+            SelectedMashupSet = table;
         }
 
         public void Wizard_AddArithmetic(CsTable srcSet)
@@ -625,11 +635,11 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (column.ColumnDefinition.Formula == null) return; // No formula
+            if (column.Definition.Formula == null) return; // No formula
             
             column.Add();
 
-            column.ColumnDefinition.Evaluate();
+            column.Definition.Evaluate();
 
             SelectedMashupDim = column;
         }
@@ -652,7 +662,7 @@ namespace Samm
 
             column.Add();
 
-            column.ColumnDefinition.Evaluate();
+            column.Definition.Evaluate();
 
             SelectedMashupDim = column;
         }
@@ -675,7 +685,7 @@ namespace Samm
 
             column.Add();
 
-            column.ColumnDefinition.Evaluate();
+            column.Definition.Evaluate();
 
             SelectedMashupDim = column;
         }
@@ -686,7 +696,7 @@ namespace Samm
 
             CsSchema schema = MashupTop;
 
-            if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.ARITHMETIC)
+            if (column.Definition.DefinitionType == ColumnDefinitionType.ARITHMETIC)
             {
                 ArithmeticBox dlg = new ArithmeticBox(column, false);
                 dlg.Owner = this;
@@ -695,7 +705,7 @@ namespace Samm
                 if (dlg.DialogResult == false) return; // Cancel
 
             }
-            else if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.LINK)
+            else if (column.Definition.DefinitionType == ColumnDefinitionType.LINK)
             {
                 LinkColumnBox dlg = new LinkColumnBox(column);
                 dlg.Owner = this;
@@ -703,7 +713,7 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
             }
-            else if (column.ColumnDefinition.ColumnDefinitionType == ColumnDefinitionType.AGGREGATION)
+            else if (column.Definition.DefinitionType == ColumnDefinitionType.AGGREGATION)
             {
                 AggregationBox dlg = new AggregationBox(column, null);
                 dlg.Owner = this;
@@ -720,7 +730,7 @@ namespace Samm
             MashupModelRoot.NotifyAllOnPropertyChanged("");
             
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
-            column.ColumnDefinition.Evaluate();
+            column.Definition.Evaluate();
 
             SelectedMashupDim = column;
         }

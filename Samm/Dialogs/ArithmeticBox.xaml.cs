@@ -78,9 +78,9 @@ namespace Samm.Dialogs
             SourceTable = sourceTable;
 
             ExpressionModel = new ObservableCollection<ExprNode>(); // This contains what we will create/edit
-            if (Column.ColumnDefinition.Formula != null)
+            if (Column.Definition.Formula != null)
             {
-                ExpressionModel.Add(Column.ColumnDefinition.Formula);
+                ExpressionModel.Add(Column.Definition.Formula);
             }
 
             InitializeComponent();
@@ -272,7 +272,7 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.ColumnDefinition.ColumnDefinitionType = ColumnDefinitionType.ARITHMETIC;
+            Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -287,7 +287,7 @@ namespace Samm.Dialogs
             {
                 expr = ExpressionModel[0];
             }
-            Column.ColumnDefinition.Formula = expr;
+            Column.Definition.Formula = expr;
 
             // Column type
             // Derive output type of the expression and use it to set the type of the column. 

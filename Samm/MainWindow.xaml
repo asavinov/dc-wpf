@@ -46,6 +46,7 @@
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
+        <RoutedUICommand x:Key="EditTableCommand" Text="Edit Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
 
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
@@ -68,6 +69,7 @@
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ProductTableCommand}" Executed="ProductTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" Executed="ExtractTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource EditTableCommand}" Executed="EditTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" Executed="DeleteTableCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AddCalculationCommand}" Executed="AddArithmeticCommand_Executed" />
@@ -167,6 +169,9 @@
                     <RibbonButton LargeImageSource="Images\extract_table.png" Label="Extract" KeyTip="X" Command="{StaticResource ExtractTableCommand}" /><!-- Create one greater table and a new dimension referencing it. -->
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> --> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
                     <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
+                </RibbonGroup>
+                <RibbonGroup x:Name="editTablesMenuGroup" Header="Edit">
+                    <RibbonButton LargeImageSource="Images\delete_table.png" Label="Edit Table" KeyTip="E" Command="{StaticResource EditTableCommand}" />
                 </RibbonGroup>
                 <RibbonGroup x:Name="deleteTablesMenuGroup" Header="Delete">
                     <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete Table" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />

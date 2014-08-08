@@ -134,9 +134,9 @@ namespace Samm
 
         public bool MoveNext()
         {
-            if (Offset < Set.TableData.Length) Offset++; // Increement if possible
+            if (Offset < Set.Data.Length) Offset++; // Increement if possible
 
-            if (Offset >= Set.TableData.Length) return false; // Cannot move
+            if (Offset >= Set.Data.Length) return false; // Cannot move
 
             return true;
         }
@@ -173,13 +173,13 @@ namespace Samm
                 if (index < 0 || index >= dimCount) return null;
                 CsColumn dim = Set.GreaterDims[index];
 
-                if (dim.ColumnData.IsNull(Offset))
+                if (dim.Data.IsNull(Offset))
                 {
                     return "";
                 }
                 else
                 {
-                    object cell = dim.ColumnData.GetValue(Offset);
+                    object cell = dim.Data.GetValue(Offset);
                     return Convert.ToString(cell);
                 }
             }
@@ -189,7 +189,7 @@ namespace Samm
         {
             CsColumn dim = Set.GetGreaterDim(dimName);
             if (dim == null) return null;
-            return (string)dim.ColumnData.GetValue(Offset);
+            return (string)dim.Data.GetValue(Offset);
         }
     }
 
