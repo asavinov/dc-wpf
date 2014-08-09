@@ -215,7 +215,6 @@ namespace Samm
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedTable == null) return;
-            Wizard_FilteredTable(SelectedTable);
             e.Handled = true;
         }
 
@@ -300,6 +299,8 @@ namespace Samm
         }
         private void UpdateTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            if (SelectedTable == null) return;
+            SelectedTable.Definition.Populate();
         }
 
         private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -390,6 +391,8 @@ namespace Samm
         }
         private void UpdateColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            if (SelectedColumn == null) return;
+            SelectedColumn.Definition.Evaluate();
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -570,86 +573,20 @@ namespace Samm
             dcs.SaveConfiguration(dcd);
         }
 
-        public void Wizard_FilteredTable(CsTable parent)
-        {
-            /*
-            //
-            // Create new subset
-            //
-            CsTable dstSet = new Set("My Table");
-            parent.AddSubset(dstSet);
-
-            //
-            // Show recommendations and let the user choose one of them
-            //
-            FilteredTableBox dlg = new FilteredTableBox();
-            dlg.Owner = this;
-            dlg.SourceTable = parent;
-            dlg.FilteredTable = dstSet;
-            dlg.RefreshAll();
-
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            if (dlg.ExpressionModel == null && dlg.ExpressionModel.Count == 0)
-                return;
-
-            Com.Model.Expression expr = dlg.ExpressionModel[0];
-
-            // Populate new set
-            dstSet.WhereExpression = expr;
-            dstSet.Populate();
-            */
-        }
-
         public void Wizard_ProductTable(CsTable set)
         {
             CsSchema schema = MashupTop;
 
-            //
+            // Create a new (product) set
+            string productTableName = "New Table";
+            CsTable productSet = schema.CreateTable(productTableName);
+
             // Show parameters for creating a product set
-            //
-            ProductTableBox dlg = new ProductTableBox();
+            ProductTableBox dlg = new ProductTableBox(schema, productSet, SelectedTable);
             dlg.Owner = this;
-            dlg.GreaterTables = new List<CsTable>();
-            dlg.GreaterTables.AddRange(MashupTop.Root.GetAllSubsets()); // Fill the list with potential greater tables
-
-            dlg.newTableName.Text = "New Product Table";
-
-            if (SelectedTable != null)
-            {
-                dlg.greaterTables.SelectedItem = SelectedTable;
-            }
-
-            dlg.RefreshAll();
-
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
-
-            string productTableName = dlg.newTableName.Text;
-            if (string.IsNullOrWhiteSpace(productTableName) || string.IsNullOrWhiteSpace(productTableName) || dlg.greaterTables.SelectedItems.Count == 0) return;
-
-            // Initialize a list of selected dimensions (from the whole list of all greater dimensions
-            List<CsTable> greaterSets = new List<CsTable>();
-            foreach (var item in dlg.greaterTables.SelectedItems)
-            {
-                greaterSets.Add((CsTable)item);
-            }
-
-            //
-            // Create a new (product) set
-            //
-            CsTable productSet = schema.CreateTable(productTableName);
-            schema.AddTable(productSet, null, null);
-
-            // Create identity dimensions for the product set
-            foreach (CsTable gSet in greaterSets)
-            {
-                CsColumn gDim = schema.CreateColumn(gSet.Name, productSet, gSet, true);
-                gDim.Add();
-            }
 
             //
             // Add filter expression for the new table
