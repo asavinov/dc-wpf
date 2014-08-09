@@ -56,18 +56,42 @@ namespace Samm
             if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
             return false;
         }
-        public SubsetTree SelectedMashupItem 
+
+        //
+        // Selection state
+        //
+        public SubsetTree SelectedItem 
         { 
             get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; }
         }
-        public CsTable SelectedMashupSet 
-        { 
-            get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsSubsetNode) return item.LesserSet; return null; }
+        public CsTable SelectedRoot
+        {
+            get 
+            { 
+                SubsetTree item = SelectedItem; 
+                if (item == null) return null;
+                if (item.IsSubsetNode && item.LesserSet.IsPrimitive && item.LesserSet.Name == "Root") return (CsTable)item.LesserSet; 
+                return null;
+            }
+        }
+        public CsTable SelectedTable 
+        {
+            get
+            {
+                SubsetTree item = SelectedItem;
+                if (item == null) return null;
+                if (item.IsSubsetNode)
+                {
+                    if (item.LesserSet.IsPrimitive) return null; 
+                    else return item.LesserSet;
+                }
+                return null;
+            }
             set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); } 
         }
-        public CsColumn SelectedMashupDim 
+        public CsColumn SelectedColumn 
         { 
-            get { SubsetTree item = SelectedMashupItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; }
+            get { SubsetTree item = SelectedItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; }
             set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); }
         }
 
@@ -142,10 +166,31 @@ namespace Samm
 
         # region Command_Executed (call backs from Commands)
 
+        private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (SelectedMashupSet == null) return;
-            Operation_OpenTable(SelectedMashupSet);
+            if (SelectedTable == null) return;
+            Operation_OpenTable(SelectedTable);
+            e.Handled = true;
+        }
+
+        private void CloseViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (GridPanel != null && GridPanel.Content != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            lblWorkspace.Content = "DATA";
+
+            GridPanel.Content = null;
+
             e.Handled = true;
         }
 
@@ -169,30 +214,50 @@ namespace Samm
 
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (SelectedMashupSet == null) return;
-            Wizard_FilteredTable(SelectedMashupSet);
+            if (SelectedTable == null) return;
+            Wizard_FilteredTable(SelectedTable);
             e.Handled = true;
         }
 
+        private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = true;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
         private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (SelectedMashupSet == null) return;
-            Wizard_ProductTable(SelectedMashupSet);
+            Wizard_ProductTable(SelectedTable);
             e.Handled = true;
         }
 
+        private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
         private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (SelectedMashupSet != null) 
-                Wizard_ExtractTable(SelectedMashupSet);
-            else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
-                Wizard_ExtractTable(SelectedMashupDim.LesserSet);
+            if (SelectedTable != null) 
+                Wizard_ExtractTable(SelectedTable);
+            else if (SelectedColumn != null && SelectedColumn.LesserSet != null)
+                Wizard_ExtractTable(SelectedColumn.LesserSet);
             e.Handled = true;
         }
 
+        private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
         private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsTable table = SelectedMashupSet;
+            CsTable table = SelectedTable;
             if (table != null)
             {
                 Wizard_EditTable(table);
@@ -200,13 +265,20 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
         private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             CsTable set = null;
-            if (SelectedMashupSet != null)
-                set = SelectedMashupSet;
-            else if (SelectedMashupDim != null && SelectedMashupDim.LesserSet != null)
-                set = SelectedMashupDim.LesserSet;
+            if (SelectedTable != null)
+                set = SelectedTable;
+            else if (SelectedColumn != null && SelectedColumn.LesserSet != null)
+                set = SelectedColumn.LesserSet;
             else return;
 
             // Remove all connections of this set with the schema by deleting all its dimensions
@@ -219,10 +291,53 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void UpdateTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void UpdateTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AddArithmetic(SelectedTable);
+            e.Handled = true;
+        }
+
+        private void AddLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AddLink(SelectedTable, null);
+        }
+
+        private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedMashupDim;
-            CsTable srcSet = SelectedMashupSet;
+            CsColumn selDim = SelectedColumn;
+            CsTable srcSet = SelectedTable;
             if (srcSet == null && selDim != null)
             {
                 srcSet = selDim.LesserSet;
@@ -232,20 +347,16 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void EditColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            Wizard_AddArithmetic(SelectedMashupSet);
-            e.Handled = true;
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = false;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
         }
-
-        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_AddLink(SelectedMashupSet, null);
-        }
-
         private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedMashupDim;
+            CsColumn selDim = SelectedColumn;
             if (selDim != null)
             {
                 Wizard_EditColumn(selDim);
@@ -253,14 +364,32 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = false;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
         private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedMashupDim;
+            CsColumn selDim = SelectedColumn;
             if (selDim == null) return;
 
             selDim.Remove();
 
             e.Handled = true;
+        }
+
+        private void UpdateColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = false;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void UpdateColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -321,7 +450,7 @@ namespace Samm
             // Populate this new table (in fact, can be done separately during Update)
             targetTable.Definition.Populate();
 
-            SelectedMashupSet = targetTable;
+            SelectedTable = targetTable;
         }
 
         public void Wizard_AccessDatasource()
@@ -476,6 +605,8 @@ namespace Samm
 
         public void Wizard_ProductTable(CsTable set)
         {
+            CsSchema schema = MashupTop;
+
             //
             // Show parameters for creating a product set
             //
@@ -486,9 +617,9 @@ namespace Samm
 
             dlg.newTableName.Text = "New Product Table";
 
-            if (SelectedMashupSet != null)
+            if (SelectedTable != null)
             {
-                dlg.greaterTables.SelectedItem = SelectedMashupSet;
+                dlg.greaterTables.SelectedItem = SelectedTable;
             }
 
             dlg.RefreshAll();
@@ -510,7 +641,6 @@ namespace Samm
             //
             // Create a new (product) set
             //
-            CsSchema schema = MashupTop;
             CsTable productSet = schema.CreateTable(productTableName);
             schema.AddTable(productSet, null, null);
 
@@ -543,7 +673,7 @@ namespace Samm
             // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
             productSet.Definition.Populate();
 
-            SelectedMashupSet = productSet;
+            SelectedTable = productSet;
         }
 
         public void Wizard_ExtractTable(CsTable set)
@@ -562,7 +692,7 @@ namespace Samm
             //
             // Show parameters for set extraction
             //
-            ExtractTableBox dlg = new ExtractTableBox(extractedDim, SelectedMashupDim);
+            ExtractTableBox dlg = new ExtractTableBox(extractedDim, SelectedColumn);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -573,7 +703,7 @@ namespace Samm
             // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
             extractedSet.Definition.Populate();
 
-            SelectedMashupSet = extractedSet;
+            SelectedTable = extractedSet;
         }
 
         public void Wizard_EditTable(CsTable table)
@@ -613,7 +743,7 @@ namespace Samm
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             table.Definition.Populate();
 
-            SelectedMashupSet = table;
+            SelectedTable = table;
         }
 
         public void Wizard_AddArithmetic(CsTable srcSet)
@@ -638,7 +768,7 @@ namespace Samm
 
             column.Definition.Evaluate();
 
-            SelectedMashupDim = column;
+            SelectedColumn = column;
         }
 
         public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
@@ -661,7 +791,7 @@ namespace Samm
 
             column.Definition.Evaluate();
 
-            SelectedMashupDim = column;
+            SelectedColumn = column;
         }
 
         public void Wizard_AddAggregation(CsTable srcSet, CsColumn measureColumn)
@@ -684,7 +814,7 @@ namespace Samm
 
             column.Definition.Evaluate();
 
-            SelectedMashupDim = column;
+            SelectedColumn = column;
         }
 
         public void Wizard_EditColumn(CsColumn column)
@@ -729,7 +859,7 @@ namespace Samm
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             column.Definition.Evaluate();
 
-            SelectedMashupDim = column;
+            SelectedColumn = column;
         }
 
         #endregion
@@ -739,9 +869,6 @@ namespace Samm
         public void Operation_OpenTable(CsTable set)
         {
             lblWorkspace.Content = set.Name;
-
-            Label lbl = new Label();
-            lbl.Content = "Content";
 
             var gridView = new SetGridView(set);
             GridPanel.Content = gridView.Grid;

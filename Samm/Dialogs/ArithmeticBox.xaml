@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:samm="clr-namespace:Samm"
         xmlns:controls="clr-namespace:Samm.Controls"
-        Title="ArithmeticBox" Height="350" Width="400"
+        Title="Arithmetic Expression" Height="350" Width="400"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Label  Grid.Column="0" Grid.Row="0" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="0" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="My Column" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>

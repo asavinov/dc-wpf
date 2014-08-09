@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:samm="clr-namespace:Samm"
         xmlns:controls="clr-namespace:Samm.Controls"
-        Title="ChangeRangeBox" Height="400" Width="500"
+        Title="Link Column" Height="400" Width="450"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
@@ -23,7 +23,7 @@
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <Label  Grid.Column="0" Grid.Row="0" Content="New Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="0" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewColumnName}" IsReadOnly="False" HorizontalAlignment="Stretch" Height="25" Margin="5" TextWrapping="NoWrap" VerticalAlignment="Top" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
