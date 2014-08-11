@@ -124,6 +124,7 @@ namespace Samm.Dialogs
 
                 mapping.AddMatch(new PathMatch(new DimPath(projDim), new DimPath(idDim)));
             }
+            Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
             Column.Definition.Mapping = mapping;
             Column.Definition.IsGenerating = true;
             Column.Name = NewColumnName;

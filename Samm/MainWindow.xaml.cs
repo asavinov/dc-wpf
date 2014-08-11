@@ -166,6 +166,24 @@ namespace Samm
 
         # region Command_Executed (call backs from Commands)
 
+        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_TextDatasource();
+            e.Handled = true;
+        }
+
+        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_AccessDatasource();
+            e.Handled = true;
+        }
+
+        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Wizard_SqlserverDatasource();
+            e.Handled = true;
+        }
+
         private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedRoot != null) e.CanExecute = false;
@@ -194,22 +212,27 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void UpdateElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            Wizard_TextDatasource();
-            e.Handled = true;
+            if (SelectedRoot != null) e.CanExecute = true;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
         }
-
-        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void UpdateElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Wizard_AccessDatasource();
-            e.Handled = true;
-        }
-
-        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_SqlserverDatasource();
-            e.Handled = true;
+            if (SelectedRoot != null) // Update all
+            {
+                // Use dependency graph to update elements starting from independent and ending with dependent
+            }
+            else if (SelectedTable != null) // Update table
+            {
+                SelectedTable.Definition.Populate();
+            }
+            else if (SelectedColumn != null) // Update column
+            {
+                SelectedColumn.Definition.Evaluate();
+            }
         }
 
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -288,19 +311,6 @@ namespace Samm
             set.LesserDims.ToArray().ToList().ForEach(x => x.Remove());
 
             e.Handled = true;
-        }
-
-        private void UpdateTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void UpdateTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedTable == null) return;
-            SelectedTable.Definition.Populate();
         }
 
         private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -382,19 +392,6 @@ namespace Samm
             e.Handled = true;
         }
 
-        private void UpdateColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void UpdateColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedColumn == null) return;
-            SelectedColumn.Definition.Evaluate();
-        }
-
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box
@@ -440,14 +437,21 @@ namespace Samm
             //
 
             CsSchema schema = MashupTop;
+
             CsTable targetTable = schema.CreateTable(tableName);
+            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
             schema.AddTable(targetTable, null, null);
 
+            // Create generating/import column
             Mapper mapper = new Mapper(); // Create mapping for an import dimension
             Mapping map = mapper.CreatePrimitive(sourceTable, targetTable); // Complete mapping (all to all)
             map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
 
-            CsColumn dim = new Dim(map); // Create generating/import column with this mapping
+            CsColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
+            dim.Definition.Mapping = map;
+            dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
+            dim.Definition.IsGenerating = true;
+
             dim.Add();
 
             // Populate this new table (in fact, can be done separately during Update)

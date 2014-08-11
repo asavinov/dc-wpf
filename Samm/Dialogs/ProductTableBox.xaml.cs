@@ -66,6 +66,8 @@ namespace Samm.Dialogs
 
             SourceTable.Name = productTableName;
 
+            SourceTable.Definition.DefinitionType = TableDefinitionType.PRODUCT;
+
             // Save table
             Schema.AddTable(SourceTable, null, null);
 

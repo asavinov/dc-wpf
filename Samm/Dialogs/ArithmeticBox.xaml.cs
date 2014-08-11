@@ -286,8 +286,6 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
-
             // Column name
             if (IsWhere)
             {
@@ -299,6 +297,8 @@ namespace Samm.Dialogs
             }
 
             // Column definition
+            Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
+
             ExprNode expr = null;
             if (ExpressionModel == null || ExpressionModel.Count == 0) 
             {

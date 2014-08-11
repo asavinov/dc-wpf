@@ -149,8 +149,6 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
-
             // Column name
             Column.Name = newColumnName.Text;
 
@@ -161,6 +159,7 @@ namespace Samm.Dialogs
             }
 
             // Column definition
+            Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
             Column.Definition.Mapping = MappingModel.Mapping;
             Column.Definition.IsGenerating = false;
 

@@ -217,8 +217,6 @@ namespace Samm.Dialogs
         {
             CsSchema schema = Column.LesserSet.Top;
 
-            Column.Definition.DefinitionType = ColumnDefinitionType.AGGREGATION;
-
             // Column name
             Column.Name = newColumnName.Text;
 
@@ -235,6 +233,7 @@ namespace Samm.Dialogs
             Column.GreaterSet = targetTable;
 
             // Column definition
+            Column.Definition.DefinitionType = ColumnDefinitionType.AGGREGATION;
             Column.Definition.FactTable = FactTable;
             Column.Definition.GroupPaths.Clear();
             Column.Definition.GroupPaths.Add(GroupingPath);

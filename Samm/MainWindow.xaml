@@ -5,7 +5,7 @@
         xmlns:samm="clr-namespace:Samm"
         xmlns:controls="clr-namespace:Samm.Controls"
         x:Name="UI"
-        Title="ConceptMix Application" 
+        Title="ConceptMix - Integrate, Transform, Analiyze" 
         Icon="Images\default.ico"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
@@ -37,52 +37,50 @@
         </DataTemplate>
 
         <!-- Commands can be (and should be later) defined programmatically as classes -->
-        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
-        <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
-
         <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
         <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access table" />
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server table" />
+
+        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
+        <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
+        <RoutedUICommand x:Key="UpdateElementCommand" Text="Update Element" />
 
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
         <RoutedUICommand x:Key="EditTableCommand" Text="Edit Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
-        <RoutedUICommand x:Key="UpdateTableCommand" Text="Update Table" />
 
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
         <RoutedUICommand x:Key="AddLinkCommand" Text="Add Link" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
-        <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update Column" />
 
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
     </RibbonWindow.Resources>
 
     <Window.CommandBindings>
-        <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
-
         <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
+
+        <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
+        <CommandBinding Command="{StaticResource UpdateElementCommand}" CanExecute="UpdateElementCommand_CanExecute" Executed="UpdateElementCommand_Executed" />
 
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ProductTableCommand}" CanExecute="ProductTableCommand_CanExecute" Executed="ProductTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" CanExecute="ExtractTableCommand_CanExecute" Executed="ExtractTableCommand_Executed" />
         <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
         <CommandBinding Command="{StaticResource AddLinkCommand}" CanExecute="AddLinkCommand_CanExecute" Executed="AddLinkCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
-        <CommandBinding Command="{StaticResource UpdateColumnCommand}" CanExecute="UpdateColumnCommand_CanExecute" Executed="UpdateColumnCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
@@ -123,8 +121,8 @@
             </Ribbon.ApplicationMenu>
 
             <!-- Ribbon Tab Home/File -->
+            <!--
             <RibbonTab Header="Home" KeyTip="H" >
-                <!-- Home  group-->
                 <RibbonGroup x:Name="ClipboardGroup" Header="Home">
                     <RibbonMenuButton LargeImageSource="Images\paste.png" Label="Paste" KeyTip="V">
                         <RibbonMenuItem ImageSource="Images\paste.png" Header="Keep Text Only" KeyTip="T"/>
@@ -134,26 +132,7 @@
                     <RibbonButton SmallImageSource="Images\copy.png" Label="Copy" KeyTip="C" />
                 </RibbonGroup>
             </RibbonTab>
-
-            <!-- Ribbon Tab View -->
-            <RibbonTab Header="View" KeyTip="V">
-                <RibbonGroup x:Name="visualizeGroup" Header="View Data">
-                    <RibbonButton LargeImageSource="Images\view_table.png" Label="Table" KeyTip="T" Command="{StaticResource OpenTableCommand}" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="closeGroup" Header="Close">
-                    <RibbonButton LargeImageSource="Images\close_view.png" Label="Close" KeyTip="C" Command="{StaticResource CloseViewCommand}" />
-                </RibbonGroup>
-                <!--
-                <RibbonGroup x:Name="windowGroup" Header="Window">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Window" KeyTip="W" />
-                </RibbonGroup>
-                <RibbonGroup Header="Selection Propagation">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
-                </RibbonGroup>
-                -->
-            </RibbonTab>
+            -->
 
             <RibbonTab Header="Data" KeyTip="D">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Import">
@@ -168,9 +147,29 @@
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R" IsEnabled="False" />
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R" IsEnabled="False" />
                 </RibbonGroup>
-                <RibbonGroup Header="Update">
-                    <RibbonButton LargeImageSource="Images\update_all.png" Label="Update All" KeyTip="U" />
+            </RibbonTab>
+
+            <!-- Ribbon Tab View -->
+            <RibbonTab Header="View" KeyTip="V">
+                <RibbonGroup x:Name="visualizeGroup" Header="View Data">
+                    <RibbonButton LargeImageSource="Images\view_table.png" Label="Table" KeyTip="T" Command="{StaticResource OpenTableCommand}" />
                 </RibbonGroup>
+                <RibbonGroup x:Name="closeGroup" Header="Close">
+                    <RibbonButton LargeImageSource="Images\close_view.png" Label="Close" KeyTip="C" Command="{StaticResource CloseViewCommand}" />
+                </RibbonGroup>
+                <RibbonGroup Header="Update">
+                    <RibbonButton LargeImageSource="Images\update_table.png" Label="Update" KeyTip="U" Command="{StaticResource UpdateElementCommand}" />
+                </RibbonGroup>
+                <!--
+                <RibbonGroup x:Name="windowGroup" Header="Window">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Window" KeyTip="W" />
+                </RibbonGroup>
+                <RibbonGroup Header="Selection Propagation">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
+                </RibbonGroup>
+                -->
             </RibbonTab>
 
             <RibbonTab Header="Table" KeyTip="T" >
@@ -187,9 +186,6 @@
                 <RibbonGroup x:Name="deleteTablesMenuGroup" Header="Delete">
                     <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />
                 </RibbonGroup>
-                <RibbonGroup Header="Update">
-                    <RibbonButton LargeImageSource="Images\update_table.png" Label="Table" KeyTip="U" Command="{StaticResource UpdateTableCommand}" />
-                </RibbonGroup>
             </RibbonTab>
 
             <RibbonTab Header="Column" KeyTip="C" >
@@ -205,9 +201,6 @@
                 </RibbonGroup>
                 <RibbonGroup x:Name="deleteColumnsMenuGroup" Header="Delete">
                     <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete" KeyTip="D" Command="{StaticResource DeleteColumnCommand}" />
-                </RibbonGroup>
-                <RibbonGroup Header="Update">
-                    <RibbonButton LargeImageSource="Images\update_column.png" Label="Column" KeyTip="U" Command="{StaticResource UpdateColumnCommand}" />
                 </RibbonGroup>
             </RibbonTab>
 
