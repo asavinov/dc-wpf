@@ -106,7 +106,8 @@ namespace Samm.Dialogs
 
         private void recommendButton_Click(object sender, RoutedEventArgs e)
         {
-
+            MappingModel.SelectBestTarget();
+            targetTree.Select(MappingModel.TargetTree.SelectedNode);
         }
 
         private void addMatchButton_Click(object sender, RoutedEventArgs e)

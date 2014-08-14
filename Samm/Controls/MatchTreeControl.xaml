@@ -154,6 +154,7 @@
             Name="MatchTree" 
             Grid.Column="0" Grid.Row="0" 
             ItemsSource="{Binding Path=.}" 
+            SelectedValuePath=""
             ItemTemplateSelector="{StaticResource matchTreeDataTemplateSelector}"
             ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 

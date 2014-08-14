@@ -28,6 +28,39 @@ namespace Samm.Controls
             InitializeComponent();
         }
 
+        public bool Select(object data) // Select tree view item with this column or table
+        {
+            TreeViewItem root = (TreeViewItem)MatchTree.ItemContainerGenerator.ContainerFromIndex(0);
+            return Select(root, data);
+        }
+
+        private bool Select(TreeViewItem item, object data)
+        {
+            if (item == null) return false;
+
+            bool found = false;
+            MatchTreeNode itemData = (MatchTreeNode)item.DataContext;
+            if (itemData == data) found = true;
+            else found = false;
+
+            if (found)
+            {
+                item.IsSelected = true;
+                return true;
+            }
+
+            foreach (object c in item.Items) // Not found. Recursion
+            {
+                //var childData = item.DataContext;
+                TreeViewItem childItem = item.ItemContainerGenerator.ContainerFromItem(c) as TreeViewItem;
+                //TreeViewItem child = item.ItemContainerGenerator.ContainerFromItem(data) as TreeViewItem;
+                bool result = Select(childItem, data);
+                if (result == true) return true;
+            }
+
+            return false;
+        }
+
         private void MatchTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeView treeView = (TreeView)sender;

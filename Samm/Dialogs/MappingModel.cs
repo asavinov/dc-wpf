@@ -157,6 +157,21 @@ namespace Samm.Dialogs
         }
 
         /// <summary>
+        /// Best target for the current source.
+        /// </summary>
+        public void SelectBestTarget()
+        {
+            DimPath sourcePath = SourceTree.SelectedPath;
+            if (sourcePath == null) return; // Primary node is not selected
+
+            if (!sourcePath.IsPrimitive) return; // Only primitive paths can be matchd
+
+            DimPath pargetPath = mapper.MapDim(sourcePath, TargetSet); // Find best path starting from the target set and corresponding to the source path
+
+            TargetTree.SelectedPath = pargetPath;
+        }
+
+        /// <summary>
         /// Primary: does not do anything (or calls the same method of the secondary tree). 
         /// Secondary: takes the currently selected primary node and this secondary node and adds this match to the list. Previous match is deleted. Contradictory matches are removed. Match status of nodes needs to be redrawn.
         /// </summary>
@@ -286,6 +301,14 @@ namespace Samm.Dialogs
                     selectedPath.RemoveFirst(MappingModel.TargetSet);
 
                 return selectedPath;
+            }
+
+            set
+            {
+                // Find node corresponding to the specified path
+                DimTree root = Children[0];
+                DimTree node = root.FindPath(value);
+                SelectedNode = (MatchTreeNode)node;
             }
         }
 
