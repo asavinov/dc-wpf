@@ -5,7 +5,7 @@
         xmlns:samm="clr-namespace:Samm"
         xmlns:controls="clr-namespace:Samm.Controls"
         x:Name="UI"
-        Title="ConceptMix - Integrate, Transform, Analiyze" 
+        Title="{StaticResource MainWindowTitle}" 
         Icon="Images\default.ico"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
@@ -91,7 +91,7 @@
 
             <!-- Help Pane, located at the right-hand side -->
             <Ribbon.HelpPaneContent>
-                <RibbonButton SmallImageSource="Images\help.png" />
+                <RibbonButton SmallImageSource="Images\default.ico" Label="Help" />
             </Ribbon.HelpPaneContent>
 
             <!-- Quick Access Toolbar - located at the upper-left corner -->

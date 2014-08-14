@@ -31,8 +31,7 @@ namespace Samm
         //
         // Data sources
         //
-
-        // TODO: we need to represent connections and source tables
+        public ObservableCollection<CsSchema> RemoteSources { get; set; }
 
         //
         // Mashups (only one is used)
@@ -105,6 +104,12 @@ namespace Samm
             //
             // Initialize data sources
             //
+            RemoteSources = new ObservableCollection<CsSchema>();
+            SetTopCsv csvSchema = new SetTopCsv("My Files");
+            ConnectionCsv conn = new ConnectionCsv();
+            csvSchema.connection = conn;
+            
+            RemoteSources.Add(csvSchema);
 
             //
             // Initialize mashups (one empty mashup)
@@ -168,7 +173,7 @@ namespace Samm
 
         private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Wizard_TextDatasource();
+            Wizard_CsvDatasource();
             e.Handled = true;
         }
 
@@ -402,6 +407,59 @@ namespace Samm
         #endregion
 
         #region Wizards (with user interactions)
+
+        public void Wizard_CsvDatasource()
+        {
+            SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            CsSchema schema = MashupTop;
+
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofd.RestoreDirectory = true;
+            ofd.CheckFileExists = true;
+            ofd.Multiselect = false;
+
+            if (ofd.ShowDialog() != true) return;
+
+            string filePath = ofd.FileName;
+            string safeFilePath = ofd.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+            //
+            // Create a source table and load its structure into the schema
+            //
+            // TODO: Check that this table has not been loaded yet (compare paths). Or do it in dialog. 
+            // If already exists then either allow for imports into different local tables (with different parameters along different projection dimensions) or reuse the existing imported table.
+            SetCsv sourceTable = (SetCsv)top.CreateTable(tableName);
+            sourceTable.FilePath = filePath;
+            top.LoadSchema(sourceTable);
+            
+            //
+            // Create a target table and configure import using a mapping stored in projection dimensions
+            //
+            CsTable targetTable = schema.CreateTable(tableName);
+            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            schema.AddTable(targetTable, null, null);
+
+            // Create generating/import column
+            Mapper mapper = new Mapper(); // Create mapping for an import dimension
+            Mapping map = mapper.CreatePrimitive(sourceTable, targetTable); // Complete mapping (all to all)
+            map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
+
+            CsColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
+            dim.Definition.Mapping = map;
+            dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
+            dim.Definition.IsGenerating = true;
+
+            dim.Add();
+
+            // Populate this new table (in fact, can be done separately during Update)
+            targetTable.Definition.Populate();
+
+            SelectedTable = targetTable;
+        }
 
         public void Wizard_TextDatasource()
         {

@@ -56,6 +56,9 @@
     <Reference Include="Com">
       <HintPath>Libs\Com.dll</HintPath>
     </Reference>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.7.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Data.ConnectionUI">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.Data.ConnectionUI.dll</HintPath>
     </Reference>
@@ -193,6 +196,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -320,6 +324,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\close_view.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_salesforce.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
