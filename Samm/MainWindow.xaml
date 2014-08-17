@@ -136,10 +136,11 @@
 
             <RibbonTab Header="Data" KeyTip="D">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Import">
-                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text Table" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access Table" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server Table" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData Table" KeyTip="O"/>
+                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" />
+                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O"/>
+                    <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S"/>
                 </RibbonGroup>
                 <RibbonGroup x:Name="exportGroup" Header="Export">
                     <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" IsEnabled="False" />

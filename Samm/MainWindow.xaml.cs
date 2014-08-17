@@ -435,25 +435,37 @@ namespace Samm
             SetCsv sourceTable = (SetCsv)top.CreateTable(tableName);
             sourceTable.FilePath = filePath;
             top.LoadSchema(sourceTable);
-            
+
             //
             // Create a target table and configure import using a mapping stored in projection dimensions
             //
-            CsTable targetTable = schema.CreateTable(tableName);
+
+            // Create a new (imported) set
+            string newTableName = tableName;
+            CsTable targetTable = schema.CreateTable(newTableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-            schema.AddTable(targetTable, null, null);
 
             // Create generating/import column
-            Mapper mapper = new Mapper(); // Create mapping for an import dimension
-            Mapping map = mapper.CreatePrimitive(sourceTable, targetTable); // Complete mapping (all to all)
-            map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
+            string newColumnName = sourceTable.Name;
+            CsColumn importDim = schema.CreateColumn(newColumnName, sourceTable, targetTable, false);
+            importDim.Definition.DefinitionType = ColumnDefinitionType.LINK;
+            importDim.Definition.IsGenerating = true;
 
-            CsColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
-            dim.Definition.Mapping = map;
-            dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
-            dim.Definition.IsGenerating = true;
+            //
+            // Show parameters for set extraction
+            //
+            List<CsColumn> initialSelection = new List<CsColumn>();
+            initialSelection.Add(SelectedColumn); // TODO: include all. alternatively, create an initial mapping
+            ColumnMappingBox dlg = new ColumnMappingBox(schema, importDim, initialSelection);
+            dlg.Owner = this;
+            dlg.RefreshAll();
 
-            dim.Add();
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false)
+            {
+                return; // Cancel
+            }
 
             // Populate this new table (in fact, can be done separately during Update)
             targetTable.Definition.Populate();
@@ -498,11 +510,10 @@ namespace Samm
 
             CsTable targetTable = schema.CreateTable(tableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-            schema.AddTable(targetTable, null, null);
 
             // Create generating/import column
             Mapper mapper = new Mapper(); // Create mapping for an import dimension
-            Mapping map = mapper.CreatePrimitive(sourceTable, targetTable); // Complete mapping (all to all)
+            Mapping map = mapper.CreatePrimitive(sourceTable, targetTable, schema); // Complete mapping (all to all)
             map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
 
             CsColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
@@ -513,6 +524,7 @@ namespace Samm
             dim.Add();
 
             // Populate this new table (in fact, can be done separately during Update)
+            schema.AddTable(targetTable, null, null);
             targetTable.Definition.Populate();
 
             SelectedTable = targetTable;
@@ -681,17 +693,19 @@ namespace Samm
 
             // Create a new (extracted) set
             string newTableName = "New Table";
-            CsTable extractedSet = schema.CreateTable(newTableName);
-            extractedSet.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            CsTable targetTable = schema.CreateTable(newTableName);
+            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             // Create a new (mapped, generating) dimension to the new set
             string newColumnName = "New Column";
-            CsColumn extractedDim = schema.CreateColumn(newColumnName, set, extractedSet, false);
+            CsColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
 
             //
             // Show parameters for set extraction
             //
-            ExtractTableBox dlg = new ExtractTableBox(extractedDim, SelectedColumn);
+            List<CsColumn> initialSelection = new List<CsColumn>();
+            initialSelection.Add(SelectedColumn);
+            ColumnMappingBox dlg = new ColumnMappingBox(schema, extractedDim, initialSelection);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -700,9 +714,9 @@ namespace Samm
             if (dlg.DialogResult == false) return; // Cancel
 
             // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
-            extractedSet.Definition.Populate();
+            targetTable.Definition.Populate();
 
-            SelectedTable = extractedSet;
+            SelectedTable = targetTable;
         }
 
         public void Wizard_EditTable(CsTable table)
@@ -715,13 +729,13 @@ namespace Samm
             {
                 CsColumn column = table.Definition.GeneratingDimensions[0];
 
-                ExtractTableBox dlg = new ExtractTableBox(column, null);
+                ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
                 dlg.Owner = this;
                 dlg.ShowDialog(); // Open the dialog box modally 
 
                 if (dlg.DialogResult == false) return; // Cancel
             }
-            if (table.Definition.DefinitionType == TableDefinitionType.PRODUCT)
+            else if (table.Definition.DefinitionType == TableDefinitionType.PRODUCT)
             {
                 // Create a new column (temporary, just to store a where expression)
                 CsColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);

@@ -129,7 +129,7 @@ namespace Samm.Dialogs
             Column.Definition.IsGenerating = true;
             Column.Name = NewColumnName;
 
-            SourceTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            TargetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             TargetTable.Name = NewTableName;
 
