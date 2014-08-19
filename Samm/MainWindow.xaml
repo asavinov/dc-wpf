@@ -164,7 +164,7 @@
                     <RibbonButton LargeImageSource="Images\update_table.png" Label="Update" KeyTip="U" Command="{StaticResource UpdateElementCommand}" />
                 </RibbonGroup>
                 <RibbonGroup Header="Edit">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Rename" KeyTip="N" Command="{StaticResource RenameElementCommand}" />
+                    <RibbonButton LargeImageSource="Images\rename.png" Label="Rename" KeyTip="N" Command="{StaticResource RenameElementCommand}" />
                 </RibbonGroup>
                 <!--
                 <RibbonGroup x:Name="windowGroup" Header="Window">
