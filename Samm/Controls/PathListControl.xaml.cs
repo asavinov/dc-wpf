@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 
 using Com.Model;
 
-namespace Samm
+namespace Samm.Controls
 {
     /// <summary>
     /// Interaction logic for PathListControl.xaml

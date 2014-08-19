@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 
 using Com.Model;
 
-namespace Samm
+namespace Samm.Dialogs
 {
     /// <summary>
     /// Interaction logic for FilteredTableBox.xaml

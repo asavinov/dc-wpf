@@ -12,10 +12,20 @@ using Com.Model;
 
 namespace Samm
 {
-    class SetGridView
+    /// <summary>
+    /// This class can be viewed as an extension of Grid which is intended for visualizing a set.
+    /// </summary>
+    public class SetGridView
     {
-        public CsTable Set { get; set; } // It is a model which contains data to be visualized
+        // Inheritance by-reference. We reference a base object.
         public DataGrid Grid { get; set; } // It is a view where the data is visualized
+
+
+        public CsTable Set { get; set; } // It is a model which contains data to be visualized
+
+        public List<DimPath> Paths { get; set; } // Only these paths will be displayed
+
+        public bool ShowPaths = true;
 
         /*
                     There are many open sets each showing a DataGrid. We need a global list of all open sets. 
@@ -46,23 +56,60 @@ namespace Samm
             Grid = new DataGrid();
             Grid.Style = Application.Current.MainWindow.FindResource("ReadOnlyGridStyle") as Style;
             Grid.AutoGenerateColumns = false;
-            Grid.ItemsSource = new Elements(_set);
 
-            // Create columns for each dimension
-            for(int i=0; i < Set.GreaterDims.Count; i++) 
+            // Initialize paths we want to visualize
+            var pathEnum = new PathEnumerator(Set, DimensionType.IDENTITY_ENTITY);
+            Paths = new List<DimPath>();
+            foreach(var path in pathEnum) 
             {
-                CsColumn dim = Set.GreaterDims[i];
-                if (dim.IsSuper) continue;
+                if (path.Path.Count == 0) continue; // ERROR
+                if (path.Path.Exists(x => x.IsSuper)) continue;
 
-                Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
+                if (path.Path.Count == 1)
+                {
+                    path.Name = path.FirstSegment.Name;
+                }
+                else
+                {
+                    path.Name = path.ColumnNamePath;
+                }
 
-                DataGridColumn col1 = new DataGridTextColumn() { Header = dim.Name, Binding = binding }; // No custom cell template
-                DataGridColumn col2 = new CustomBoundColumn() { Header = dim.Name, Binding = binding, TemplateName = "CellTemplate" }; // Custom cell template will be used
-                // Additional column parameters: Width = new DataGridLength(200), FontSize = 12
-
-                Grid.Columns.Add(col1);
+                Paths.Add(path);
             }
 
+            if (ShowPaths) // Create and confiture grid columns for all paths
+            {
+                for (int i = 0; i < Paths.Count; i++)
+                {
+                    DimPath path = Paths[i];
+
+                    Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
+
+                    DataGridColumn col1 = new DataGridTextColumn() { Header = path.Name, Binding = binding }; // No custom cell template
+                    DataGridColumn col2 = new CustomBoundColumn() { Header = path.Name, Binding = binding, TemplateName = "CellTemplate" }; // Custom cell template will be used
+                    // Additional column parameters: Width = new DataGridLength(200), FontSize = 12
+
+                    Grid.Columns.Add(col1);
+                }
+            }
+            else // Create and configure grid columns for all direct greater dimensions
+            {
+                for (int i = 0; i < Set.GreaterDims.Count; i++)
+                {
+                    CsColumn dim = Set.GreaterDims[i];
+                    if (dim.IsSuper) continue;
+
+                    Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
+
+                    DataGridColumn col1 = new DataGridTextColumn() { Header = dim.Name, Binding = binding }; // No custom cell template
+                    DataGridColumn col2 = new CustomBoundColumn() { Header = dim.Name, Binding = binding, TemplateName = "CellTemplate" }; // Custom cell template will be used
+                    // Additional column parameters: Width = new DataGridLength(200), FontSize = 12
+
+                    Grid.Columns.Add(col1);
+                }
+            }
+
+            Grid.ItemsSource = new Elements(this);
         }
     }
 
@@ -90,12 +137,13 @@ namespace Samm
 
     public class Elements : IEnumerable<Element>, IEnumerator<Element>
     {
-        public CsTable Set { get; set; }
+        public SetGridView GridView { get; set; }
+
         public int Offset { get; set; }
 
-        public Elements(CsTable set)
+        public Elements(SetGridView gridView)
         {
-            Set = set;
+            GridView = gridView;
             Offset = -1;
         }
 
@@ -117,13 +165,13 @@ namespace Samm
         {
             get 
             {
-                return new Element(Set, Offset); 
+                return new Element(GridView, Offset); 
             }
         }
 
         public void Dispose()
         {
-            Set = null;
+            GridView = null;
             Offset = -1;
         }
 
@@ -134,9 +182,9 @@ namespace Samm
 
         public bool MoveNext()
         {
-            if (Offset < Set.Data.Length) Offset++; // Increement if possible
+            if (Offset < GridView.Set.Data.Length) Offset++; // Increement if possible
 
-            if (Offset >= Set.Data.Length) return false; // Cannot move
+            if (Offset >= GridView.Set.Data.Length) return false; // Cannot move
 
             return true;
         }
@@ -150,36 +198,66 @@ namespace Samm
     public class Element 
     {
         // It should be an enumerator returned by a Set
-        public CsTable Set { get; set; }
+        public SetGridView GridView { get; set; }
         public int Offset { get; set; }
 
-        public Element(CsTable set)
+        public Element(SetGridView gridView)
+            : this(gridView, -1)
         {
-            Set = set;
-            Offset = -1;
         }
 
-        public Element(CsTable set, int offset)
+        public Element(SetGridView gridView, int offset)
         {
-            Set = set;
+            GridView = gridView;
             Offset = offset;
         }
 
-        public string this[int index]
+        public string this[int index] // It returns values that are shown in grid columns
         {
             get
             {
-                int dimCount = Set.GreaterDims.Count;
-                if (index < 0 || index >= dimCount) return null;
-                CsColumn dim = Set.GreaterDims[index];
+                object cell = Offset;
+                int ofs = Offset;
 
-                if (dim.Data.IsNull(Offset))
+                if (GridView.ShowPaths) // Use stored paths
+                {
+                    ofs = (int)cell; // Use output as an input for the next iteration
+
+                    DimPath path = GridView.Paths[index];
+                    for (int i = 0; i < path.Path.Count; i++)
+                    {
+                        if (path.Path[0].Data.IsNull(ofs))
+                        {
+                            cell = null;
+                        }
+                        else
+                        {
+                            cell = path.Path[0].Data.GetValue(ofs);
+                        }
+                    }
+                }
+                else // Use greater dimensions
+                {
+                    int dimCount = GridView.Set.GreaterDims.Count;
+                    if (index < 0 || index >= dimCount) return null;
+                    CsColumn dim = GridView.Set.GreaterDims[index];
+
+                    if (dim.Data.IsNull(ofs))
+                    {
+                        cell = null;
+                    }
+                    else
+                    {
+                        cell = dim.Data.GetValue(ofs);
+                    }
+                }
+
+                if (cell == null)
                 {
                     return "";
                 }
                 else
                 {
-                    object cell = dim.Data.GetValue(Offset);
                     return Convert.ToString(cell);
                 }
             }
@@ -187,7 +265,7 @@ namespace Samm
 
         public string Value(string dimName)
         {
-            CsColumn dim = Set.GetGreaterDim(dimName);
+            CsColumn dim = GridView.Set.GetGreaterDim(dimName);
             if (dim == null) return null;
             return (string)dim.Data.GetValue(Offset);
         }

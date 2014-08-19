@@ -8,6 +8,12 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
 
+    <Window.Resources>
+        <Style x:Key="ColumnMappingHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Visible" />
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
@@ -33,7 +39,7 @@
         <Label  Grid.Column="0" Grid.Row="3" Content="Column mapping:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ListView Name="columnMappings" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=Entries}" Margin="5">
             <ListView.View>
-                <GridView>
+                <GridView ColumnHeaderContainerStyle="{StaticResource ColumnMappingHeaderStyle}">
                     <GridViewColumn Header="Select">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
