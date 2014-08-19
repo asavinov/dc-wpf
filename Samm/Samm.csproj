@@ -123,6 +123,9 @@
     <Compile Include="Dialogs\ProductTableBox.xaml.cs">
       <DependentUpon>ProductTableBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\RenameBox.xaml.cs">
+      <DependentUpon>RenameBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -170,6 +173,10 @@
     <Compile Include="Connections\DataConnectionConfiguration.cs" />
     <Compile Include="Connections\IDataConnectionConfiguration.cs" />
     <Page Include="AboutBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\RenameBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

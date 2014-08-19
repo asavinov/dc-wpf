@@ -240,6 +240,36 @@ namespace Samm
             }
         }
 
+        private void RenameElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedItem != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void RenameElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            object element = null;
+            if (SelectedRoot != null) // Rename schema
+            {
+                element = SelectedRoot.Top;
+            }
+            else if (SelectedTable != null) // Rename table
+            {
+                element = SelectedTable;
+            }
+            else if (SelectedColumn != null) // Rename column
+            {
+                element = SelectedColumn;
+            }
+
+            RenameBox dlg = new RenameBox(element, null);
+            dlg.Owner = this;
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
+        }
+
         private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedTable == null) return;
@@ -455,17 +485,12 @@ namespace Samm
             // Show parameters for set extraction
             //
             List<CsColumn> initialSelection = new List<CsColumn>();
-            initialSelection.Add(SelectedColumn); // TODO: include all. alternatively, create an initial mapping
+            initialSelection.Add(SelectedColumn);
             ColumnMappingBox dlg = new ColumnMappingBox(schema, importDim, initialSelection);
             dlg.Owner = this;
-            dlg.RefreshAll();
-
             dlg.ShowDialog(); // Open the dialog box modally 
 
-            if (dlg.DialogResult == false)
-            {
-                return; // Cancel
-            }
+            if (dlg.DialogResult == false) return; // Cancel
 
             // Populate this new table (in fact, can be done separately during Update)
             targetTable.Definition.Populate();
@@ -750,8 +775,7 @@ namespace Samm
                 throw new NotImplementedException("A table must have a definition of certain type.");
             }
 
-            // Notify visual components about changes in this column
-            MashupModelRoot.NotifyAllOnPropertyChanged("");
+            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
 
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             table.Definition.Populate();

@@ -44,6 +44,7 @@
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
         <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
         <RoutedUICommand x:Key="UpdateElementCommand" Text="Update Element" />
+        <RoutedUICommand x:Key="RenameElementCommand" Text="Rename Element" />
 
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
@@ -69,6 +70,7 @@
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateElementCommand}" CanExecute="UpdateElementCommand_CanExecute" Executed="UpdateElementCommand_Executed" />
+        <CommandBinding Command="{StaticResource RenameElementCommand}" CanExecute="RenameElementCommand_CanExecute" Executed="RenameElementCommand_Executed" />
 
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ProductTableCommand}" CanExecute="ProductTableCommand_CanExecute" Executed="ProductTableCommand_Executed" />
@@ -160,6 +162,9 @@
                 </RibbonGroup>
                 <RibbonGroup Header="Update">
                     <RibbonButton LargeImageSource="Images\update_table.png" Label="Update" KeyTip="U" Command="{StaticResource UpdateElementCommand}" />
+                </RibbonGroup>
+                <RibbonGroup Header="Edit">
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Rename" KeyTip="N" Command="{StaticResource RenameElementCommand}" />
                 </RibbonGroup>
                 <!--
                 <RibbonGroup x:Name="windowGroup" Header="Window">

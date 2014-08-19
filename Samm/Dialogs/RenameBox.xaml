@@ -1,0 +1,33 @@
+﻿<Window x:Class="Samm.Dialogs.RenameBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Rename" Width="300"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="60*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label  Grid.Column="0" Grid.Row="0" Content="Current Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="oldName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=OldName}" TextWrapping="NoWrap" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="New Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=NewName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+
+</Window>
