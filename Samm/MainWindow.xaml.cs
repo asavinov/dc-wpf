@@ -338,12 +338,10 @@ namespace Samm
                 set = SelectedColumn.LesserSet;
             else return;
 
-            // Remove all connections of this set with the schema by deleting all its dimensions
-            set.SuperDim.Remove();
-            set.SubDims.ToArray().ToList().ForEach(x => x.Remove());
+            CsSchema schema = set.Top;
 
-            set.GreaterDims.ToArray().ToList().ForEach(x => x.Remove());
-            set.LesserDims.ToArray().ToList().ForEach(x => x.Remove());
+            // Remove all connections of this set with the schema by deleting all its dimensions
+            schema.DeleteTable(set);
 
             e.Handled = true;
         }
@@ -422,7 +420,9 @@ namespace Samm
             CsColumn selDim = SelectedColumn;
             if (selDim == null) return;
 
-            selDim.Remove();
+            CsSchema schema = selDim.LesserSet.Top;
+
+            schema.DeleteColumn(selDim);
 
             e.Handled = true;
         }
@@ -702,7 +702,7 @@ namespace Samm
             // if cancelled then remove the new set and all its columns
             if (whereDlg.DialogResult == false) 
             {
-                schema.RemoveTable(productSet);
+                schema.DeleteTable(productSet);
                 return;
             }
 
