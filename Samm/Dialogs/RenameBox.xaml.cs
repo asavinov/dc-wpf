@@ -29,26 +29,26 @@ namespace Samm.Dialogs
         public bool IsTable = false;
         public bool IsColumn = false;
 
-        protected CsSchema Schema { get { if (Element is CsSchema) return (CsSchema)Element; else if (Element is CsTable) return ((CsTable)Element).Top; else if (Element is CsColumn) return ((CsColumn)Element).LesserSet.Top; else return null; } }
-        protected CsTable Table { get { if (Element is CsSchema) return (CsTable)Element; else if (Element is CsTable) return ((CsTable)Element); else if (Element is CsColumn) return ((CsColumn)Element).LesserSet; else return null; } }
-        protected CsColumn Column { get { if (Element is CsSchema) return null; else if (Element is CsTable) return null; else if (Element is CsColumn) return (CsColumn)Element; else return null; } }
+        protected ComSchema Schema { get { if (Element is ComSchema) return (ComSchema)Element; else if (Element is ComTable) return ((ComTable)Element).Top; else if (Element is ComColumn) return ((ComColumn)Element).LesserSet.Top; else return null; } }
+        protected ComTable Table { get { if (Element is ComSchema) return (ComTable)Element; else if (Element is ComTable) return ((ComTable)Element); else if (Element is ComColumn) return ((ComColumn)Element).LesserSet; else return null; } }
+        protected ComColumn Column { get { if (Element is ComSchema) return null; else if (Element is ComTable) return null; else if (Element is ComColumn) return (ComColumn)Element; else return null; } }
 
 
         public RenameBox(object element, string name)
         {
             Element = element;
 
-            if (element is CsSchema)
+            if (element is ComSchema)
             {
                 IsSchema = true;
                 OldName = Schema.Name;
             }
-            else if(element is CsTable) 
+            else if(element is ComTable) 
             {
                 IsTable = true;
                 OldName = Table.Name;
             }
-            else if(element is CsColumn) 
+            else if(element is ComColumn) 
             {
                 IsColumn = true;
                 OldName = Column.Name;
@@ -70,17 +70,17 @@ namespace Samm.Dialogs
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
             // Really rename the element and propagate this change through all objects where this element name is used
-            if (Element is CsSchema)
+            if (Element is ComSchema)
             {
                 Schema.RenameTable(Schema, NewName);
                 Schema.Name = NewName;
             }
-            else if (Element is CsTable)
+            else if (Element is ComTable)
             {
                 Schema.RenameTable(Table, NewName);
                 Table.Name = NewName;
             }
-            else if (Element is CsColumn)
+            else if (Element is ComColumn)
             {
                 Schema.RenameColumn(Column, NewName);
                 Column.Name = NewName;

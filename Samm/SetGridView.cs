@@ -21,7 +21,7 @@ namespace Samm
         public DataGrid Grid { get; set; } // It is a view where the data is visualized
 
 
-        public CsTable Set { get; set; } // It is a model which contains data to be visualized
+        public ComTable Set { get; set; } // It is a model which contains data to be visualized
 
         public List<DimPath> Paths { get; set; } // Only these paths will be displayed
 
@@ -49,7 +49,7 @@ namespace Samm
                     Or we could simply return from Current an array of string values to be shown in the grid (which has by definition an indexer).
                     -+ values are copied and transformed into string which is good if they are anyway copied, + formatting and options can be controled by the set parameters
         */
-        public SetGridView(CsTable _set) 
+        public SetGridView(ComTable _set) 
         {
             Set = _set;
 
@@ -96,7 +96,7 @@ namespace Samm
             {
                 for (int i = 0; i < Set.GreaterDims.Count; i++)
                 {
-                    CsColumn dim = Set.GreaterDims[i];
+                    ComColumn dim = Set.GreaterDims[i];
                     if (dim.IsSuper) continue;
 
                     Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
@@ -240,7 +240,7 @@ namespace Samm
                 {
                     int dimCount = GridView.Set.GreaterDims.Count;
                     if (index < 0 || index >= dimCount) return null;
-                    CsColumn dim = GridView.Set.GreaterDims[index];
+                    ComColumn dim = GridView.Set.GreaterDims[index];
 
                     if (dim.Data.IsNull(ofs))
                     {
@@ -265,7 +265,7 @@ namespace Samm
 
         public string Value(string dimName)
         {
-            CsColumn dim = GridView.Set.GetGreaterDim(dimName);
+            ComColumn dim = GridView.Set.GetGreaterDim(dimName);
             if (dim == null) return null;
             return (string)dim.Data.GetValue(Offset);
         }

@@ -29,9 +29,9 @@ namespace Samm.Dialogs
         bool IsNew { get; set; }
         bool IsImport { get; set; }
 
-        public CsSchema Schema { get; set; }
+        public ComSchema Schema { get; set; }
 
-        public CsColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
+        public ComColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
 
         public string NewTableName { get; set; }
 
@@ -52,7 +52,7 @@ namespace Samm.Dialogs
 
         }
 
-        public ColumnMappingBox(CsSchema targetSchema, CsColumn column, List<CsColumn> initialColumns)
+        public ColumnMappingBox(ComSchema targetSchema, ComColumn column, List<ComColumn> initialColumns)
         {
             Schema = targetSchema;
             if (Schema == null) Schema = column.GreaterSet.Top;
@@ -70,7 +70,7 @@ namespace Samm.Dialogs
             if (column.LesserSet.Top.GetType() == typeof(SetTop)) IsImport = false;
             else IsImport = true;
 
-            List<CsTable> targetTypes = new List<CsTable>();
+            List<ComTable> targetTypes = new List<ComTable>();
             targetTypes.Add(Schema.GetPrimitive("Integer"));
             targetTypes.Add(Schema.GetPrimitive("Double"));
             targetTypes.Add(Schema.GetPrimitive("String"));
@@ -88,7 +88,7 @@ namespace Samm.Dialogs
                 }
                 else
                 {
-                    foreach (CsColumn sourceColumn in Column.LesserSet.GreaterDims)
+                    foreach (ComColumn sourceColumn in Column.LesserSet.GreaterDims)
                     {
                         if (sourceColumn.IsSuper) continue;
                         if (!sourceColumn.IsPrimitive) continue;
@@ -139,15 +139,15 @@ namespace Samm.Dialogs
 
         private void CreateEntries(Mapping mapping)
         {
-            CsTable sourceTable = mapping.SourceSet;
-            CsTable targetTable = mapping.TargetSet;
+            ComTable sourceTable = mapping.SourceSet;
+            ComTable targetTable = mapping.TargetSet;
 
-            List<CsTable> targetTypes = new List<CsTable>();
+            List<ComTable> targetTypes = new List<ComTable>();
             targetTypes.Add(Schema.GetPrimitive("Integer"));
             targetTypes.Add(Schema.GetPrimitive("Double"));
             targetTypes.Add(Schema.GetPrimitive("String"));
 
-            foreach (CsColumn sourceColumn in sourceTable.GreaterDims)
+            foreach (ComColumn sourceColumn in sourceTable.GreaterDims)
             {
                 if (sourceColumn.IsSuper) continue;
                 if (!sourceColumn.IsPrimitive) continue;
@@ -204,15 +204,15 @@ namespace Samm.Dialogs
             // For each entry decide what to do with the corresponding 1. match in the mapping 2. target column, depending on the comparision with the existing 1. match, target column
             foreach (var entry in Entries)
             {
-                CsColumn sourceColumn = entry.Source;
+                ComColumn sourceColumn = entry.Source;
 
                 PathMatch match = mapping.GetMatchForSource(new DimPath(sourceColumn));
 
-                CsColumn targetColumn;
+                ComColumn targetColumn;
 
                 if (entry.IsMatched && match == null) // Newly added. Creation
                 {
-                    CsTable targetType = entry.TargetType;
+                    ComTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
                     targetColumn = Schema.CreateColumn(targetColumnName, Column.GreaterSet, targetType, entry.IsKey);
                     targetColumn.Add();
@@ -265,17 +265,17 @@ namespace Samm.Dialogs
     /// </summary>
     public class ColumnMappingEntry
     {
-        public CsColumn Source { get; set; }
+        public ComColumn Source { get; set; }
 
-        public CsColumn Target { get; set; }
+        public ComColumn Target { get; set; }
 
         public bool IsMatched { get; set; }
         public bool IsKey { get; set; }
 
-        public List<CsTable> TargetTypes { get; set; }
-        public CsTable TargetType { get; set; }
+        public List<ComTable> TargetTypes { get; set; }
+        public ComTable TargetType { get; set; }
 
-        public ColumnMappingEntry(CsColumn sourceColumn)
+        public ColumnMappingEntry(ComColumn sourceColumn)
         {
             Source = sourceColumn;
 

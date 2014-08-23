@@ -23,18 +23,18 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        public CsSchema Schema { get; set; }
+        public ComSchema Schema { get; set; }
 
-        public CsTable SourceTable { get; set; }
+        public ComTable SourceTable { get; set; }
 
-        public List<CsTable> GreaterTables { get; set; }
+        public List<ComTable> GreaterTables { get; set; }
 
-        public ProductTableBox(CsSchema schema, CsTable table, CsTable greaterTable)
+        public ProductTableBox(ComSchema schema, ComTable table, ComTable greaterTable)
         {
             Schema = schema;
             SourceTable = table;
 
-            GreaterTables = new List<CsTable>();
+            GreaterTables = new List<ComTable>();
             GreaterTables.AddRange(Schema.Root.GetAllSubsets()); // Fill the list with potential greater tables
 
             InitializeComponent();
@@ -72,16 +72,16 @@ namespace Samm.Dialogs
             Schema.AddTable(SourceTable, null, null);
 
             // Initialize a list of selected dimensions (from the whole list of all greater dimensions
-            List<CsTable> greaterSets = new List<CsTable>();
+            List<ComTable> greaterSets = new List<ComTable>();
             foreach (var item in greaterTables.SelectedItems)
             {
-                greaterSets.Add((CsTable)item);
+                greaterSets.Add((ComTable)item);
             }
 
             // Create identity dimensions for the product set
-            foreach (CsTable gSet in greaterSets)
+            foreach (ComTable gSet in greaterSets)
             {
-                CsColumn gDim = Schema.CreateColumn(gSet.Name, SourceTable, gSet, true);
+                ComColumn gDim = Schema.CreateColumn(gSet.Name, SourceTable, gSet, true);
                 gDim.Add();
             }
 

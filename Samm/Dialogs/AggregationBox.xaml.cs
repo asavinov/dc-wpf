@@ -30,12 +30,12 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        CsColumn Column { get; set; }
+        ComColumn Column { get; set; }
 
-        public CsTable SourceTable { get; set; }
+        public ComTable SourceTable { get; set; }
 
-        public List<CsTable> FactTables { get; set; }
-        public CsTable FactTable { get; set; }
+        public List<ComTable> FactTables { get; set; }
+        public ComTable FactTable { get; set; }
 
         public List<DimPath> GroupingPaths { get; set; } // Alternative paths from the fact to the source
         public DimPath GroupingPath { get; set; }
@@ -81,7 +81,7 @@ namespace Samm.Dialogs
             //aggregationFunctions.Items.Refresh();
         }
 
-        public AggregationBox(CsColumn column, CsColumn measureColumn)
+        public AggregationBox(ComColumn column, ComColumn measureColumn)
         {
             InitializeComponent();
 
@@ -109,7 +109,7 @@ namespace Samm.Dialogs
             if (IsNew && measureColumn != null)
             {
                 // Find at least one fact table that has a measure path to this measure column
-                foreach (CsTable table in FactTables)
+                foreach (ComTable table in FactTables)
                 {
                     var pathEnum = new PathEnumerator(
                         table, 
@@ -149,7 +149,7 @@ namespace Samm.Dialogs
             //
             // Initialize grouping paths. Paths from the fact set to the source set
             //
-            var grPaths = new PathEnumerator((CsTable)factTable, SourceTable, DimensionType.IDENTITY_ENTITY);
+            var grPaths = new PathEnumerator((ComTable)factTable, SourceTable, DimensionType.IDENTITY_ENTITY);
             GroupingPaths = grPaths.ToList<DimPath>();
 
             // Select some grouping path item
@@ -170,10 +170,10 @@ namespace Samm.Dialogs
             //
             // Initialize measure paths. Paths from the fact set to numeric sets
             //
-            CsSchema schema = ((CsTable)factTable).Top;
+            ComSchema schema = ((ComTable)factTable).Top;
             var mePaths = new PathEnumerator(
-                new List<CsTable>(new CsTable[] { (CsTable)factTable }),
-                new List<CsTable>(new CsTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
+                new List<ComTable>(new ComTable[] { (ComTable)factTable }),
+                new List<ComTable>(new ComTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
                 false,
                 DimensionType.IDENTITY_ENTITY
                );
@@ -215,13 +215,13 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            CsSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Top;
 
             // Column name
             Column.Name = newColumnName.Text;
 
             // Column type
-            CsTable targetTable = null;
+            ComTable targetTable = null;
             if (AggregationFunction == "COUNT")
             {
                 targetTable = schema.GetPrimitive("Integer"); ;

@@ -31,25 +31,25 @@ namespace Samm
         //
         // Data sources
         //
-        public ObservableCollection<CsSchema> RemoteSources { get; set; }
+        public ObservableCollection<ComSchema> RemoteSources { get; set; }
 
         //
         // Mashups (only one is used)
         //
-        public ObservableCollection<CsSchema> Mashups { get; set; }
-        public CsSchema MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
-        public CsTable MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
+        public ObservableCollection<ComSchema> Mashups { get; set; }
+        public ComSchema MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
+        public ComTable MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
 
         public ObservableCollection<SubsetTree> MashupsModel { get; set; } // What is shown in SubsetTree for mashups
         public SubsetTree MashupModelRoot { get { return MashupsModel.Count != 0 ? (SubsetTree)MashupsModel[0] : null; } }
 
-        public bool IsInMashups(CsTable set) // Determine if the specified set belongs to some mashup
+        public bool IsInMashups(ComTable set) // Determine if the specified set belongs to some mashup
         {
             if (set == null || Mashups == null) return false;
-            foreach (CsSchema t in Mashups) { if (set.Top == t) return true; }
+            foreach (ComSchema t in Mashups) { if (set.Top == t) return true; }
             return false;
         }
-        public bool IsInMashups(CsColumn dim) // Determine if the specified dimension belongs to some mashup
+        public bool IsInMashups(ComColumn dim) // Determine if the specified dimension belongs to some mashup
         {
             if (dim == null || Mashups == null) return false;
             if (IsInMashups(dim.LesserSet) && IsInMashups(dim.GreaterSet)) return true;
@@ -63,17 +63,17 @@ namespace Samm
         { 
             get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; }
         }
-        public CsTable SelectedRoot
+        public ComTable SelectedRoot
         {
             get 
             { 
                 SubsetTree item = SelectedItem; 
                 if (item == null) return null;
-                if (item.IsSubsetNode && item.LesserSet.IsPrimitive && item.LesserSet.Name == "Root") return (CsTable)item.LesserSet; 
+                if (item.IsSubsetNode && item.LesserSet.IsPrimitive && item.LesserSet.Name == "Root") return (ComTable)item.LesserSet; 
                 return null;
             }
         }
-        public CsTable SelectedTable 
+        public ComTable SelectedTable 
         {
             get
             {
@@ -88,7 +88,7 @@ namespace Samm
             }
             set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); } 
         }
-        public CsColumn SelectedColumn 
+        public ComColumn SelectedColumn 
         { 
             get { SubsetTree item = SelectedItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; }
             set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); }
@@ -104,7 +104,7 @@ namespace Samm
             //
             // Initialize data sources
             //
-            RemoteSources = new ObservableCollection<CsSchema>();
+            RemoteSources = new ObservableCollection<ComSchema>();
             SetTopCsv csvSchema = new SetTopCsv("My Files");
             ConnectionCsv conn = new ConnectionCsv();
             csvSchema.connection = conn;
@@ -114,10 +114,10 @@ namespace Samm
             //
             // Initialize mashups (one empty mashup)
             //
-            Mashups = new ObservableCollection<CsSchema>();
+            Mashups = new ObservableCollection<ComSchema>();
             MashupsModel = new ObservableCollection<SubsetTree>();
 
-            CsSchema mashupTop = CreateSampleSchema(); // new SetTop("New Mashup");
+            ComSchema mashupTop = CreateSampleSchema(); // new SetTop("New Mashup");
             Mashups.Add(mashupTop);
 
             SubsetTree mashupModel = new SubsetTree(mashupTop.Root.SuperDim);
@@ -130,12 +130,12 @@ namespace Samm
             InitializeComponent();
         }
 
-        public CsSchema CreateSampleSchema()
+        public ComSchema CreateSampleSchema()
         {
-            CsSchema ds = new SetTop("Sample Mashup");
-            CsColumn d1, d2, d3, d4;
+            ComSchema ds = new SetTop("Sample Mashup");
+            ComColumn d1, d2, d3, d4;
 
-            CsTable departments = ds.CreateTable("Departments");
+            ComTable departments = ds.CreateTable("Departments");
             ds.AddTable(departments, null, null);
 
             d1 = ds.CreateColumn("name", departments, ds.GetPrimitive("String"), true);
@@ -143,10 +143,10 @@ namespace Samm
             d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), false);
             d2.Add();
 
-            departments.Data.Append(new CsColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
-            departments.Data.Append(new CsColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
+            departments.Data.Append(new ComColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
+            departments.Data.Append(new ComColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
 
-            CsTable employees = ds.CreateTable("Employees");
+            ComTable employees = ds.CreateTable("Employees");
             ds.AddTable(employees, null, null);
 
             d1 = ds.CreateColumn("name", employees, ds.GetPrimitive("String"), true);
@@ -158,7 +158,7 @@ namespace Samm
             d4 = ds.CreateColumn("dept", employees, departments, false);
             d4.Add();
 
-            CsTable managers = ds.CreateTable("Managers");
+            ComTable managers = ds.CreateTable("Managers");
             ds.AddTable(managers, employees, null);
 
             d1 = ds.CreateColumn("title", managers, ds.GetPrimitive("String"), false);
@@ -314,7 +314,7 @@ namespace Samm
         }
         private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsTable table = SelectedTable;
+            ComTable table = SelectedTable;
             if (table != null)
             {
                 Wizard_EditTable(table);
@@ -331,14 +331,14 @@ namespace Samm
         }
         private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsTable set = null;
+            ComTable set = null;
             if (SelectedTable != null)
                 set = SelectedTable;
             else if (SelectedColumn != null && SelectedColumn.LesserSet != null)
                 set = SelectedColumn.LesserSet;
             else return;
 
-            CsSchema schema = set.Top;
+            ComSchema schema = set.Top;
 
             // Remove all connections of this set with the schema by deleting all its dimensions
             schema.DeleteTable(set);
@@ -380,8 +380,8 @@ namespace Samm
         }
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedColumn;
-            CsTable srcSet = SelectedTable;
+            ComColumn selDim = SelectedColumn;
+            ComTable srcSet = SelectedTable;
             if (srcSet == null && selDim != null)
             {
                 srcSet = selDim.LesserSet;
@@ -400,7 +400,7 @@ namespace Samm
         }
         private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedColumn;
+            ComColumn selDim = SelectedColumn;
             if (selDim != null)
             {
                 Wizard_EditColumn(selDim);
@@ -417,10 +417,10 @@ namespace Samm
         }
         private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            CsColumn selDim = SelectedColumn;
+            ComColumn selDim = SelectedColumn;
             if (selDim == null) return;
 
-            CsSchema schema = selDim.LesserSet.Top;
+            ComSchema schema = selDim.LesserSet.Top;
 
             schema.DeleteColumn(selDim);
 
@@ -441,7 +441,7 @@ namespace Samm
         public void Wizard_CsvDatasource()
         {
             SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -472,19 +472,19 @@ namespace Samm
 
             // Create a new (imported) set
             string newTableName = tableName;
-            CsTable targetTable = schema.CreateTable(newTableName);
+            ComTable targetTable = schema.CreateTable(newTableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             // Create generating/import column
             string newColumnName = sourceTable.Name;
-            CsColumn importDim = schema.CreateColumn(newColumnName, sourceTable, targetTable, false);
+            ComColumn importDim = schema.CreateColumn(newColumnName, sourceTable, targetTable, false);
             importDim.Definition.DefinitionType = ColumnDefinitionType.LINK;
             importDim.Definition.IsGenerating = true;
 
             //
             // Show parameters for set extraction
             //
-            List<CsColumn> initialSelection = new List<CsColumn>();
+            List<ComColumn> initialSelection = new List<ComColumn>();
             initialSelection.Add(SelectedColumn);
             ColumnMappingBox dlg = new ColumnMappingBox(schema, importDim, initialSelection);
             dlg.Owner = this;
@@ -525,15 +525,15 @@ namespace Samm
             SetTopOledb top = new SetTopOledb("");
             top.connection = conn;
             top.LoadSchema(); // Load complete schema
-            CsTable sourceTable = top.FindTable(tableName);
+            ComTable sourceTable = top.FindTable(tableName);
 
             //
             // Configure import by creating a mapping for import dimensions
             //
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
-            CsTable targetTable = schema.CreateTable(tableName);
+            ComTable targetTable = schema.CreateTable(tableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             // Create generating/import column
@@ -541,7 +541,7 @@ namespace Samm
             Mapping map = mapper.CreatePrimitive(sourceTable, targetTable, schema); // Complete mapping (all to all)
             map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
 
-            CsColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
+            ComColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
             dim.Definition.Mapping = map;
             dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
             dim.Definition.IsGenerating = true;
@@ -672,13 +672,13 @@ namespace Samm
             dcs.SaveConfiguration(dcd);
         }
 
-        public void Wizard_ProductTable(CsTable set)
+        public void Wizard_ProductTable(ComTable set)
         {
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             // Create a new (product) set
             string productTableName = "New Table";
-            CsTable productSet = schema.CreateTable(productTableName);
+            ComTable productSet = schema.CreateTable(productTableName);
 
             // Show parameters for creating a product set
             ProductTableBox dlg = new ProductTableBox(schema, productSet, SelectedTable);
@@ -692,7 +692,7 @@ namespace Samm
             //
 
             // Create a new column (temporary, just to store a where expression)
-            CsColumn column = schema.CreateColumn("Where Expression", productSet, schema.GetPrimitive("Boolean"), false);
+            ComColumn column = schema.CreateColumn("Where Expression", productSet, schema.GetPrimitive("Boolean"), false);
 
             // Show dialog for authoring arithmetic expression
             ArithmeticBox whereDlg = new ArithmeticBox(column, true);
@@ -712,23 +712,23 @@ namespace Samm
             SelectedTable = productSet;
         }
 
-        public void Wizard_ExtractTable(CsTable set)
+        public void Wizard_ExtractTable(ComTable set)
         {
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             // Create a new (extracted) set
             string newTableName = "New Table";
-            CsTable targetTable = schema.CreateTable(newTableName);
+            ComTable targetTable = schema.CreateTable(newTableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
             // Create a new (mapped, generating) dimension to the new set
             string newColumnName = "New Column";
-            CsColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
+            ComColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
 
             //
             // Show parameters for set extraction
             //
-            List<CsColumn> initialSelection = new List<CsColumn>();
+            List<ComColumn> initialSelection = new List<ComColumn>();
             initialSelection.Add(SelectedColumn);
             ColumnMappingBox dlg = new ColumnMappingBox(schema, extractedDim, initialSelection);
             dlg.Owner = this;
@@ -744,15 +744,15 @@ namespace Samm
             SelectedTable = targetTable;
         }
 
-        public void Wizard_EditTable(CsTable table)
+        public void Wizard_EditTable(ComTable table)
         {
             if (table == null) return;
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             if (table.Definition.DefinitionType == TableDefinitionType.PROJECTION)
             {
-                CsColumn column = table.Definition.GeneratingDimensions[0];
+                ComColumn column = table.Definition.GeneratingDimensions[0];
 
                 ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
                 dlg.Owner = this;
@@ -763,7 +763,7 @@ namespace Samm
             else if (table.Definition.DefinitionType == TableDefinitionType.PRODUCT)
             {
                 // Create a new column (temporary, just to store a where expression)
-                CsColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);
+                ComColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);
 
                 // Show dialog for authoring arithmetic expression
                 ArithmeticBox whereDlg = new ArithmeticBox(column, true);
@@ -783,14 +783,14 @@ namespace Samm
             SelectedTable = table;
         }
 
-        public void Wizard_AddArithmetic(CsTable srcSet)
+        public void Wizard_AddArithmetic(ComTable srcSet)
         {
             if (srcSet == null) return;
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             // Create a new column
-            CsColumn column = schema.CreateColumn("New Column", srcSet, null, false); // We do not know its output type
+            ComColumn column = schema.CreateColumn("New Column", srcSet, null, false); // We do not know its output type
 
             // Show dialog for authoring arithmetic expression
             ArithmeticBox dlg = new ArithmeticBox(column, false);
@@ -808,14 +808,14 @@ namespace Samm
             SelectedColumn = column;
         }
 
-        public void Wizard_AddLink(CsTable sourceTable, CsTable targetTable)
+        public void Wizard_AddLink(ComTable sourceTable, ComTable targetTable)
         {
             if (sourceTable == null) return;
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             // Create a new (mapped) dimension using the mapping
-            CsColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
+            ComColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
 
             // Show link column dialog
             LinkColumnBox dlg = new LinkColumnBox(column);
@@ -831,14 +831,14 @@ namespace Samm
             SelectedColumn = column;
         }
 
-        public void Wizard_AddAggregation(CsTable srcSet, CsColumn measureColumn)
+        public void Wizard_AddAggregation(ComTable srcSet, ComColumn measureColumn)
         {
             if (srcSet == null) return;
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             // Create new aggregated column
-            CsColumn column = schema.CreateColumn("My Column", srcSet, null, false);
+            ComColumn column = schema.CreateColumn("My Column", srcSet, null, false);
 
             // Show recommendations and let the user choose one of them
             AggregationBox dlg = new AggregationBox(column, measureColumn);
@@ -854,11 +854,11 @@ namespace Samm
             SelectedColumn = column;
         }
 
-        public void Wizard_EditColumn(CsColumn column)
+        public void Wizard_EditColumn(ComColumn column)
         {
             if (column == null) return;
 
-            CsSchema schema = MashupTop;
+            ComSchema schema = MashupTop;
 
             if (column.Definition.DefinitionType == ColumnDefinitionType.ARITHMETIC)
             {
@@ -903,7 +903,7 @@ namespace Samm
 
         #region Operations (no user interactions)
 
-        public void Operation_OpenTable(CsTable set)
+        public void Operation_OpenTable(ComTable set)
         {
             lblWorkspace.Content = set.Name;
 
@@ -966,7 +966,7 @@ namespace Samm
             {
                 if (dropTarget is Set && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((CsTable)dropTarget, (CsTable)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((ComTable)dropTarget, (ComTable)dropSource);
                 }
             }
 
@@ -981,7 +981,7 @@ namespace Samm
             //
             if (data is SubsetTree && ((SubsetTree)data).IsSubsetNode) 
             {
-                CsTable set = ((SubsetTree)data).LesserSet;
+                ComTable set = ((SubsetTree)data).LesserSet;
                 if(!(set.Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups(set)) 
                 {
                     // Call a direct operation method for opening a table with the necessary parameters (rather than a command)

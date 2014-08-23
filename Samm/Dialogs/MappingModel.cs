@@ -24,8 +24,8 @@ namespace Samm.Dialogs
 
         public Mapping Mapping { get; set; } // It is the current state of the mapping. And it is what is initialized and returned. 
 
-        private CsTable _sourceSet;
-        public CsTable SourceSet 
+        private ComTable _sourceSet;
+        public ComTable SourceSet 
         {
             get { return _sourceSet; }
             set 
@@ -45,8 +45,8 @@ namespace Samm.Dialogs
             }
         }
 
-        private CsTable _targetSet;
-        public CsTable TargetSet
+        private ComTable _targetSet;
+        public ComTable TargetSet
         {
             get { return _targetSet; }
             set
@@ -196,14 +196,14 @@ namespace Samm.Dialogs
         }
 
 
-        public static List<CsTable> GetPossibleGreaterSets(CsTable table)
+        public static List<ComTable> GetPossibleGreaterSets(ComTable table)
         {
             // Possible target sets: all sets from the schema excepting: 
             // not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
 
-            List<CsTable> all = table.Top.Root.GetAllSubsets();
-            List<CsTable> result = new List<CsTable>();
-            foreach (CsTable set in all)
+            List<ComTable> all = table.Top.Root.GetAllSubsets();
+            List<ComTable> result = new List<ComTable>();
+            foreach (ComTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
                 if (set.IsLesser(table)) continue; // We cannot point to a lesser set (cycle)
@@ -214,14 +214,14 @@ namespace Samm.Dialogs
             return result;
         }
 
-        public static List<CsTable> GetPossibleLesserSets(CsTable table) // Fact sets
+        public static List<ComTable> GetPossibleLesserSets(ComTable table) // Fact sets
         {
             // Possible target sets: all sets from the schema excepting: 
             // not source, not greater, there is lesser path
 
-            List<CsTable> all = table.Top.Root.GetAllSubsets();
-            List<CsTable> result = new List<CsTable>();
-            foreach (CsTable set in all)
+            List<ComTable> all = table.Top.Root.GetAllSubsets();
+            List<ComTable> result = new List<ComTable>();
+            foreach (ComTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
                 if (!set.IsLesser(table)) continue;
@@ -232,14 +232,14 @@ namespace Samm.Dialogs
             return result;
         }
 
-        public MappingModel(CsColumn sourceDim, CsColumn targetDim)
+        public MappingModel(ComColumn sourceDim, ComColumn targetDim)
             : this(sourceDim.GreaterSet, targetDim.GreaterSet)
         {
             SourceTree.Children[0].Dim = sourceDim;
             TargetTree.Children[0].Dim = targetDim;
         }
 
-        public MappingModel(CsTable sourceSet, CsTable targetSet)
+        public MappingModel(ComTable sourceSet, ComTable targetSet)
         {
             mapper = new Mapper();
             mapper.MaxMappingsToBuild = 100;
@@ -392,12 +392,12 @@ namespace Samm.Dialogs
             throw new NotImplementedException();
         }
 
-        public MatchTreeNode(CsColumn dim, DimTree parent = null)
+        public MatchTreeNode(ComColumn dim, DimTree parent = null)
             : base(dim, parent)
         {
         }
 
-        public MatchTreeNode(CsTable set, DimTree parent = null)
+        public MatchTreeNode(ComTable set, DimTree parent = null)
             : base(set, parent)
         {
         }

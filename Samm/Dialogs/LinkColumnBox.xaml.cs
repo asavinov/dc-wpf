@@ -25,13 +25,13 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        CsColumn Column { get; set; }
+        ComColumn Column { get; set; }
 
         public string NewColumnName { get; set; }
 
         public MappingModel MappingModel { get; set; }
 
-        public List<CsTable> TargetTables { get; set; }
+        public List<ComTable> TargetTables { get; set; }
 
         public void RefreshAll()
         {
@@ -52,7 +52,7 @@ namespace Samm.Dialogs
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
         }
 
-        public LinkColumnBox(CsColumn column)
+        public LinkColumnBox(ComColumn column)
         {
             InitializeComponent();
 
@@ -60,8 +60,8 @@ namespace Samm.Dialogs
             else IsNew = true;
 
             Column = column;
-            CsTable sourceTable = column.LesserSet;
-            CsTable targetTable = column.GreaterSet;
+            ComTable sourceTable = column.LesserSet;
+            ComTable targetTable = column.GreaterSet;
 
             // Name
             NewColumnName = Column.Name;
@@ -74,12 +74,12 @@ namespace Samm.Dialogs
             {
                 // Compare the quality of gest mappings from the the source set to possible target sets
 
-                CsTable bestTargetTable = TargetTables[0];
+                ComTable bestTargetTable = TargetTables[0];
                 double bestSimilarity = 0.0;
                 /*
-                foreach (CsTable set in targetTables)
+                foreach (ComTable set in targetTables)
                 {
-                   CsColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
+                   ComColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
 
                     List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
                     if (mappings[0].Similarity > bestSimilarity) { bestTargetTable = set; bestSimilarity = mappings[0].Similarity; }
@@ -141,14 +141,14 @@ namespace Samm.Dialogs
 
             if (set == null) return;
 
-            MappingModel.TargetSet = (CsTable)set;
+            MappingModel.TargetSet = (ComTable)set;
 
             RefreshAll(); // Refresh
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            CsSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Top;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -156,7 +156,7 @@ namespace Samm.Dialogs
             // Column type
             if (IsNew)
             {
-                Column.GreaterSet = (CsTable)targetTables.SelectedItem;
+                Column.GreaterSet = (ComTable)targetTables.SelectedItem;
             }
 
             // Column definition

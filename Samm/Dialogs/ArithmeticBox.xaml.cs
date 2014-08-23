@@ -44,9 +44,9 @@ namespace Samm.Dialogs
         bool IsWhere { get; set; } // True if we edit Where expression of a table (lesser table of the column parameter)
         bool IsNew { get; set; }
 
-        CsColumn Column { get; set; }
+        ComColumn Column { get; set; }
 
-        public CsTable SourceTable { get; set; }
+        public ComTable SourceTable { get; set; }
 
         public List<DimPath> SourcePaths { get; set; }
 
@@ -66,7 +66,7 @@ namespace Samm.Dialogs
             expressionModel.ExprTreeView.Items.Refresh();
         }
 
-        public ArithmeticBox(CsColumn column, bool whereExpression)
+        public ArithmeticBox(ComColumn column, bool whereExpression)
         {
             IsWhere = whereExpression;
 
@@ -74,8 +74,8 @@ namespace Samm.Dialogs
             else IsNew = true;
 
             Column = column;
-            CsTable sourceTable = column.LesserSet;
-            CsSchema schema = sourceTable.Top;
+            ComTable sourceTable = column.LesserSet;
+            ComSchema schema = sourceTable.Top;
 
             SourceTable = sourceTable;
 
@@ -126,8 +126,8 @@ namespace Samm.Dialogs
 
             // Initialize a list of possible column accesses
             var paths = new PathEnumerator(
-                new List<CsTable>(new CsTable[] { SourceTable }),
-                new List<CsTable>(new CsTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }), 
+                new List<ComTable>(new ComTable[] { SourceTable }),
+                new List<ComTable>(new ComTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }), 
                 false, 
                 DimensionType.IDENTITY_ENTITY
                );
@@ -284,7 +284,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            CsSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Top;
 
             // Column name
             if (IsWhere)
@@ -324,7 +324,7 @@ namespace Samm.Dialogs
                 // Column type
                 // Derive output type of the expression and use it to set the type of the column. 
                 // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
-                expr.Resolve(schema, new List<CsVariable>() { new Variable("this", SourceTable) });
+                expr.Resolve(schema, new List<ComVariable>() { new Variable("this", SourceTable) });
                 Column.GreaterSet = expr.Result.TypeTable;
 
                 Column.Definition.Formula = expr;

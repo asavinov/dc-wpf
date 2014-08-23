@@ -27,7 +27,7 @@
                 </StackPanel>
             </DataTemplate>
 
-            <!-- Visualization of one CsColumn as a list item -->
+            <!-- Visualization of one ComColumn as a list item -->
             <DataTemplate x:Key="ColumnListItemTemplate">
                 <StackPanel Orientation="Horizontal">
                     <Image x:Name="node_icon" Source="Images/node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left" />
