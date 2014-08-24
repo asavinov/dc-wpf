@@ -229,7 +229,7 @@ namespace Samm.Dialogs
                 else if (entry.IsMatched) // Remains included. Update properties (name, key, type etc.)
                 {
                     targetColumn = match.TargetPath.FirstSegment;
-                    if (targetColumn != entry.TargetType) // Type has been changed
+                    if (targetColumn.GreaterSet != entry.TargetType) // Type has been changed
                     {
                         targetColumn.Remove();
                         targetColumn.GreaterSet = entry.TargetType;

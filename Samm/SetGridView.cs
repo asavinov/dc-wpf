@@ -217,22 +217,23 @@ namespace Samm
             get
             {
                 object cell = Offset;
-                int ofs = Offset;
 
                 if (GridView.ShowPaths) // Use stored paths
                 {
-                    ofs = (int)cell; // Use output as an input for the next iteration
-
                     DimPath path = GridView.Paths[index];
+                    int ofs;
                     for (int i = 0; i < path.Path.Count; i++)
                     {
-                        if (path.Path[0].Data.IsNull(ofs))
+                        ofs = (int)cell; // Use output as an input for the next iteration
+
+                        if (path.Path[i].Data.IsNull(ofs))
                         {
                             cell = null;
+                            break; // Cannot continue with next segments
                         }
                         else
                         {
-                            cell = path.Path[0].Data.GetValue(ofs);
+                            cell = path.Path[i].Data.GetValue(ofs);
                         }
                     }
                 }
@@ -242,13 +243,13 @@ namespace Samm
                     if (index < 0 || index >= dimCount) return null;
                     ComColumn dim = GridView.Set.GreaterDims[index];
 
-                    if (dim.Data.IsNull(ofs))
+                    if (dim.Data.IsNull(Offset))
                     {
                         cell = null;
                     }
                     else
                     {
-                        cell = dim.Data.GetValue(ofs);
+                        cell = dim.Data.GetValue(Offset);
                     }
                 }
 
