@@ -278,7 +278,7 @@ namespace Samm
 
         private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = true;
+            if (SelectedRoot != null) e.CanExecute = false;
             else if (SelectedTable != null) e.CanExecute = true;
             else if (SelectedColumn != null) e.CanExecute = false;
             else e.CanExecute = false;
