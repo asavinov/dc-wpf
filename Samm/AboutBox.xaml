@@ -7,7 +7,8 @@
         >
 
     <Window.Resources>
-        <BitmapImage x:Key="AboutLogoImage" UriSource="pack://application:,,,/Samm;component/Images/AboutLogo.png"/>
+        <BitmapImage x:Key="CO_logo" UriSource="pack://application:,,,/Samm;component/Images/AboutLogo.png"/>
+        <BitmapImage x:Key="DC_logo" UriSource="pack://application:,,,/Samm;component/Images/DC.png"/>
     </Window.Resources>
 
     <Grid Margin="10,10,2,6">
@@ -16,7 +17,7 @@
             <ColumnDefinition Width="292*"/>
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Column="0" Source="{StaticResource AboutLogoImage}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5"/>
+        <Image Grid.Column="0" Source="{StaticResource DC_logo}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5"/>
 
         <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="396" Margin="5,5,5,5">
             <Label Name="labelProductName" Content="{Binding Path=AssemblyProduct}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5,5,5,5"/>

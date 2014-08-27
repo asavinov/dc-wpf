@@ -334,6 +334,29 @@
   <ItemGroup>
     <Resource Include="Images\rename.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\DC.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dc-32x32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_cloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_database.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\file_close.png" />
+    <Resource Include="Images\file_exit.png" />
+    <Resource Include="Images\file_new.png" />
+    <Resource Include="Images\file_open.png" />
+    <Resource Include="Images\file_save.png" />
+    <Resource Include="Images\file_saveas.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\file_settings.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

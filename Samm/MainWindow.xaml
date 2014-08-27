@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:Samm.Controls"
         x:Name="UI"
         Title="{StaticResource MainWindowTitle}" 
-        Icon="Images\default.ico"
+        Icon="Images\dc-32x32.png"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
 
@@ -93,10 +93,11 @@
 
             <!-- Help Pane, located at the right-hand side -->
             <Ribbon.HelpPaneContent>
-                <RibbonButton SmallImageSource="Images\default.ico" Label="Help" />
+                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label="Help" />
             </Ribbon.HelpPaneContent>
 
             <!-- Quick Access Toolbar - located at the upper-left corner -->
+            <!--
             <Ribbon.QuickAccessToolBar>
                 <RibbonQuickAccessToolBar>
                     <RibbonButton x:Name ="Save" SmallImageSource="Images\default.ico" />
@@ -107,18 +108,19 @@
                     </RibbonSplitButton>
                 </RibbonQuickAccessToolBar>
             </Ribbon.QuickAccessToolBar>
-
+            -->
+            
             <!-- Application Menu, located at the left-hand side (down arrow) -->
             <Ribbon.ApplicationMenu>
                 <RibbonApplicationMenu KeyTip="F">
-                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\default.ico" Command="ApplicationCommands.New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\default.ico" Command="ApplicationCommands.Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\default.ico" Command="ApplicationCommands.Close"/>
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\default.ico" Command="ApplicationCommands.Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\default.ico" Command="ApplicationCommands.SaveAs"/>
-                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\default.ico" />
-                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\default.ico" Command="{StaticResource AboutCommand}" />
-                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\default.ico" />
+                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\file_new.png" Command="ApplicationCommands.New"/>
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\file_open.png" Command="ApplicationCommands.Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" Command="ApplicationCommands.Close"/>
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\file_save.png" Command="ApplicationCommands.Save"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\file_saveas.png" Command="ApplicationCommands.SaveAs"/>
+                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" />
+                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\dc-32x32.png" Command="{StaticResource AboutCommand}" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\file_exit.png" />
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
 
@@ -139,16 +141,25 @@
             <RibbonTab Header="Data" KeyTip="D">
                 <RibbonGroup x:Name="importDatasourceGroup" Header="Import">
                     <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O"/>
-                    <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S"/>
+                    <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
+                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" IsEnabled="False" />
+                    </RibbonMenuButton>
+                    <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
+                        <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
+                    </RibbonMenuButton>
                 </RibbonGroup>
                 <RibbonGroup x:Name="exportGroup" Header="Export">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Access Database" KeyTip="A" IsEnabled="False" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Text Table" KeyTip="T" IsEnabled="False" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Excel" KeyTip="R" IsEnabled="False" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Remove Data Source" KeyTip="R" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" IsEnabled="False" />
+                    <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
+                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" IsEnabled="False" />
+                    </RibbonMenuButton>
+                    <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
+                        <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
+                    </RibbonMenuButton>
                 </RibbonGroup>
             </RibbonTab>
 
