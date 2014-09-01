@@ -117,7 +117,8 @@ namespace Samm
             Mashups = new ObservableCollection<ComSchema>();
             MashupsModel = new ObservableCollection<SubsetTree>();
 
-            ComSchema mashupTop = CreateSampleSchema(); // new SetTop("New Mashup");
+            ComSchema mashupTop = new SetTop("New Mashup");
+            //mashupTop = CreateSampleSchema();
             Mashups.Add(mashupTop);
 
             SubsetTree mashupModel = new SubsetTree(mashupTop.Root.SuperDim);
@@ -450,6 +451,15 @@ namespace Samm
                 }
                 schema.DeleteTable(gTab); // Delete (directly) generated table
                 // This column will be now deleted as a result of the deletion of the generated table
+            }
+            else if(selDim.LesserSet.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
+            {
+                ComColumn projDim = selDim.LesserSet.Definition.GeneratingDimensions[0];
+                Mapping mapping = projDim.Definition.Mapping;
+                PathMatch match = mapping.GetMatchForTarget(new DimPath(selDim));
+                mapping.RemoveMatch(match.SourcePath, match.TargetPath);
+
+                schema.DeleteColumn(selDim);
             }
             else // Just delete this column
             {
