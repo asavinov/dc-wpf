@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Samm
+namespace Samm.Dialogs
 {
     /// <summary>
     /// Interaction logic for Window1.xaml
@@ -48,7 +48,7 @@ namespace Samm
         {
             get
             {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                return "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
         }
 
@@ -104,6 +104,7 @@ namespace Samm
                 return ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
         }
+
         #endregion
 
     }

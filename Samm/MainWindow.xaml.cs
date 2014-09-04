@@ -469,6 +469,11 @@ namespace Samm
             e.Handled = true;
         }
 
+        private void HelpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://conceptoriented.com");
+        }
+
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box

@@ -58,6 +58,8 @@
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
 
+        <RoutedUICommand x:Key="HelpCommand" Text="Help" />
+
         <RoutedUICommand x:Key="AboutCommand" Text="About" />
 
     </RibbonWindow.Resources>
@@ -84,6 +86,8 @@
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
 
+        <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
+
         <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
@@ -93,7 +97,7 @@
 
             <!-- Help Pane, located at the right-hand side -->
             <Ribbon.HelpPaneContent>
-                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label="Help" />
+                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label=" Help: conceptoriented.com " KeyTip="H" Command="{StaticResource HelpCommand}" />
             </Ribbon.HelpPaneContent>
 
             <!-- Quick Access Toolbar - located at the upper-left corner -->

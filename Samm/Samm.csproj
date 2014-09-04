@@ -102,6 +102,9 @@
       <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Dialogs\AboutBox.xaml.cs">
+      <DependentUpon>AboutBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\AggregationBox.xaml.cs">
       <DependentUpon>AggregationBox.xaml</DependentUpon>
     </Compile>
@@ -127,9 +130,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SetGridView.cs" />
-    <Compile Include="AboutBox.xaml.cs">
-      <DependentUpon>AboutBox.xaml</DependentUpon>
-    </Compile>
     <Page Include="Controls\ExprTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -141,6 +141,10 @@
     <Page Include="Controls\SubsetTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\AboutBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\AggregationBox.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -168,10 +172,6 @@
     </Compile>
     <Compile Include="Connections\DataConnectionConfiguration.cs" />
     <Compile Include="Connections\IDataConnectionConfiguration.cs" />
-    <Page Include="AboutBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Dialogs\RenameBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

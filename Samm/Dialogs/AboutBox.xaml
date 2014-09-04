@@ -1,0 +1,47 @@
+﻿<Window x:Class="Samm.Dialogs.AboutBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding Path=AssemblyTitle}" Height="400" Width="600"
+        WindowStartupLocation="CenterOwner" 
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+
+    <Window.Resources>
+        <BitmapImage x:Key="CO_logo" UriSource="pack://application:,,,/Samm;component/Images/AboutLogo.png"/>
+        <BitmapImage x:Key="DC_logo" UriSource="pack://application:,,,/Samm;component/Images/DC.png"/>
+    </Window.Resources>
+
+    <Grid Margin="10,10,2,6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="115*"/>
+            <ColumnDefinition Width="292*"/>
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Column="0" Source="{StaticResource DC_logo}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,5"/>
+
+        <Grid Grid.Column="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Name="labelProductName" Content="{Binding Path=AssemblyProduct}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5"/>
+
+            <Label Grid.Row="1" Name="labelVersion" Content="{Binding Path=AssemblyVersion}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5"/>
+
+            <Label Grid.Row="2" Name="labelCopyright" Content="{Binding Path=AssemblyCopyright}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5"/>
+
+            <Label Grid.Row="3" Name="labelCompanyName" Content="{Binding Path=AssemblyCompany}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5"/>
+
+            <TextBox Grid.Row="4" Name="textBoxDescription" Text="{Binding Path=AssemblyDescription}" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5"/>
+
+            <Button Grid.Row="5" Name="okButton" Content="_OK" Margin="5" IsDefault="True" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" IsCancel="True" />
+
+        </Grid>
+
+    </Grid>
+</Window>
