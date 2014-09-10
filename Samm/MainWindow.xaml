@@ -65,6 +65,11 @@
     </RibbonWindow.Resources>
 
     <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" />
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenCommand_Executed" />
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCommand_Executed" />
+        <CommandBinding Command="ApplicationCommands.SaveAs" Executed="SaveAsCommand_Executed" />
+
         <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
@@ -118,10 +123,10 @@
             <Ribbon.ApplicationMenu>
                 <RibbonApplicationMenu KeyTip="F">
                     <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\file_new.png" Command="ApplicationCommands.New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\file_open.png" Command="ApplicationCommands.Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" Command="ApplicationCommands.Close"/>
+                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\file_open.png" IsEnabled="True" Command="ApplicationCommands.Open"/>
+                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/>
                     <RibbonApplicationMenuItem Header="Save" ImageSource="Images\file_save.png" Command="ApplicationCommands.Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\file_saveas.png" Command="ApplicationCommands.SaveAs"/>
+                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\file_saveas.png" IsEnabled="True" Command="ApplicationCommands.SaveAs"/>
                     <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" />
                     <RibbonApplicationMenuItem Header="About" ImageSource="Images\dc-32x32.png" Command="{StaticResource AboutCommand}" />
                     <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\file_exit.png" />

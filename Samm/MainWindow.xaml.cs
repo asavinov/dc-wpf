@@ -18,6 +18,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Data.ConnectionUI;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 using Com.Model;
 using Samm.Dialogs;
 
@@ -101,29 +104,12 @@ namespace Samm
 
         public MainWindow()
         {
-            //
-            // Initialize data sources
-            //
             RemoteSources = new ObservableCollection<ComSchema>();
-            SetTopCsv csvSchema = new SetTopCsv("My Files");
-            ConnectionCsv conn = new ConnectionCsv();
-            csvSchema.connection = conn;
-            
-            RemoteSources.Add(csvSchema);
-
-            //
-            // Initialize mashups (one empty mashup)
-            //
             Mashups = new ObservableCollection<ComSchema>();
             MashupsModel = new ObservableCollection<SubsetTree>();
 
-            ComSchema mashupTop = new SetTop("New Mashup");
-            //mashupTop = CreateSampleSchema();
-            Mashups.Add(mashupTop);
-
-            SubsetTree mashupModel = new SubsetTree(mashupTop.Root.SuperDim);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
+            // Create new empty mashup
+            NewCommand_Executed(null, null);
 
             DragDropHelper = new DragDropHelper();
 
@@ -171,6 +157,130 @@ namespace Samm
         }
 
         # region Command_Executed (call backs from Commands)
+
+        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            //
+            // Initialize schemas
+            //
+            RemoteSources.Clear();
+            SetTopCsv csvSchema = new SetTopCsv("My Files");
+            ConnectionCsv conn = new ConnectionCsv();
+            RemoteSources.Add(csvSchema);
+
+            //
+            // Initialize mashup schema
+            //
+            Mashups.Clear();
+            ComSchema mashupTop = new SetTop("New Mashup");
+            //mashupTop = CreateSampleSchema();
+            Mashups.Add(mashupTop);
+
+            //
+            // Update visual component (views)
+            //
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+        }
+
+        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            dlg.CheckFileExists = true;
+            dlg.Multiselect = false;
+            
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result != true) return;
+
+            string filePath = dlg.FileName;
+            string safeFilePath = dlg.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+            //
+            // Read from the file and de-serialize workspace
+            //
+
+            // Write to file
+            string jsonString = System.IO.File.ReadAllText(filePath);
+
+            // De-serialize
+            JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
+            Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
+            workspace.FromJson(json, workspace);
+
+            // User workspace objects
+            Mashups.Clear();
+            RemoteSources.Clear();
+            foreach (var remote in workspace.Schemas)
+            {
+                if (remote == workspace.Mashup)
+                {
+                    Mashups.Add(workspace.Mashup);
+                }
+                else
+                {
+                    RemoteSources.Add(remote);
+                }
+            }
+
+            // Update visual component (views)
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+
+            e.Handled = true;
+        }
+
+        private void CloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            NewCommand_Executed(sender, e);
+        }
+
+        private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();
+            dlg.FileName = "Mashup";
+            dlg.DefaultExt = ".mashup";
+            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result != true) return;
+
+            string filePath = dlg.FileName;
+            string safeFilePath = dlg.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+            //
+            // Serialize workspace and write it to the file
+            //
+            var workspace = new Workspace();
+            workspace.Schemas.Add(MashupTop);
+            workspace.Mashup = MashupTop;
+            foreach (var remote in RemoteSources)
+            {
+                workspace.Schemas.Add(remote);
+            }
+
+            // Serialize
+            JObject json = Utils.CreateJsonFromObject(workspace);
+            workspace.ToJson(json);
+            string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
+
+            // Write to file
+            System.IO.File.WriteAllText(filePath, jsonString);
+
+            e.Handled = true;
+        }
 
         private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -490,17 +600,18 @@ namespace Samm
             SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
             ComSchema schema = MashupTop;
 
-            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
-            ofd.RestoreDirectory = true;
-            ofd.CheckFileExists = true;
-            ofd.Multiselect = false;
+            var ofg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            ofg.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofg.RestoreDirectory = true;
+            ofg.CheckFileExists = true;
+            ofg.Multiselect = false;
 
-            if (ofd.ShowDialog() != true) return;
+            Nullable<bool> result = ofg.ShowDialog();
+            if (result != true) return;
 
-            string filePath = ofd.FileName;
-            string safeFilePath = ofd.SafeFileName;
+            string filePath = ofg.FileName;
+            string safeFilePath = ofg.SafeFileName;
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
@@ -547,7 +658,7 @@ namespace Samm
 
         public void Wizard_TextDatasource()
         {
-            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            var ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
             ofd.RestoreDirectory = true;
