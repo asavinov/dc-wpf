@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -31,6 +32,9 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : RibbonWindow
     {
+        // File where mash is stored
+        public string MashupFile { get; set; }
+
         //
         // Data sources
         //
@@ -109,7 +113,7 @@ namespace Samm
             MashupsModel = new ObservableCollection<SubsetTree>();
 
             // Create new empty mashup
-            NewCommand_Executed(null, null);
+            NewMashup();
 
             DragDropHelper = new DragDropHelper();
 
@@ -160,6 +164,20 @@ namespace Samm
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            // TODO: ask the user wants to save unsaved changes. If yes, call Save, if not just create new
+
+            NewMashup();
+
+            //
+            // Update visual component (views)
+            //
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+        }
+        protected void NewMashup()
+        {
             //
             // Initialize schemas
             //
@@ -175,14 +193,6 @@ namespace Samm
             ComSchema mashupTop = new SetTop("New Mashup");
             //mashupTop = CreateSampleSchema();
             Mashups.Add(mashupTop);
-
-            //
-            // Update visual component (views)
-            //
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
         }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -203,11 +213,22 @@ namespace Samm
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
-            //
-            // Read from the file and de-serialize workspace
-            //
+            // TODO: If there are unsaved changes then ask if they have to be saved (and maybe cancel opening new file). Results: abondon changes, save changes, cancel open 
 
-            // Write to file
+            // Read from the file and de-serialize workspace
+            ReadFromFile(filePath);
+            MashupFile = filePath;
+
+            // Update visual component (views)
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+
+            e.Handled = true;
+        }
+        protected void ReadFromFile(string filePath)
+        {
             string jsonString = System.IO.File.ReadAllText(filePath);
 
             // De-serialize
@@ -229,19 +250,38 @@ namespace Samm
                     RemoteSources.Add(remote);
                 }
             }
+        }
 
-            // Update visual component (views)
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
+        private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(MashupFile))
+            {
+                SaveAsCommand_Executed(sender, e); // Choose a file to save to. It will call this method again.
+            }
+            else
+            {
+                WriteToFile(MashupFile); // Simply write to file
+            }
 
             e.Handled = true;
         }
-
-        private void CloseCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        protected void WriteToFile(string filePath)
         {
-            NewCommand_Executed(sender, e);
+            var workspace = new Workspace();
+            workspace.Schemas.Add(MashupTop);
+            workspace.Mashup = MashupTop;
+            foreach (var remote in RemoteSources)
+            {
+                workspace.Schemas.Add(remote);
+            }
+
+            // Serialize
+            JObject json = Utils.CreateJsonFromObject(workspace);
+            workspace.ToJson(json);
+            string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
+
+            // Write to file
+            System.IO.File.WriteAllText(filePath, jsonString);
         }
 
         private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -260,26 +300,53 @@ namespace Samm
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
-            //
-            // Serialize workspace and write it to the file
-            //
-            var workspace = new Workspace();
-            workspace.Schemas.Add(MashupTop);
-            workspace.Mashup = MashupTop;
-            foreach (var remote in RemoteSources)
-            {
-                workspace.Schemas.Add(remote);
-            }
-
-            // Serialize
-            JObject json = Utils.CreateJsonFromObject(workspace);
-            workspace.ToJson(json);
-            string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
-
-            // Write to file
-            System.IO.File.WriteAllText(filePath, jsonString);
+            MashupFile = filePath;
+            SaveCommand_Executed(sender, e); // It will simply save
 
             e.Handled = true;
+        }
+
+        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+        }
+
+        private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.Close();
+        }
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            var response = MessageBox.Show(this, "Do you want to save your changes?", "Exiting...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (response == MessageBoxResult.Yes)
+            {
+                // TODO: Ask about the desire to save and call Save (it will call save_as if necessary)
+
+                MessageBoxResult saveResult = MessageBoxResult.Cancel;
+                if (saveResult == MessageBoxResult.Cancel) // If canceled during save
+                {
+                    e.Cancel = true;
+                }
+                else // Was really saved or refused to save
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+            else if (response == MessageBoxResult.No) 
+            {
+                Application.Current.Shutdown();
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void HelpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://conceptoriented.com");
         }
 
         private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -577,18 +644,6 @@ namespace Samm
             }
 
             e.Handled = true;
-        }
-
-        private void HelpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("http://conceptoriented.com");
-        }
-
-        private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            AboutBox dlg = new AboutBox(); // Instantiate the dialog box
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
         }
 
         #endregion

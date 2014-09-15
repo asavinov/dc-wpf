@@ -8,6 +8,7 @@
         Title="{StaticResource MainWindowTitle}" 
         Icon="Images\dc-32x32.png"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Closing="Window_Closing"
         >
 
     <RibbonWindow.Resources>
@@ -37,6 +38,10 @@
         </DataTemplate>
 
         <!-- Commands can be (and should be later) defined programmatically as classes -->
+        <RoutedUICommand x:Key="AboutCommand" Text="About" />
+        <RoutedUICommand x:Key="ExitCommand" Text="Exit" />
+        <RoutedUICommand x:Key="HelpCommand" Text="Help" />
+
         <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
         <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access table" />
         <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server table" />
@@ -58,17 +63,16 @@
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
 
-        <RoutedUICommand x:Key="HelpCommand" Text="Help" />
-
-        <RoutedUICommand x:Key="AboutCommand" Text="About" />
-
     </RibbonWindow.Resources>
 
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" />
         <CommandBinding Command="ApplicationCommands.Open" Executed="OpenCommand_Executed" />
-        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCommand_Executed" />
+        <CommandBinding Command="ApplicationCommands.Save" Executed="SaveCommand_Executed" />
         <CommandBinding Command="ApplicationCommands.SaveAs" Executed="SaveAsCommand_Executed" />
+        <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
+        <CommandBinding Command="{StaticResource ExitCommand}" Executed="ExitCommand_Executed" />
+        <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
 
         <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
         <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
@@ -91,9 +95,6 @@
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
 
-        <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
-
-        <CommandBinding Command="{StaticResource AboutCommand}" Executed="AboutCommand_Executed" />
     </Window.CommandBindings>
 
     <DockPanel LastChildFill="True">
@@ -102,7 +103,7 @@
 
             <!-- Help Pane, located at the right-hand side -->
             <Ribbon.HelpPaneContent>
-                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label=" Help: conceptoriented.com " KeyTip="H" Command="{StaticResource HelpCommand}" />
+                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label=" Info: conceptoriented.com " KeyTip="H" Command="{StaticResource HelpCommand}" />
             </Ribbon.HelpPaneContent>
 
             <!-- Quick Access Toolbar - located at the upper-left corner -->
@@ -124,12 +125,12 @@
                 <RibbonApplicationMenu KeyTip="F">
                     <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\file_new.png" Command="ApplicationCommands.New"/>
                     <RibbonApplicationMenuItem Header="Open" ImageSource="Images\file_open.png" IsEnabled="True" Command="ApplicationCommands.Open"/>
-                    <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/>
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\file_save.png" Command="ApplicationCommands.Save"/>
+                    <!-- <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/> -->
+                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\file_save.png" IsEnabled="True" Command="ApplicationCommands.Save"/>
                     <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\file_saveas.png" IsEnabled="True" Command="ApplicationCommands.SaveAs"/>
-                    <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" />
+                    <!-- <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" /> -->
                     <RibbonApplicationMenuItem Header="About" ImageSource="Images\dc-32x32.png" Command="{StaticResource AboutCommand}" />
-                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\file_exit.png" />
+                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\file_exit.png"  Command="{StaticResource ExitCommand}" />
                 </RibbonApplicationMenu>
             </Ribbon.ApplicationMenu>
 
