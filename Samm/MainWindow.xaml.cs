@@ -17,7 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Microsoft.Data.ConnectionUI;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -160,22 +159,6 @@ namespace Samm
             return ds;
         }
 
-        # region Command_Executed (call backs from Commands)
-
-        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            // TODO: ask the user wants to save unsaved changes. If yes, call Save, if not just create new
-
-            NewMashup();
-
-            //
-            // Update visual component (views)
-            //
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
-        }
         protected void NewMashup()
         {
             //
@@ -193,47 +176,24 @@ namespace Samm
             ComSchema mashupTop = new SetTop("New Mashup");
             //mashupTop = CreateSampleSchema();
             Mashups.Add(mashupTop);
-        }
 
-        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dlg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
-            dlg.CheckFileExists = true;
-            dlg.Multiselect = false;
-            
-            Nullable<bool> result = dlg.ShowDialog();
-
-            if (result != true) return;
-
-            string filePath = dlg.FileName;
-            string safeFilePath = dlg.SafeFileName;
-            string fileDir = System.IO.Path.GetDirectoryName(filePath);
-            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
-
-            // TODO: If there are unsaved changes then ask if they have to be saved (and maybe cancel opening new file). Results: abondon changes, save changes, cancel open 
-
-            // Read from the file and de-serialize workspace
-            ReadFromFile(filePath);
-            MashupFile = filePath;
-
+            //
             // Update visual component (views)
+            //
             MashupsModel.Clear();
             SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
             mashupModel.ExpandTree();
             MashupsModel.Add(mashupModel);
-
-            e.Handled = true;
         }
-        protected void ReadFromFile(string filePath)
+
+        protected void ReadMashup(string filePath)
         {
             string jsonString = System.IO.File.ReadAllText(filePath);
 
             // De-serialize
             JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
             Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
+
             workspace.FromJson(json, workspace);
 
             // User workspace objects
@@ -250,22 +210,15 @@ namespace Samm
                     RemoteSources.Add(remote);
                 }
             }
+
+            // Update visual component (views)
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
         }
 
-        private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(MashupFile))
-            {
-                SaveAsCommand_Executed(sender, e); // Choose a file to save to. It will call this method again.
-            }
-            else
-            {
-                WriteToFile(MashupFile); // Simply write to file
-            }
-
-            e.Handled = true;
-        }
-        protected void WriteToFile(string filePath)
+        protected void WriteMashup(string filePath)
         {
             var workspace = new Workspace();
             workspace.Schemas.Add(MashupTop);
@@ -284,7 +237,107 @@ namespace Samm
             System.IO.File.WriteAllText(filePath, jsonString);
         }
 
+        # region Command_Executed (call backs from Commands)
+
+        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            NewFileWizard();
+            e.Handled = true;
+        }
+        private bool NewFileWizard()
+        {
+            // Ask if changes have to be saved before loading a new mashup
+            var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (saveChanges == MessageBoxResult.Yes)
+            {
+                bool isSaved = SaveFileWizard();
+                if (!isSaved) return false; // Cancelled in save as dialog
+            }
+            else if (saveChanges == MessageBoxResult.No)
+            {
+                // Abondon changes.
+            }
+            else
+            {
+                return false;
+            }
+
+            NewMashup();
+
+            return true;
+        }
+
+        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            OpenFileWizard();
+            e.Handled = true;
+        }
+        private bool OpenFileWizard()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
+            dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            dlg.CheckFileExists = true;
+            dlg.Multiselect = false;
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result != true) return false;
+
+            string filePath = dlg.FileName;
+            string safeFilePath = dlg.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+            // Ask if changes have to be saved before loading a new mashup
+            var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (saveChanges == MessageBoxResult.Yes)
+            {
+                bool isSaved = SaveFileWizard();
+                if (!isSaved) return false; // Cancelled in save as dialog
+            }
+            else if (saveChanges == MessageBoxResult.No)
+            {
+                // Abondon changes.
+            }
+            else
+            {
+                return false;
+            }
+
+            // Read from the file and de-serialize workspace
+            ReadMashup(filePath);
+            MashupFile = filePath;
+
+            return true;
+        }
+
+        private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveFileWizard();
+            e.Handled = true;
+        }
+        private bool SaveFileWizard()
+        {
+            if (string.IsNullOrEmpty(MashupFile))
+            {
+                bool isSaved = SaveAsFileWizard(); // Choose a file to save to. It will call this method again.
+                return isSaved;
+            }
+            else
+            {
+                WriteMashup(MashupFile); // Simply write to file
+                return true;
+            }
+        }
+
         private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            SaveAsFileWizard();
+            e.Handled = true;
+        }
+        private bool SaveAsFileWizard()
         {
             var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();
             dlg.FileName = "Mashup";
@@ -293,7 +346,7 @@ namespace Samm
 
             Nullable<bool> result = dlg.ShowDialog();
 
-            if (result != true) return;
+            if (result != true) return false; // Cancelled
 
             string filePath = dlg.FileName;
             string safeFilePath = dlg.SafeFileName;
@@ -301,9 +354,9 @@ namespace Samm
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
             MashupFile = filePath;
-            SaveCommand_Executed(sender, e); // It will simply save
+            WriteMashup(MashupFile); // Really save
 
-            e.Handled = true;
+            return true; // Saved
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -869,6 +922,7 @@ namespace Samm
             // authorized for redistribution since Feb 2010: http://connect.microsoft.com/VisualStudio/feedback/details/423104/redistributable-microsoft-data-connectionui-dll-and-microsoft-data-connectionui-dialog-dll
             //
             // Assemblies: Microsoft.Data.ConnectionUI.dll, Microsoft.Data.ConnectionUI.Dialog.dll
+            /*
             DataConnectionDialog dcd = new DataConnectionDialog();
             DataConnectionConfiguration dcs = new DataConnectionConfiguration(null);
             dcs.LoadConfiguration(dcd);
@@ -883,6 +937,7 @@ namespace Samm
             //readOledbSchema(connectionString); //For testing purposes
 
             dcs.SaveConfiguration(dcd);
+            */
         }
 
         public void Wizard_ProductTable(ComTable set)
