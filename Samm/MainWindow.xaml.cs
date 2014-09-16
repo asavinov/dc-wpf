@@ -638,7 +638,11 @@ namespace Samm
         {
             if (SelectedRoot != null) e.CanExecute = false;
             else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null) e.CanExecute = true;
+            else if (SelectedColumn != null)
+            {
+                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.NONE) e.CanExecute = false;
+                else e.CanExecute = true;
+            }
             else e.CanExecute = false;
         }
         private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1128,7 +1132,11 @@ namespace Samm
 
             ComSchema schema = MashupTop;
 
-            if (column.Definition.DefinitionType == ColumnDefinitionType.ARITHMETIC)
+            if (column.Definition.DefinitionType == ColumnDefinitionType.NONE)
+            {
+                return;
+            }
+            else if (column.Definition.DefinitionType == ColumnDefinitionType.ARITHMETIC)
             {
                 ArithmeticBox dlg = new ArithmeticBox(column, false);
                 dlg.Owner = this;
