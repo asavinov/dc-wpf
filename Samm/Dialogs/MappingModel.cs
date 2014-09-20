@@ -201,12 +201,12 @@ namespace Samm.Dialogs
             // Possible target sets: all sets from the schema excepting: 
             // not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
 
-            List<ComTable> all = table.Top.Root.GetAllSubsets();
+            List<ComTable> all = table.Schema.Root.AllSubTables;
             List<ComTable> result = new List<ComTable>();
             foreach (ComTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
-                if (set.IsLesser(table)) continue; // We cannot point to a lesser set (cycle)
+                if (set.IsInput(table)) continue; // We cannot point to a lesser set (cycle)
 
                 result.Add(set);
             }
@@ -219,12 +219,12 @@ namespace Samm.Dialogs
             // Possible target sets: all sets from the schema excepting: 
             // not source, not greater, there is lesser path
 
-            List<ComTable> all = table.Top.Root.GetAllSubsets();
+            List<ComTable> all = table.Schema.Root.AllSubTables;
             List<ComTable> result = new List<ComTable>();
             foreach (ComTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
-                if (!set.IsLesser(table)) continue;
+                if (!set.IsInput(table)) continue;
 
                 result.Add(set);
             }

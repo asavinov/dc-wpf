@@ -94,9 +94,9 @@ namespace Samm
             }
             else // Create and configure grid columns for all direct greater dimensions
             {
-                for (int i = 0; i < Set.GreaterDims.Count; i++)
+                for (int i = 0; i < Set.Columns.Count; i++)
                 {
-                    ComColumn dim = Set.GreaterDims[i];
+                    ComColumn dim = Set.Columns[i];
                     if (dim.IsSuper) continue;
 
                     Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
@@ -239,9 +239,9 @@ namespace Samm
                 }
                 else // Use greater dimensions
                 {
-                    int dimCount = GridView.Set.GreaterDims.Count;
+                    int dimCount = GridView.Set.Columns.Count;
                     if (index < 0 || index >= dimCount) return null;
-                    ComColumn dim = GridView.Set.GreaterDims[index];
+                    ComColumn dim = GridView.Set.Columns[index];
 
                     if (dim.Data.IsNull(Offset))
                     {
@@ -266,7 +266,7 @@ namespace Samm
 
         public string Value(string dimName)
         {
-            ComColumn dim = GridView.Set.GetGreaterDim(dimName);
+            ComColumn dim = GridView.Set.GetColumn(dimName);
             if (dim == null) return null;
             return (string)dim.Data.GetValue(Offset);
         }

@@ -85,7 +85,7 @@ namespace Samm.Dialogs
         {
             InitializeComponent();
 
-            if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
+            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
@@ -170,7 +170,7 @@ namespace Samm.Dialogs
             //
             // Initialize measure paths. Paths from the fact set to numeric sets
             //
-            ComSchema schema = ((ComTable)factTable).Top;
+            ComSchema schema = ((ComTable)factTable).Schema;
             var mePaths = new PathEnumerator(
                 new List<ComTable>(new ComTable[] { (ComTable)factTable }),
                 new List<ComTable>(new ComTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
@@ -215,7 +215,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;

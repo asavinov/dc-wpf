@@ -26,16 +26,16 @@
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="node_icon" Source="../Images/node_root.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
-                <TextBlock Text="{Binding Path=Dim.LesserSet.Top.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
+                <TextBlock Text="{Binding Path=Dim.LesserSet.Schema.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
             </StackPanel>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="LOCAL">
+                <DataTrigger Binding="{Binding LesserSet.Schema.DataSourceType}" Value="LOCAL">
                     <Setter Property="Source" Value="../Images/node_root.png" TargetName="node_icon"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="OLEDB">
+                <DataTrigger Binding="{Binding LesserSet.Schema.DataSourceType}" Value="OLEDB">
                     <Setter Property="Source" Value="../Images/node_access.png" TargetName="node_icon"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding LesserSet.Top.DataSourceType}" Value="CSV">
+                <DataTrigger Binding="{Binding LesserSet.Schema.DataSourceType}" Value="CSV">
                     <Setter Property="Source" Value="../Images/node_csv.png" TargetName="node_icon"/>
                 </DataTrigger>
             </DataTemplate.Triggers>

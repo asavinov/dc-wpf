@@ -56,7 +56,7 @@ namespace Samm.Dialogs
         {
             InitializeComponent();
 
-            if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
+            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
@@ -148,7 +148,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;

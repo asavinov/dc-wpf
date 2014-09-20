@@ -35,7 +35,7 @@ namespace Samm.Dialogs
             SourceTable = table;
 
             GreaterTables = new List<ComTable>();
-            GreaterTables.AddRange(Schema.Root.GetAllSubsets()); // Fill the list with potential greater tables
+            GreaterTables.AddRange(Schema.Root.AllSubTables); // Fill the list with potential greater tables
 
             InitializeComponent();
 

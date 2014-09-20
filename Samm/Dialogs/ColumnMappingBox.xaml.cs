@@ -55,8 +55,8 @@ namespace Samm.Dialogs
         public ColumnMappingBox(ComSchema targetSchema, ComColumn column, List<ComColumn> initialColumns)
         {
             Schema = targetSchema;
-            if (Schema == null) Schema = column.GreaterSet.Top;
-            if (Schema == null) Schema = column.LesserSet.Top;
+            if (Schema == null) Schema = column.GreaterSet.Schema;
+            if (Schema == null) Schema = column.LesserSet.Schema;
 
             Column = column;
 
@@ -64,10 +64,10 @@ namespace Samm.Dialogs
 
             NewColumnName = column.Name;
 
-            if (column.GreaterSet.SuperDim != null) IsNew = false;
+            if (column.GreaterSet.SuperColumn != null) IsNew = false;
             else IsNew = true;
 
-            if (column.LesserSet.Top.GetType() == typeof(SetTop)) IsImport = false;
+            if (column.LesserSet.Schema.GetType() == typeof(SetTop)) IsImport = false;
             else IsImport = true;
 
             List<ComTable> targetTypes = new List<ComTable>();
@@ -88,7 +88,7 @@ namespace Samm.Dialogs
                 }
                 else
                 {
-                    foreach (ComColumn sourceColumn in Column.LesserSet.GreaterDims)
+                    foreach (ComColumn sourceColumn in Column.LesserSet.Columns)
                     {
                         if (sourceColumn.IsSuper) continue;
                         if (!sourceColumn.IsPrimitive) continue;
@@ -147,7 +147,7 @@ namespace Samm.Dialogs
             targetTypes.Add(Schema.GetPrimitive("Double"));
             targetTypes.Add(Schema.GetPrimitive("String"));
 
-            foreach (ComColumn sourceColumn in sourceTable.GreaterDims)
+            foreach (ComColumn sourceColumn in sourceTable.Columns)
             {
                 if (sourceColumn.IsSuper) continue;
                 if (!sourceColumn.IsPrimitive) continue;

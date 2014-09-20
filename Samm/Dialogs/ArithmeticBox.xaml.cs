@@ -70,12 +70,12 @@ namespace Samm.Dialogs
         {
             IsWhere = whereExpression;
 
-            if (column.LesserSet.GreaterDims.Contains(column)) IsNew = false;
+            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
             ComTable sourceTable = column.LesserSet;
-            ComSchema schema = sourceTable.Top;
+            ComSchema schema = sourceTable.Schema;
 
             SourceTable = sourceTable;
 
@@ -284,7 +284,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Top;
+            ComSchema schema = Column.LesserSet.Schema;
 
             // Column name
             if (IsWhere)

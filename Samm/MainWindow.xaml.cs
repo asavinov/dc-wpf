@@ -52,7 +52,7 @@ namespace Samm
         public bool IsInMashups(ComTable set) // Determine if the specified set belongs to some mashup
         {
             if (set == null || Mashups == null) return false;
-            foreach (ComSchema t in Mashups) { if (set.Top == t) return true; }
+            foreach (ComSchema t in Mashups) { if (set.Schema == t) return true; }
             return false;
         }
         public bool IsInMashups(ComColumn dim) // Determine if the specified dimension belongs to some mashup
@@ -181,7 +181,7 @@ namespace Samm
             // Update visual component (views)
             //
             MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
             mashupModel.ExpandTree();
             MashupsModel.Add(mashupModel);
         }
@@ -213,7 +213,7 @@ namespace Samm
 
             // Update visual component (views)
             MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperDim);
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
             mashupModel.ExpandTree();
             MashupsModel.Add(mashupModel);
         }
@@ -481,7 +481,7 @@ namespace Samm
             object element = null;
             if (SelectedRoot != null) // Rename schema
             {
-                element = SelectedRoot.Top;
+                element = SelectedRoot.Schema;
             }
             else if (SelectedTable != null) // Rename table
             {
@@ -569,7 +569,7 @@ namespace Samm
                 set = SelectedColumn.LesserSet;
             else return;
 
-            ComSchema schema = set.Top;
+            ComSchema schema = set.Schema;
 
             // 
             // Delete tables generated from this table (alternatively, leave them but with empty definition)
@@ -667,7 +667,7 @@ namespace Samm
             ComColumn selDim = SelectedColumn;
             if (selDim == null) return;
 
-            ComSchema schema = selDim.LesserSet.Top;
+            ComSchema schema = selDim.LesserSet.Schema;
 
             // 
             // Delete related columns/tables
@@ -795,7 +795,7 @@ namespace Samm
             SetTopOledb top = new SetTopOledb("");
             top.connection = conn;
             top.LoadSchema(); // Load complete schema
-            ComTable sourceTable = top.FindTable(tableName);
+            ComTable sourceTable = top.GetSubTable(tableName);
 
             //
             // Configure import by creating a mapping for import dimensions
@@ -852,7 +852,7 @@ namespace Samm
             //Sources.Add(top); // Append to the list of data sources
 
             // And also append to the tree model
-            SubsetTree sourceModel = new SubsetTree(top.Root.SuperDim);
+            SubsetTree sourceModel = new SubsetTree(top.Root.SuperColumn);
             sourceModel.ExpandTree();
             //SourcesModel.Add(sourceModel);
         }
