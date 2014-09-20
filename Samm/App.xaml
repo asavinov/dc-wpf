@@ -15,6 +15,7 @@
             <!-- Use in C#: string localizedMessage = (string)Application.Current.FindResource("localizedMessage"); -->
             <clr:String x:Key="AppName">DataCommander</clr:String>
             <clr:String x:Key="MainWindowTitle">DataCommander: Integrate, Transform, Analiyze</clr:String>
+            <clr:String x:Key="ErrorMsg" xml:space="preserve">We are sorry for the error. &#x0a;It is a prototype so please do not expect high reliability at this stage of development. Contact us for any questions or help.</clr:String>
 
             <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="TextAlignment" Value="Left"></Setter>

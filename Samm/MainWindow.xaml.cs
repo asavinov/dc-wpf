@@ -112,7 +112,7 @@ namespace Samm
             MashupsModel = new ObservableCollection<SubsetTree>();
 
             // Create new empty mashup
-            NewMashup();
+            Operation_NewMashup();
 
             DragDropHelper = new DragDropHelper();
 
@@ -159,7 +159,50 @@ namespace Samm
             return ds;
         }
 
-        protected void NewMashup()
+        protected void GenericError(System.Exception e)
+        {
+            string msg = Application.Current.FindResource("ErrorMsg").ToString();
+            var result = MessageBox.Show(this, msg + "\n\nError message: \n" + e.Message, "Error...", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+        }
+
+        # region File operations
+
+        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                NewFileWizard();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        private bool NewFileWizard()
+        {
+            // Ask if changes have to be saved before loading a new mashup
+            var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (saveChanges == MessageBoxResult.Yes)
+            {
+                bool isSaved = SaveFileWizard();
+                if (!isSaved) return false; // Cancelled in save as dialog
+            }
+            else if (saveChanges == MessageBoxResult.No)
+            {
+                // Abondon changes.
+            }
+            else
+            {
+                return false;
+            }
+
+            Operation_NewMashup();
+
+            return true;
+        }
+        protected void Operation_NewMashup()
         {
             //
             // Initialize schemas
@@ -186,90 +229,17 @@ namespace Samm
             MashupsModel.Add(mashupModel);
         }
 
-        protected void ReadMashup(string filePath)
-        {
-            string jsonString = System.IO.File.ReadAllText(filePath);
-
-            // De-serialize
-            JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
-            Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
-
-            workspace.FromJson(json, workspace);
-
-            // User workspace objects
-            Mashups.Clear();
-            RemoteSources.Clear();
-            foreach (var remote in workspace.Schemas)
-            {
-                if (remote == workspace.Mashup)
-                {
-                    Mashups.Add(workspace.Mashup);
-                }
-                else
-                {
-                    RemoteSources.Add(remote);
-                }
-            }
-
-            // Update visual component (views)
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
-        }
-
-        protected void WriteMashup(string filePath)
-        {
-            var workspace = new Workspace();
-            workspace.Schemas.Add(MashupTop);
-            workspace.Mashup = MashupTop;
-            foreach (var remote in RemoteSources)
-            {
-                workspace.Schemas.Add(remote);
-            }
-
-            // Serialize
-            JObject json = Utils.CreateJsonFromObject(workspace);
-            workspace.ToJson(json);
-            string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
-
-            // Write to file
-            System.IO.File.WriteAllText(filePath, jsonString);
-        }
-
-        # region Command_Executed (call backs from Commands)
-
-        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            NewFileWizard();
-            e.Handled = true;
-        }
-        private bool NewFileWizard()
-        {
-            // Ask if changes have to be saved before loading a new mashup
-            var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
-            if (saveChanges == MessageBoxResult.Yes)
-            {
-                bool isSaved = SaveFileWizard();
-                if (!isSaved) return false; // Cancelled in save as dialog
-            }
-            else if (saveChanges == MessageBoxResult.No)
-            {
-                // Abondon changes.
-            }
-            else
-            {
-                return false;
-            }
-
-            NewMashup();
-
-            return true;
-        }
-
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            OpenFileWizard();
+            try
+            {
+                OpenFileWizard();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
             e.Handled = true;
         }
         private bool OpenFileWizard()
@@ -307,15 +277,54 @@ namespace Samm
             }
 
             // Read from the file and de-serialize workspace
-            ReadMashup(filePath);
+            Operation_ReadMashup(filePath);
             MashupFile = filePath;
 
             return true;
         }
+        protected void Operation_ReadMashup(string filePath)
+        {
+            string jsonString = System.IO.File.ReadAllText(filePath);
+
+            // De-serialize
+            JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
+            Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
+
+            workspace.FromJson(json, workspace);
+
+            // User workspace objects
+            Mashups.Clear();
+            RemoteSources.Clear();
+            foreach (var remote in workspace.Schemas)
+            {
+                if (remote == workspace.Mashup)
+                {
+                    Mashups.Add(workspace.Mashup);
+                }
+                else
+                {
+                    RemoteSources.Add(remote);
+                }
+            }
+
+            // Update visual component (views)
+            MashupsModel.Clear();
+            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
+            mashupModel.ExpandTree();
+            MashupsModel.Add(mashupModel);
+        }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            SaveFileWizard();
+            try
+            {
+                SaveFileWizard();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
             e.Handled = true;
         }
         private bool SaveFileWizard()
@@ -327,14 +336,22 @@ namespace Samm
             }
             else
             {
-                WriteMashup(MashupFile); // Simply write to file
+                Operation_WriteMashup(MashupFile); // Simply write to file
                 return true;
             }
         }
 
         private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            SaveAsFileWizard();
+            try
+            {
+                SaveAsFileWizard();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
             e.Handled = true;
         }
         private bool SaveAsFileWizard()
@@ -354,9 +371,27 @@ namespace Samm
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
             MashupFile = filePath;
-            WriteMashup(MashupFile); // Really save
+            Operation_WriteMashup(MashupFile); // Really save
 
             return true; // Saved
+        }
+        protected void Operation_WriteMashup(string filePath)
+        {
+            var workspace = new Workspace();
+            workspace.Schemas.Add(MashupTop);
+            workspace.Mashup = MashupTop;
+            foreach (var remote in RemoteSources)
+            {
+                workspace.Schemas.Add(remote);
+            }
+
+            // Serialize
+            JObject json = Utils.CreateJsonFromObject(workspace);
+            workspace.ToJson(json);
+            string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
+
+            // Write to file
+            System.IO.File.WriteAllText(filePath, jsonString);
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -375,16 +410,14 @@ namespace Samm
             var response = MessageBox.Show(this, "Do you want to save your changes?", "Exiting...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
             if (response == MessageBoxResult.Yes)
             {
-                // TODO: Ask about the desire to save and call Save (it will call save_as if necessary)
-
-                MessageBoxResult saveResult = MessageBoxResult.Cancel;
-                if (saveResult == MessageBoxResult.Cancel) // If canceled during save
-                {
-                    e.Cancel = true;
-                }
-                else // Was really saved or refused to save
+                bool isSaved = SaveFileWizard();
+                if (isSaved) // Was really saved
                 {
                     Application.Current.Shutdown();
+                }
+                else
+                {
+                    e.Cancel = true;
                 }
             }
             else if (response == MessageBoxResult.No) 
@@ -402,311 +435,23 @@ namespace Samm
             System.Diagnostics.Process.Start("http://conceptoriented.com");
         }
 
-        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_CsvDatasource();
-            e.Handled = true;
-        }
-
-        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_AccessDatasource();
-            e.Handled = true;
-        }
-
-        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_SqlserverDatasource();
-            e.Handled = true;
-        }
-
-        private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedTable == null) return;
-            Operation_OpenTable(SelectedTable);
-            e.Handled = true;
-        }
-
-        private void CloseViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (GridPanel != null && GridPanel.Content != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            lblWorkspace.Content = "DATA";
-
-            GridPanel.Content = null;
-
-            e.Handled = true;
-        }
-
-        private void UpdateElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = true;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void UpdateElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) // Update all
-            {
-                // Use dependency graph to update elements starting from independent and ending with dependent
-            }
-            else if (SelectedTable != null) // Update table
-            {
-                SelectedTable.Definition.Populate();
-            }
-            else if (SelectedColumn != null) // Update column
-            {
-                SelectedColumn.Definition.Evaluate();
-            }
-        }
-
-        private void RenameElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedItem != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void RenameElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            object element = null;
-            if (SelectedRoot != null) // Rename schema
-            {
-                element = SelectedRoot.Schema;
-            }
-            else if (SelectedTable != null) // Rename table
-            {
-                element = SelectedTable;
-            }
-            else if (SelectedColumn != null) // Rename column
-            {
-                element = SelectedColumn;
-            }
-
-            RenameBox dlg = new RenameBox(element, null);
-            dlg.Owner = this;
-            dlg.ShowDialog();
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
-        }
-
-        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedTable == null) return;
-            e.Handled = true;
-        }
-
-        private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_ProductTable(SelectedTable);
-            e.Handled = true;
-        }
-
-        private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedTable != null) 
-                Wizard_ExtractTable(SelectedTable);
-            else if (SelectedColumn != null && SelectedColumn.Input != null)
-                Wizard_ExtractTable(SelectedColumn.Input);
-            e.Handled = true;
-        }
-
-        private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComTable table = SelectedTable;
-            if (table != null)
-            {
-                Wizard_EditTable(table);
-            }
-            e.Handled = true;
-        }
-
-        private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComTable set = null;
-            if (SelectedTable != null)
-                set = SelectedTable;
-            else if (SelectedColumn != null && SelectedColumn.Input != null)
-                set = SelectedColumn.Input;
-            else return;
-
-            ComSchema schema = set.Schema;
-
-            // 
-            // Delete tables generated from this table (alternatively, leave them but with empty definition)
-            //
-            var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { set }), new List<ComTable>(), false, DimensionType.GENERATING);
-            foreach (var path in paths)
-            {
-                for (int i = path.Path.Count - 1; i >= 0; i--)
-                {
-                    schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
-                }
-            }
-
-            // Remove all connections of this set with the schema by deleting all its dimensions
-            schema.DeleteTable(set);
-
-            e.Handled = true;
-        }
-
-        private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_AddArithmetic(SelectedTable);
-            e.Handled = true;
-        }
-
-        private void AddLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Wizard_AddLink(SelectedTable, null);
-        }
-
-        private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
-            else e.CanExecute = false;
-        }
-        private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComColumn selDim = SelectedColumn;
-            ComTable srcSet = SelectedTable;
-            if (srcSet == null && selDim != null)
-            {
-                srcSet = selDim.Input;
-            }
-
-            Wizard_AddAggregation(srcSet, null);
-            e.Handled = true;
-        }
-
-        private void EditColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null)
-            {
-                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.NONE) e.CanExecute = false;
-                else e.CanExecute = true;
-            }
-            else e.CanExecute = false;
-        }
-        private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComColumn selDim = SelectedColumn;
-            if (selDim != null)
-            {
-                Wizard_EditColumn(selDim);
-            }
-            e.Handled = true;
-        }
-
-        private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComColumn selDim = SelectedColumn;
-            if (selDim == null) return;
-
-            ComSchema schema = selDim.Input.Schema;
-
-            // 
-            // Delete related columns/tables
-            //
-            if (selDim.Definition.IsGenerating) // Delete all tables that are directly or indirectly generated by this column
-            {
-                ComTable gTab = selDim.Output;
-                var paths = new PathEnumerator(new List<ComTable>( new ComTable[] { gTab } ), new List<ComTable>(), false, DimensionType.GENERATING);
-                foreach (var path in paths)
-                {
-                    for (int i = path.Path.Count - 1; i >= 0; i--)
-                    {
-                        schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
-                    }
-                }
-                schema.DeleteTable(gTab); // Delete (directly) generated table
-                // This column will be now deleted as a result of the deletion of the generated table
-            }
-            else if (selDim.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
-            {
-                ComColumn projDim = selDim.Input.Definition.GeneratingDimensions[0];
-                Mapping mapping = projDim.Definition.Mapping;
-                PathMatch match = mapping.GetMatchForTarget(new DimPath(selDim));
-                mapping.RemoveMatch(match.SourcePath, match.TargetPath);
-
-                schema.DeleteColumn(selDim);
-            }
-            else // Just delete this column
-            {
-                schema.DeleteColumn(selDim);
-            }
-
-            e.Handled = true;
-        }
-
         #endregion
 
-        #region Wizards (with user interactions)
+        # region Datasource operations
 
+        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_CsvDatasource();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_CsvDatasource()
         {
             SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
@@ -767,8 +512,7 @@ namespace Samm
 
             SelectedTable = targetTable;
         }
-
-        public void Wizard_TextDatasource()
+        public void Wizard_TextDatasource() // Reading text via Oledb
         {
             var ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -824,7 +568,20 @@ namespace Samm
 
             SelectedTable = targetTable;
         }
+        
+        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_AccessDatasource();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
 
+            e.Handled = true;
+        }
         public void Wizard_AccessDatasource()
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
@@ -857,6 +614,19 @@ namespace Samm
             //SourcesModel.Add(sourceModel);
         }
 
+        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_SqlserverDatasource();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         private static void Wizard_SqlserverDatasource()
         {
             /*
@@ -944,6 +714,151 @@ namespace Samm
             */
         }
 
+        #endregion
+
+        # region View operations
+
+        private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+            try
+            {
+                Operation_OpenTable(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Operation_OpenTable(ComTable set)
+        {
+            lblWorkspace.Content = set.Name;
+
+            var gridView = new SetGridView(set);
+            GridPanel.Content = gridView.Grid;
+        }
+
+
+        private void CloseViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (GridPanel != null && GridPanel.Content != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            lblWorkspace.Content = "DATA";
+
+            GridPanel.Content = null;
+
+            e.Handled = true;
+        }
+
+        private void UpdateElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = true;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void UpdateElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) // Update all
+            {
+                // Use dependency graph to update elements starting from independent and ending with dependent
+            }
+            else if (SelectedTable != null) // Update table
+            {
+                try
+                {
+                    SelectedTable.Definition.Populate();
+                }
+                catch (System.Exception ex)
+                {
+                    GenericError(ex);
+                }
+            }
+            else if (SelectedColumn != null) // Update column
+            {
+                try
+                {
+                    SelectedColumn.Definition.Evaluate();
+                }
+                catch (System.Exception ex)
+                {
+                    GenericError(ex);
+                }
+            }
+        }
+
+        private void RenameElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedItem != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void RenameElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            object element = null;
+            if (SelectedRoot != null) // Rename schema
+            {
+                element = SelectedRoot.Schema;
+            }
+            else if (SelectedTable != null) // Rename table
+            {
+                element = SelectedTable;
+            }
+            else if (SelectedColumn != null) // Rename column
+            {
+                element = SelectedColumn;
+            }
+
+            RenameBox dlg = new RenameBox(element, null);
+            dlg.Owner = this;
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
+        }
+
+        #endregion
+
+        # region Table operations
+
+        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+            e.Handled = true;
+        }
+
+        private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_ProductTable(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_ProductTable(ComTable set)
         {
             ComSchema schema = MashupTop;
@@ -972,7 +887,7 @@ namespace Samm
             whereDlg.ShowDialog(); // Open the dialog box modally 
 
             // if cancelled then remove the new set and all its columns
-            if (whereDlg.DialogResult == false) 
+            if (whereDlg.DialogResult == false)
             {
                 schema.DeleteTable(productSet);
                 return;
@@ -984,6 +899,34 @@ namespace Samm
             SelectedTable = productSet;
         }
 
+        private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComTable table = null;
+            if (SelectedTable != null)
+                table = SelectedTable;
+            else if (SelectedColumn != null && SelectedColumn.Input != null)
+                table = SelectedColumn.Input;
+            else
+                return;
+
+            try
+            {
+                Wizard_ExtractTable(table);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+            
+            e.Handled = true;
+        }
         public void Wizard_ExtractTable(ComTable set)
         {
             ComSchema schema = MashupTop;
@@ -1016,6 +959,29 @@ namespace Samm
             SelectedTable = targetTable;
         }
 
+        private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComTable table = SelectedTable;
+            if (table == null) return;
+
+            try
+            {
+                Wizard_EditTable(table);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_EditTable(ComTable table)
         {
             if (table == null) return;
@@ -1055,6 +1021,66 @@ namespace Samm
             SelectedTable = table;
         }
 
+        private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComTable set = null;
+            if (SelectedTable != null)
+                set = SelectedTable;
+            else if (SelectedColumn != null && SelectedColumn.Input != null)
+                set = SelectedColumn.Input;
+            else return;
+
+            ComSchema schema = set.Schema;
+
+            // 
+            // Delete tables generated from this table (alternatively, leave them but with empty definition)
+            //
+            var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { set }), new List<ComTable>(), false, DimensionType.GENERATING);
+            foreach (var path in paths)
+            {
+                for (int i = path.Path.Count - 1; i >= 0; i--)
+                {
+                    schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
+                }
+            }
+
+            // Remove all connections of this set with the schema by deleting all its dimensions
+            schema.DeleteTable(set);
+
+            e.Handled = true;
+        }
+
+        #endregion
+
+        # region Column operations
+
+        private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_AddArithmetic(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_AddArithmetic(ComTable srcSet)
         {
             if (srcSet == null) return;
@@ -1072,7 +1098,7 @@ namespace Samm
             if (dlg.DialogResult == false) return; // Cancel
 
             if (column.Definition.Formula == null) return; // No formula
-            
+
             column.Add();
 
             column.Definition.Evaluate();
@@ -1080,6 +1106,24 @@ namespace Samm
             SelectedColumn = column;
         }
 
+        private void AddLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_AddLink(SelectedTable, null);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+        }
         public void Wizard_AddLink(ComTable sourceTable, ComTable targetTable)
         {
             if (sourceTable == null) return;
@@ -1103,6 +1147,33 @@ namespace Samm
             SelectedColumn = column;
         }
 
+        private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComColumn selDim = SelectedColumn;
+            ComTable srcSet = SelectedTable;
+            if (srcSet == null && selDim != null)
+            {
+                srcSet = selDim.Input;
+            }
+
+            try
+            {
+                Wizard_AddAggregation(srcSet, null);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_AddAggregation(ComTable srcSet, ComColumn measureColumn)
         {
             if (srcSet == null) return;
@@ -1126,6 +1197,33 @@ namespace Samm
             SelectedColumn = column;
         }
 
+        private void EditColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = false;
+            else if (SelectedColumn != null)
+            {
+                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.NONE) e.CanExecute = false;
+                else e.CanExecute = true;
+            }
+            else e.CanExecute = false;
+        }
+        private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComColumn column = SelectedColumn;
+            if (column == null) return;
+
+            try
+            {
+                Wizard_EditColumn(column);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
         public void Wizard_EditColumn(ComColumn column)
         {
             if (column == null) return;
@@ -1168,27 +1266,73 @@ namespace Samm
 
             // Notify visual components about changes in this column
             MashupModelRoot.NotifyAllOnPropertyChanged("");
-            
+
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             column.Definition.Evaluate();
 
             SelectedColumn = column;
         }
 
-        #endregion
-
-        #region Operations (no user interactions)
-
-        public void Operation_OpenTable(ComTable set)
+        private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            lblWorkspace.Content = set.Name;
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = false;
+            else if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedColumn == null) return;
 
-            var gridView = new SetGridView(set);
-            GridPanel.Content = gridView.Grid;
+            try
+            {
+                Operation_DeleteColumn(SelectedColumn);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+
+            e.Handled = true;
+        }
+        protected void Operation_DeleteColumn(ComColumn column)
+        {
+            ComSchema schema = column.Input.Schema;
+
+            // 
+            // Delete related columns/tables
+            //
+            if (column.Definition.IsGenerating) // Delete all tables that are directly or indirectly generated by this column
+            {
+                ComTable gTab = column.Output;
+                var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { gTab }), new List<ComTable>(), false, DimensionType.GENERATING);
+                foreach (var path in paths)
+                {
+                    for (int i = path.Path.Count - 1; i >= 0; i--)
+                    {
+                        schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
+                    }
+                }
+                schema.DeleteTable(gTab); // Delete (directly) generated table
+                // This column will be now deleted as a result of the deletion of the generated table
+            }
+            else if (column.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
+            {
+                ComColumn projDim = column.Input.Definition.GeneratingDimensions[0];
+                Mapping mapping = projDim.Definition.Mapping;
+                PathMatch match = mapping.GetMatchForTarget(new DimPath(column));
+                mapping.RemoveMatch(match.SourcePath, match.TargetPath);
+
+                schema.DeleteColumn(column);
+            }
+            else // Just delete this column
+            {
+                schema.DeleteColumn(column);
+            }
         }
 
         #endregion
-
     }
 
     public class DragDropHelper
