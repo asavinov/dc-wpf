@@ -85,11 +85,11 @@ namespace Samm.Dialogs
         {
             InitializeComponent();
 
-            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
+            if (column.Input.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
-            SourceTable = column.LesserSet;
+            SourceTable = column.Input;
 
             newColumnName.Text = Column.Name;
 
@@ -112,8 +112,8 @@ namespace Samm.Dialogs
                 foreach (ComTable table in FactTables)
                 {
                     var pathEnum = new PathEnumerator(
-                        table, 
-                        measureColumn.GreaterSet, 
+                        table,
+                        measureColumn.Output, 
                         DimensionType.IDENTITY_ENTITY
                         );
 
@@ -215,7 +215,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Schema;
+            ComSchema schema = Column.Input.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -228,9 +228,9 @@ namespace Samm.Dialogs
             }
             else
             {
-                targetTable = MeasurePath.GreaterSet; // The same as the measure path
+                targetTable = MeasurePath.Output; // The same as the measure path
             }
-            Column.GreaterSet = targetTable;
+            Column.Output = targetTable;
 
             // Column definition
             Column.Definition.DefinitionType = ColumnDefinitionType.AGGREGATION;

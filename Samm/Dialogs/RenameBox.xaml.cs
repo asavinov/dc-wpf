@@ -29,8 +29,8 @@ namespace Samm.Dialogs
         public bool IsTable = false;
         public bool IsColumn = false;
 
-        protected ComSchema Schema { get { if (Element is ComSchema) return (ComSchema)Element; else if (Element is ComTable) return ((ComTable)Element).Schema; else if (Element is ComColumn) return ((ComColumn)Element).LesserSet.Schema; else return null; } }
-        protected ComTable Table { get { if (Element is ComSchema) return (ComTable)Element; else if (Element is ComTable) return ((ComTable)Element); else if (Element is ComColumn) return ((ComColumn)Element).LesserSet; else return null; } }
+        protected ComSchema Schema { get { if (Element is ComSchema) return (ComSchema)Element; else if (Element is ComTable) return ((ComTable)Element).Schema; else if (Element is ComColumn) return ((ComColumn)Element).Input.Schema; else return null; } }
+        protected ComTable Table { get { if (Element is ComSchema) return (ComTable)Element; else if (Element is ComTable) return ((ComTable)Element); else if (Element is ComColumn) return ((ComColumn)Element).Input; else return null; } }
         protected ComColumn Column { get { if (Element is ComSchema) return null; else if (Element is ComTable) return null; else if (Element is ComColumn) return (ComColumn)Element; else return null; } }
 
 

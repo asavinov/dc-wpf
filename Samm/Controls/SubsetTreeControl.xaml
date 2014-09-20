@@ -26,7 +26,7 @@
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="node_icon" Source="../Images/node_root.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
-                <TextBlock Text="{Binding Path=Dim.LesserSet.Schema.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
+                <TextBlock Text="{Binding Path=Dim.Input.Schema.Name}" FontSize="14" FontWeight="Bold" Margin="10"/>
             </StackPanel>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding LesserSet.Schema.DataSourceType}" Value="LOCAL">
@@ -55,10 +55,10 @@
             </HierarchicalDataTemplate.ItemsSource>
             <StackPanel Orientation="Horizontal">
                 <Image Source="../Images/node_table.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
-                <TextBlock Text="{Binding Path=Dim.LesserSet.Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
+                <TextBlock Text="{Binding Path=Dim.Input.Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
             </StackPanel>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.LesserSet.IsPrimitive}" Value="true">
+                <DataTrigger Binding="{Binding Path=Dim.Input.IsPrimitive}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -71,7 +71,7 @@
                 <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>
                 <!-- <TextBlock Text="" Width="10"/> -->
                 <TextBlock Text=" ("/>
-                <TextBlock Text="{Binding Path=Dim.GreaterSet.Name}"/>
+                <TextBlock Text="{Binding Path=Dim.Output.Name}"/>
                 <TextBlock Text=")"/>
             </StackPanel>
             <DataTemplate.Triggers>

@@ -70,11 +70,11 @@ namespace Samm.Dialogs
         {
             IsWhere = whereExpression;
 
-            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
+            if (column.Input.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
-            ComTable sourceTable = column.LesserSet;
+            ComTable sourceTable = column.Input;
             ComSchema schema = sourceTable.Schema;
 
             SourceTable = sourceTable;
@@ -284,7 +284,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Schema;
+            ComSchema schema = Column.Input.Schema;
 
             // Column name
             if (IsWhere)
@@ -325,7 +325,7 @@ namespace Samm.Dialogs
                 // Derive output type of the expression and use it to set the type of the column. 
                 // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
                 expr.Resolve(schema, new List<ComVariable>() { new Variable("this", SourceTable) });
-                Column.GreaterSet = expr.Result.TypeTable;
+                Column.Output = expr.Result.TypeTable;
 
                 Column.Definition.Formula = expr;
             }

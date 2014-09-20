@@ -117,7 +117,7 @@ namespace Samm.Controls
             SubsetTree itemData = (SubsetTree)item.DataContext;
             if (itemData.IsSubsetNode)
             {
-                if (data is ComTable && itemData.LesserSet == data) found = true;
+                if (data is ComTable && itemData.Input == data) found = true;
             }
             else if (itemData.IsDimensionNode)
             {
@@ -347,7 +347,7 @@ namespace Samm.Controls
                 if (item is SubsetTree)
                 {
                     SubsetTree nodeItem = item as SubsetTree;
-                    if (nodeItem.Dim.LesserSet.Name == "Root")
+                    if (nodeItem.Dim.Input.Name == "Root")
                     {
                         return RootItemTemplate;
                         //return element.FindResource("rootItemTemplate") as DataTemplate;

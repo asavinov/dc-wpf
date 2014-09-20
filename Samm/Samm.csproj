@@ -63,12 +63,9 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Com">
-      <HintPath>Libs\Com.dll</HintPath>
-    </Reference>
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\CsvHelper.2.7.1\lib\net40-client\CsvHelper.dll</HintPath>
@@ -370,6 +367,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Connections\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\comcsharp\Com\Com.csproj">
+      <Project>{dc3924c8-d2e2-4bae-b9cc-bf6be5f85df8}</Project>
+      <Name>Com</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

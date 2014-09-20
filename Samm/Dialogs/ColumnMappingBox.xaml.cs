@@ -55,19 +55,19 @@ namespace Samm.Dialogs
         public ColumnMappingBox(ComSchema targetSchema, ComColumn column, List<ComColumn> initialColumns)
         {
             Schema = targetSchema;
-            if (Schema == null) Schema = column.GreaterSet.Schema;
-            if (Schema == null) Schema = column.LesserSet.Schema;
+            if (Schema == null) Schema = column.Output.Schema;
+            if (Schema == null) Schema = column.Input.Schema;
 
             Column = column;
 
-            NewTableName = column.GreaterSet.Name;
+            NewTableName = column.Output.Name;
 
             NewColumnName = column.Name;
 
-            if (column.GreaterSet.SuperColumn != null) IsNew = false;
+            if (column.Output.SuperColumn != null) IsNew = false;
             else IsNew = true;
 
-            if (column.LesserSet.Schema.GetType() == typeof(SetTop)) IsImport = false;
+            if (column.Input.Schema.GetType() == typeof(SetTop)) IsImport = false;
             else IsImport = true;
 
             List<ComTable> targetTypes = new List<ComTable>();
@@ -82,13 +82,13 @@ namespace Samm.Dialogs
                 if (IsImport)
                 {
                     Mapper mapper = new Mapper(); // Create mapping for an import dimension
-                    Mapping mapping = mapper.CreatePrimitive(Column.LesserSet, Column.GreaterSet, Schema); // Complete mapping (all to all)
+                    Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, Schema); // Complete mapping (all to all)
 
                     CreateEntries(mapping);
                 }
                 else
                 {
-                    foreach (ComColumn sourceColumn in Column.LesserSet.Columns)
+                    foreach (ComColumn sourceColumn in Column.Input.Columns)
                     {
                         if (sourceColumn.IsSuper) continue;
                         if (!sourceColumn.IsPrimitive) continue;
@@ -112,11 +112,11 @@ namespace Samm.Dialogs
                         else entry.IsKey = true;
 
                         entry.TargetTypes = targetTypes;
-                        if (sourceColumn.GreaterSet.Name == "Integer")
+                        if (sourceColumn.Output.Name == "Integer")
                             entry.TargetType = Schema.GetPrimitive("Integer");
-                        else if (sourceColumn.GreaterSet.Name == "Double")
+                        else if (sourceColumn.Output.Name == "Double")
                             entry.TargetType = Schema.GetPrimitive("Double");
-                        else if (sourceColumn.GreaterSet.Name == "String")
+                        else if (sourceColumn.Output.Name == "String")
                             entry.TargetType = Schema.GetPrimitive("String");
 
                         Entries.Add(entry);
@@ -128,7 +128,7 @@ namespace Samm.Dialogs
                 Mapping existingMapping = Column.Definition.Mapping;
                 if (existingMapping == null)
                 {
-                    existingMapping = new Mapping(Column.LesserSet, Column.GreaterSet);
+                    existingMapping = new Mapping(Column.Input, Column.Output);
                 }
 
                 CreateEntries(existingMapping);
@@ -165,7 +165,7 @@ namespace Samm.Dialogs
                     entry.IsMatched = true;
                     entry.IsKey = entry.Target.IsIdentity;
 
-                    entry.TargetType = entry.Target.GreaterSet;
+                    entry.TargetType = entry.Target.Output;
                 }
                 else
                 {
@@ -176,11 +176,11 @@ namespace Samm.Dialogs
                     else entry.IsKey = true;
 
                     // Recommend a type
-                    if (sourceColumn.GreaterSet.Name == "Integer")
+                    if (sourceColumn.Output.Name == "Integer")
                         entry.TargetType = Schema.GetPrimitive("Integer");
-                    else if (sourceColumn.GreaterSet.Name == "Double")
+                    else if (sourceColumn.Output.Name == "Double")
                         entry.TargetType = Schema.GetPrimitive("Double");
-                    else if (sourceColumn.GreaterSet.Name == "String")
+                    else if (sourceColumn.Output.Name == "String")
                         entry.TargetType = Schema.GetPrimitive("String");
 
                 }
@@ -194,7 +194,7 @@ namespace Samm.Dialogs
             Mapping mapping;
             if (IsNew)
             {
-                mapping = new Mapping(Column.LesserSet, Column.GreaterSet);
+                mapping = new Mapping(Column.Input, Column.Output);
             }
             else
             {
@@ -214,7 +214,7 @@ namespace Samm.Dialogs
                 {
                     ComTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
-                    targetColumn = Schema.CreateColumn(targetColumnName, Column.GreaterSet, targetType, entry.IsKey);
+                    targetColumn = Schema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
                     targetColumn.Add();
 
                     mapping.AddMatch(new PathMatch(new DimPath(sourceColumn), new DimPath(targetColumn)));
@@ -229,10 +229,10 @@ namespace Samm.Dialogs
                 else if (entry.IsMatched) // Remains included. Update properties (name, key, type etc.)
                 {
                     targetColumn = match.TargetPath.FirstSegment;
-                    if (targetColumn.GreaterSet != entry.TargetType) // Type has been changed
+                    if (targetColumn.Output != entry.TargetType) // Type has been changed
                     {
                         targetColumn.Remove();
-                        targetColumn.GreaterSet = entry.TargetType;
+                        targetColumn.Output = entry.TargetType;
                         targetColumn.Add();
                     }
                 }
@@ -242,7 +242,7 @@ namespace Samm.Dialogs
             }
 
             Column.Name = NewColumnName;
-            Column.GreaterSet.Name = NewTableName;
+            Column.Output.Name = NewTableName;
 
             if (IsNew)
             {
@@ -251,8 +251,8 @@ namespace Samm.Dialogs
                 Column.Definition.IsGenerating = true;
                 Column.Add();
 
-                Column.GreaterSet.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-                Schema.AddTable(Column.GreaterSet, null, null);
+                Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+                Schema.AddTable(Column.Output, null, null);
             }
 
             this.DialogResult = true;

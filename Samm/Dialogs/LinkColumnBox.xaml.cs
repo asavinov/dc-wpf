@@ -42,7 +42,7 @@ namespace Samm.Dialogs
             sourceTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
             targetTables.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
-            //targetTables.SelectedItem = null; // NewColumnName.GreaterSet;
+            //targetTables.SelectedItem = null; // NewColumnName.Output;
 
             sourceTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
             targetTree.MatchTree.GetBindingExpression(TreeView.ItemsSourceProperty).UpdateTarget();
@@ -56,12 +56,12 @@ namespace Samm.Dialogs
         {
             InitializeComponent();
 
-            if (column.LesserSet.Columns.Contains(column)) IsNew = false;
+            if (column.Input.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
 
             Column = column;
-            ComTable sourceTable = column.LesserSet;
-            ComTable targetTable = column.GreaterSet;
+            ComTable sourceTable = column.Input;
+            ComTable targetTable = column.Output;
 
             // Name
             NewColumnName = Column.Name;
@@ -79,7 +79,7 @@ namespace Samm.Dialogs
                 /*
                 foreach (ComTable set in targetTables)
                 {
-                   ComColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.LesserSet);
+                   ComColumn dim2 = set.CreateDefaultLesserDimension(dim.Name, dim.Input);
 
                     List<Mapping> mappings = m.MapDim(new DimPath(dim), new DimPath(dim2));
                     if (mappings[0].Similarity > bestSimilarity) { bestTargetTable = set; bestSimilarity = mappings[0].Similarity; }
@@ -148,7 +148,7 @@ namespace Samm.Dialogs
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            ComSchema schema = Column.LesserSet.Schema;
+            ComSchema schema = Column.Input.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -156,7 +156,7 @@ namespace Samm.Dialogs
             // Column type
             if (IsNew)
             {
-                Column.GreaterSet = (ComTable)targetTables.SelectedItem;
+                Column.Output = (ComTable)targetTables.SelectedItem;
             }
 
             // Column definition

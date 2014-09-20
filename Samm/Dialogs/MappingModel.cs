@@ -233,7 +233,7 @@ namespace Samm.Dialogs
         }
 
         public MappingModel(ComColumn sourceDim, ComColumn targetDim)
-            : this(sourceDim.GreaterSet, targetDim.GreaterSet)
+            : this(sourceDim.Output, targetDim.Output)
         {
             SourceTree.Children[0].Dim = sourceDim;
             TargetTree.Children[0].Dim = targetDim;
