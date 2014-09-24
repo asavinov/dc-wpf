@@ -54,6 +54,8 @@ namespace Samm.Dialogs
 
         public LinkColumnBox(ComColumn column)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             InitializeComponent();
 
             if (column.Input.Columns.Contains(column)) IsNew = false;
@@ -74,7 +76,7 @@ namespace Samm.Dialogs
             {
                 // Compare the quality of gest mappings from the the source set to possible target sets
 
-                ComTable bestTargetTable = TargetTables[0];
+                ComTable bestTargetTable = TargetTables.Count > 0 ? TargetTables[0] : null;
                 double bestSimilarity = 0.0;
                 /*
                 foreach (ComTable set in targetTables)
@@ -146,7 +148,22 @@ namespace Samm.Dialogs
             RefreshAll(); // Refresh
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(newColumnName.Text)) return false;
+
+            if (targetTables.SelectedItem == null) return false;
+
+            if (MappingModel.Mapping.Matches.Count == 0) return false;
+
+            return true;
+        }
+        private void OkCommand_Executed(object state)
         {
             ComSchema schema = Column.Input.Schema;
 
@@ -165,6 +182,9 @@ namespace Samm.Dialogs
             Column.Definition.IsGenerating = false;
 
             this.DialogResult = true;
+        }
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
         }
 
     }

@@ -42,7 +42,7 @@
         <ComboBox Name="aggregationFunctions" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding Path=AggregationFunctions}" SelectedItem="{Binding Path=AggregationFunction, Mode=TwoWay}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Command="{Binding OkCommand}" />
             <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
         </StackPanel>
     </Grid>

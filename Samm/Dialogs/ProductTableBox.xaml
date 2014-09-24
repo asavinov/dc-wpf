@@ -19,13 +19,13 @@
         </Grid.RowDefinitions>
 
         <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="0" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="0" TextWrapping="NoWrap" Text="{Binding Path=NewTableName}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Source Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ListView Name="greaterTables" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Path=GreaterTables}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Command="{Binding OkCommand}" />
             <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
         </StackPanel>
     </Grid>

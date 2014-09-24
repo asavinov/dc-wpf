@@ -68,7 +68,7 @@
         </Grid>
 
         <StackPanel Grid.Column="1" Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Click="okButton_Click" />
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Command="{Binding OkCommand}" />
             <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
         </StackPanel>
     </Grid>

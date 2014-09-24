@@ -1130,6 +1130,10 @@ namespace Samm
 
             ComSchema schema = MashupTop;
 
+            // Check if linking is possible or create a message with info why it is not possible
+            var TargetTables = MappingModel.GetPossibleGreaterSets(sourceTable);
+            if (TargetTables.Count == 0) return;
+
             // Create a new (mapped) dimension using the mapping
             ComColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
 

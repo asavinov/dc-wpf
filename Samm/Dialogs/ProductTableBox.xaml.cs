@@ -27,10 +27,14 @@ namespace Samm.Dialogs
 
         public ComTable SourceTable { get; set; }
 
+        public string NewTableName { get; set; }
+
         public List<ComTable> GreaterTables { get; set; }
 
         public ProductTableBox(ComSchema schema, ComTable table, ComTable greaterTable)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             Schema = schema;
             SourceTable = table;
 
@@ -58,7 +62,20 @@ namespace Samm.Dialogs
             //newTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(newTableName.Text)) return false;
+
+            if (greaterTables.SelectedItems.Count == 0) return false;
+
+            return true;
+        }
+        private void OkCommand_Executed(object state)
         {
             // Save name
             string productTableName = newTableName.Text;
@@ -86,6 +103,9 @@ namespace Samm.Dialogs
             }
 
             this.DialogResult = true;
+        }
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

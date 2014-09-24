@@ -54,6 +54,8 @@ namespace Samm.Dialogs
 
         public ColumnMappingBox(ComSchema targetSchema, ComColumn column, List<ComColumn> initialColumns)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             Schema = targetSchema;
             if (Schema == null) Schema = column.Output.Schema;
             if (Schema == null) Schema = column.Input.Schema;
@@ -189,7 +191,30 @@ namespace Samm.Dialogs
             }
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(newTableName.Text)) return false;
+
+            if (string.IsNullOrWhiteSpace(newColumnName.Text)) return false;
+            
+            bool selected = false;
+            foreach (var entry in Entries)
+            {
+                if (entry.IsMatched)
+                {
+                    selected = true;
+                    break;
+                }
+            }
+
+            return selected;
+        }
+        private void OkCommand_Executed(object state)
         {
             Mapping mapping;
             if (IsNew)
@@ -256,6 +281,9 @@ namespace Samm.Dialogs
             }
 
             this.DialogResult = true;
+        }
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
         }
 
     }

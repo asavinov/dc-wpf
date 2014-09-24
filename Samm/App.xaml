@@ -35,7 +35,7 @@
                     <TextBlock Text="{Binding Path=Name}" FontWeight="SemiBold" Foreground="Blue"/>
                     <!-- <TextBlock Text="" Width="10"/> -->
                     <TextBlock Text=" ("/>
-                    <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                    <TextBlock Text="{Binding Path=Output.Name}"/>
                     <TextBlock Text=")"/>
                 </StackPanel>
                 <DataTemplate.Triggers>
@@ -53,7 +53,7 @@
                     <TextBlock Text="{Binding Path=ColumnNamePath}" FontWeight="SemiBold" Foreground="Blue"/>
                     <!-- <TextBlock Text="" Width="10"/> -->
                     <TextBlock Text=" ("/>
-                    <TextBlock Text="{Binding Path=GreaterSet.Name}"/>
+                    <TextBlock Text="{Binding Path=Output.Name}"/>
                     <TextBlock Text=")"/>
                 </StackPanel>
                 <DataTemplate.Triggers>

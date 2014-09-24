@@ -83,6 +83,8 @@ namespace Samm.Dialogs
 
         public AggregationBox(ComColumn column, ComColumn measureColumn)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             InitializeComponent();
 
             if (column.Input.Columns.Contains(column)) IsNew = false;
@@ -213,7 +215,26 @@ namespace Samm.Dialogs
             if (fragment == null) return;
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(newColumnName.Text)) return false;
+
+            if (factTables.SelectedItems.Count == 0) return false;
+
+            if (groupingPaths.SelectedItem == null) return false;
+
+            if (measurePaths.SelectedItem == null && aggregationFunctions.SelectedItem != "COUNT") return false;
+
+            if (aggregationFunctions.SelectedItem == null) return false;
+
+            return true;
+        }
+        private void OkCommand_Executed(object state)
         {
             ComSchema schema = Column.Input.Schema;
 
@@ -242,6 +263,9 @@ namespace Samm.Dialogs
             Column.Definition.Updater = AggregationFunction;
 
             this.DialogResult = true;
+        }
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
         }
 
     }

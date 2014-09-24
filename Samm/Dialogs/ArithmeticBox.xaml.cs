@@ -68,6 +68,8 @@ namespace Samm.Dialogs
 
         public ArithmeticBox(ComColumn column, bool whereExpression)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             IsWhere = whereExpression;
 
             if (column.Input.Columns.Contains(column)) IsNew = false;
@@ -282,7 +284,20 @@ namespace Samm.Dialogs
             RefreshAll();
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(newColumnName.Text)) return false;
+
+            if (ExpressionModel.Count == 0) return false;
+
+            return true;
+        }
+        private void OkCommand_Executed(object state)
         {
             ComSchema schema = Column.Input.Schema;
 
@@ -300,11 +315,11 @@ namespace Samm.Dialogs
             Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
 
             ExprNode expr = null;
-            if (ExpressionModel == null || ExpressionModel.Count == 0) 
+            if (ExpressionModel == null || ExpressionModel.Count == 0)
             {
                 expr = null;
             }
-            else 
+            else
             {
                 expr = ExpressionModel[0];
             }
@@ -329,8 +344,11 @@ namespace Samm.Dialogs
 
                 Column.Definition.Formula = expr;
             }
-            
+
             this.DialogResult = true;
+        }
+        private void okButton_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
