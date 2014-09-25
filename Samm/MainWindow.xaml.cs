@@ -161,7 +161,7 @@ namespace Samm
 
         protected void GenericError(System.Exception e)
         {
-            string msg = Application.Current.FindResource("ErrorMsg").ToString();
+            string msg = Application.Current.FindResource("GenericErrorMsg").ToString();
             var result = MessageBox.Show(this, msg + "\n\nError message: \n" + e.Message, "Error...", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
         }
 
@@ -437,13 +437,13 @@ namespace Samm
 
         #endregion
 
-        # region Datasource operations
+        # region Import/export operations
 
-        private void TextDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void ImportTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
-                Wizard_CsvDatasource();
+                Wizard_ImportCsv();
             }
             catch (System.Exception ex)
             {
@@ -452,14 +452,14 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_CsvDatasource()
+        public void Wizard_ImportCsv()
         {
             SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
             ComSchema schema = MashupTop;
 
             var ofg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            ofg.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofg.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             ofg.RestoreDirectory = true;
             ofg.CheckFileExists = true;
             ofg.Multiselect = false;
@@ -512,11 +512,11 @@ namespace Samm
 
             SelectedTable = targetTable;
         }
-        public void Wizard_TextDatasource() // Reading text via Oledb
+        public void Wizard_ImportText() // Reading text via Oledb
         {
             var ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            ofd.Filter = "Access Files (*.CSV)|*.CSV|All files (*.*)|*.*";
+            ofd.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;
             ofd.Multiselect = false;
@@ -569,11 +569,11 @@ namespace Samm
             SelectedTable = targetTable;
         }
         
-        private void AccessDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void ImportAccessCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
-                Wizard_AccessDatasource();
+                Wizard_ImportAccess();
             }
             catch (System.Exception ex)
             {
@@ -582,7 +582,7 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_AccessDatasource()
+        public void Wizard_ImportAccess()
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -614,11 +614,11 @@ namespace Samm
             //SourcesModel.Add(sourceModel);
         }
 
-        private void SqlserverDatasourceCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void ImportSqlserverCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
-                Wizard_SqlserverDatasource();
+                Wizard_ImportSqlserver();
             }
             catch (System.Exception ex)
             {
@@ -627,7 +627,7 @@ namespace Samm
 
             e.Handled = true;
         }
-        private static void Wizard_SqlserverDatasource()
+        private static void Wizard_ImportSqlserver()
         {
             /*
                                 // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
@@ -714,6 +714,83 @@ namespace Samm
             */
         }
 
+        private void ExportTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedRoot != null) e.CanExecute = false;
+            else if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = false;
+            else e.CanExecute = false;
+        }
+        private void ExportTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                Wizard_ExportCsv(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Wizard_ExportCsv(ComTable table)
+        {
+            SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            ComSchema schema = MashupTop;
+
+            var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();
+            dlg.FileName = table.Name;
+            dlg.DefaultExt = ".csv";
+            dlg.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if (result != true) return; // Cancelled
+
+            string filePath = dlg.FileName;
+            string safeFilePath = dlg.SafeFileName;
+            string fileDir = System.IO.Path.GetDirectoryName(filePath);
+            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
+
+            //
+            // Create a target file and write all records to it
+            //
+            ComColumn[] columns = table.Columns.Where(x => !x.IsSuper).ToArray();
+
+            using (var sw = new System.IO.StreamWriter(filePath))
+            {
+                var csv = new CsvHelper.CsvWriter(sw);
+
+                // Write header
+                for (int j = 0; j < columns.Length; j++)
+                {
+                    csv.WriteField(columns[j].Name, true);
+                }
+                csv.NextRecord(); // End of record
+
+                // Write records
+                for (int i = 0; i < table.Data.Length; i++)
+                {
+                    for (int j = 0; j < columns.Length; j++)
+                    {
+                        object val = table.Data.GetValue(columns[j].Name, i);
+                        string field = val.ToString();
+                        bool shouldQuote = false;
+                        if(StringSimilarity.SameColumnName(columns[j].Output.Name, "String")) 
+                        {
+                            shouldQuote = true;
+                        }
+
+                        csv.WriteField(field, shouldQuote);
+                    }
+
+                    csv.NextRecord(); // End of record
+                }
+            }
+
+        }
+        
         #endregion
 
         # region View operations
@@ -739,11 +816,11 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Operation_OpenTable(ComTable set)
+        public void Operation_OpenTable(ComTable table)
         {
-            lblWorkspace.Content = set.Name;
+            lblWorkspace.Content = table.Name;
 
-            var gridView = new SetGridView(set);
+            var gridView = new SetGridView(table);
             GridPanel.Content = gridView.Grid;
         }
 
@@ -1039,8 +1116,16 @@ namespace Samm
 
             ComSchema schema = set.Schema;
 
+            // Ask for confirmation
+            string msg = Application.Current.FindResource("DeleteTableMsg").ToString();
+            var result = MessageBox.Show(this, msg, "Delete table...", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+
             // 
-            // Delete tables generated from this table (alternatively, leave them but with empty definition)
+            // Delete tables *generated* from this table (alternatively, leave them but with empty definition)
             //
             var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { set }), new List<ComTable>(), false, DimensionType.GENERATING);
             foreach (var path in paths)
@@ -1303,6 +1388,14 @@ namespace Samm
         protected void Operation_DeleteColumn(ComColumn column)
         {
             ComSchema schema = column.Input.Schema;
+
+            // Ask for confirmation
+            string msg = Application.Current.FindResource("DeleteColumnMsg").ToString();
+            var result = MessageBox.Show(this, msg, "Delete column...", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
 
             // 
             // Delete related columns/tables

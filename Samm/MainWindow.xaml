@@ -42,9 +42,10 @@
         <RoutedUICommand x:Key="ExitCommand" Text="Exit" />
         <RoutedUICommand x:Key="HelpCommand" Text="Help" />
 
-        <RoutedUICommand x:Key="TextDatasourceCommand" Text="Text Table" />
-        <RoutedUICommand x:Key="AccessDatasourceCommand" Text="Access table" />
-        <RoutedUICommand x:Key="SqlserverDatasourceCommand" Text="Sql Server table" />
+        <RoutedUICommand x:Key="ImportTextCommand" Text="Text Table" />
+        <RoutedUICommand x:Key="ImportAccessCommand" Text="Access table" />
+        <RoutedUICommand x:Key="ImportSqlserverCommand" Text="Sql Server table" />
+        <RoutedUICommand x:Key="ExportTextCommand" Text="Text Table" />
 
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
         <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
@@ -74,9 +75,10 @@
         <CommandBinding Command="{StaticResource ExitCommand}" Executed="ExitCommand_Executed" />
         <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
 
-        <CommandBinding Command="{StaticResource TextDatasourceCommand}" Executed="TextDatasourceCommand_Executed" />
-        <CommandBinding Command="{StaticResource AccessDatasourceCommand}" Executed="AccessDatasourceCommand_Executed" />
-        <CommandBinding Command="{StaticResource SqlserverDatasourceCommand}" Executed="SqlserverDatasourceCommand_Executed" />
+        <CommandBinding Command="{StaticResource ImportTextCommand}" Executed="ImportTextCommand_Executed" />
+        <CommandBinding Command="{StaticResource ImportAccessCommand}" Executed="ImportAccessCommand_Executed" />
+        <CommandBinding Command="{StaticResource ImportSqlserverCommand}" Executed="ImportSqlserverCommand_Executed" />
+        <CommandBinding Command="{StaticResource ExportTextCommand}" CanExecute="ExportTextCommand_CanExecute" Executed="ExportTextCommand_Executed" />
 
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
@@ -149,11 +151,11 @@
             -->
 
             <RibbonTab Header="Data" KeyTip="D">
-                <RibbonGroup x:Name="importDatasourceGroup" Header="Import">
-                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource TextDatasourceCommand}" />
+                <RibbonGroup x:Name="importGroup" Header="Import">
+                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource ImportTextCommand}" />
                     <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
-                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource AccessDatasourceCommand}" IsEnabled="False" />
-                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource SqlserverDatasourceCommand}" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource ImportAccessCommand}" IsEnabled="False" />
+                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource ImportSqlserverCommand}" IsEnabled="False" />
                     </RibbonMenuButton>
                     <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
                         <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
@@ -161,7 +163,7 @@
                     </RibbonMenuButton>
                 </RibbonGroup>
                 <RibbonGroup x:Name="exportGroup" Header="Export">
-                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource ExportTextCommand}" />
                     <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
                         <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" IsEnabled="False" />
                         <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" IsEnabled="False" />
