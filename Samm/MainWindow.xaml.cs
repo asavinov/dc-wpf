@@ -101,6 +101,11 @@ namespace Samm
         }
 
         //
+        // Configuration and options
+        //
+        public bool Config_CompressFile = true;
+
+        //
         // Operations and behavior
         //
         public DragDropHelper DragDropHelper { get; protected set; }
@@ -284,8 +289,18 @@ namespace Samm
         }
         protected void Operation_ReadMashup(string filePath)
         {
-            string jsonString = System.IO.File.ReadAllText(filePath);
+            byte[] jsonBytes = System.IO.File.ReadAllBytes(filePath);
 
+            string jsonString = System.IO.File.ReadAllText(filePath);
+            if (Config_CompressFile)
+            {
+                jsonString = Utils.Unzip(jsonBytes);
+            }
+            else
+            {
+                jsonString = Encoding.UTF8.GetString(jsonBytes);
+            }
+            
             // De-serialize
             JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
             Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
@@ -390,8 +405,18 @@ namespace Samm
             workspace.ToJson(json);
             string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
 
+            byte[] jsonBytes;
+            if (Config_CompressFile)
+            {
+                jsonBytes = Utils.Zip(jsonString);
+            }
+            else
+            {
+                jsonBytes = Encoding.UTF8.GetBytes(jsonString);
+            }
+
             // Write to file
-            System.IO.File.WriteAllText(filePath, jsonString);
+            System.IO.File.WriteAllBytes(filePath, jsonBytes);
         }
 
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -779,6 +804,7 @@ namespace Samm
                         bool shouldQuote = false;
                         if(StringSimilarity.SameColumnName(columns[j].Output.Name, "String")) 
                         {
+
                             shouldQuote = true;
                         }
 
