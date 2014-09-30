@@ -63,7 +63,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox Name="valueOperand" Grid.Column="0" Text="My Value" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+            <TextBox Name="valueOperand" Grid.Column="0" Text="0.0" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
             <Button Name="AddValue" Grid.Column="1" Content="Add" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Click="AddValue_Click"/>
         </Grid>
 
