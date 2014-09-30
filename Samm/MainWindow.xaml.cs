@@ -250,7 +250,7 @@ namespace Samm
         private bool OpenFileWizard()
         {
             var dlg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            //dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.CheckFileExists = true;
@@ -483,7 +483,7 @@ namespace Samm
             ComSchema schema = MashupTop;
 
             var ofg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            //ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofg.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             ofg.RestoreDirectory = true;
             ofg.CheckFileExists = true;
@@ -540,7 +540,7 @@ namespace Samm
         public void Wizard_ImportText() // Reading text via Oledb
         {
             var ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            //ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofd.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;
@@ -610,7 +610,7 @@ namespace Samm
         public void Wizard_ImportAccess()
         {
             Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
+            //ofd.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofd.Filter = "Access Files (*.ACCDB)|*.ACCDB|All files (*.*)|*.*";
             ofd.RestoreDirectory = true;
             ofd.CheckFileExists = true;

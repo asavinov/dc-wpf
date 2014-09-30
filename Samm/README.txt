@@ -20,10 +20,15 @@ Author
 
 Alexandr Savinov:    http://conceptoriented.org/savinov
 
+Usage
+=====
+
+Unpack the archive and start Samm.exe application. 
+
 ChangeLog
 =========
 
-0.2.0.0 (2014-09-30):
+0.2-demo2 (2014-09-30):
 
 - Saving/Opening workspace
 - Deleting tables/columns
@@ -31,6 +36,6 @@ ChangeLog
 - UI and main menu reworked
 - A list of data sources removed
 
-0.1.0.0 (2014-06-26):
+0.1-demo1 (2014-06-20):
 
 - Minimum Viable Product

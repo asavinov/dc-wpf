@@ -48,7 +48,7 @@ namespace Samm.Dialogs
         {
             get
             {
-                return "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                return "Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " (30.09.2014)";
             }
         }
 

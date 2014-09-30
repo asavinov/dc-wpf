@@ -1,3 +1,10 @@
+Release preparation:
+- About dialog: version date
+- Application/assembly properties: version, name etc.
+- Update readme (change log etc.)
+- Remove parameters for debugging: initialdir in open/save dialogs, etc.
+- Switch to Release build option and build the project
+- Copy all files: dll, readme, license, examples
 
 Icons:
 Make an .ico file containing multiple sizes. 
@@ -27,3 +34,10 @@ http://msdn.microsoft.com/en-us/library/aa511280.aspx
     See http://www.researchgate.net/aboutus.AboutUsCareers.html.
 
 -->
+
+     ____        _         ____ 
+    |  _ \  __ _| |_ ___  / ___|
+    | | | |/ _` | __/ _` | | 
+    | |_| | (_| | || (_| | |___
+    |____/ \__,_|\__\__,_|\____|
+
