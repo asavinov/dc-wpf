@@ -165,7 +165,7 @@ namespace Samm.Dialogs
                 {
                     entry.Target = match.TargetPath.FirstSegment;
                     entry.IsMatched = true;
-                    entry.IsKey = entry.Target.IsIdentity;
+                    entry.IsKey = entry.Target.IsKey;
 
                     entry.TargetType = entry.Target.Output;
                 }
@@ -308,7 +308,7 @@ namespace Samm.Dialogs
             Source = sourceColumn;
 
             IsMatched = false;
-            IsKey = sourceColumn.IsIdentity;
+            IsKey = sourceColumn.IsKey;
         }
 
     }

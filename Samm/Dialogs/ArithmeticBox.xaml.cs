@@ -84,9 +84,9 @@ namespace Samm.Dialogs
             ExpressionModel = new ObservableCollection<ExprNode>(); // This contains what we will create/edit
             if (IsWhere)
             {
-                if (SourceTable.Definition.WhereExpression != null)
+                if (SourceTable.Definition.WhereExpr != null)
                 {
-                    ExpressionModel.Add(SourceTable.Definition.WhereExpression);
+                    ExpressionModel.Add(SourceTable.Definition.WhereExpr);
                 }
             }
             else
@@ -332,7 +332,7 @@ namespace Samm.Dialogs
                     expr.Result.TypeTable = schema.GetPrimitive("Boolean");
                 }
 
-                SourceTable.Definition.WhereExpression = expr;
+                SourceTable.Definition.WhereExpr = expr;
             }
             else // Expression belongs to the column definition
             {

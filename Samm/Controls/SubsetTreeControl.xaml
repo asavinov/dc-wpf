@@ -75,7 +75,7 @@
                 <TextBlock Text=")"/>
             </StackPanel>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                <DataTrigger Binding="{Binding Path=Dim.IsKey}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
                     <Setter Property="Source" Value="../Images/node_column_key.png" TargetName="node_icon" />
                 </DataTrigger>

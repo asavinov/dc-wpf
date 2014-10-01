@@ -62,10 +62,10 @@
 
         <Style x:Key="CanMatchTypeStyle" TargetType="{x:Type TextBlock}">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                <DataTrigger Binding="{Binding Path=Dim.IsKey}" Value="true">
                     <Setter Property="Foreground" Value="Red" ></Setter>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="false">
+                <DataTrigger Binding="{Binding Path=Dim.IsKey}" Value="false">
                     <Setter Property="Foreground" Value="Black"></Setter>
                 </DataTrigger>
             </Style.Triggers>
@@ -87,7 +87,7 @@
         <!-- This is how tree items representing a source elements of the mapping -->
         <HierarchicalDataTemplate x:Key="sourceItemTemplate" DataType="{x:Type dialogs:MatchTreeNode}">
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                <DataTrigger Binding="{Binding Path=Dim.IsKey}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -114,7 +114,7 @@
         <HierarchicalDataTemplate x:Key="targetItemTemplate" DataType="{x:Type dialogs:MatchTreeNode}">
 <!--
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding Path=Dim.IsIdentity}" Value="true">
+                <DataTrigger Binding="{Binding Path=Dim.IsKey}" Value="true">
                     <Setter Property="TreeViewItem.Foreground" Value="Red"></Setter>
                 </DataTrigger>
             </DataTemplate.Triggers>

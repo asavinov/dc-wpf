@@ -578,7 +578,7 @@ namespace Samm
             // Create generating/import column
             Mapper mapper = new Mapper(); // Create mapping for an import dimension
             Mapping map = mapper.CreatePrimitive(sourceTable, targetTable, schema); // Complete mapping (all to all)
-            map.Matches.ForEach(m => m.TargetPath.Path.ForEach(p => p.Add()));
+            map.Matches.ForEach(m => m.TargetPath.Segments.ForEach(p => p.Add()));
 
             ComColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
             dim.Definition.Mapping = map;
@@ -1093,7 +1093,7 @@ namespace Samm
 
             if (table.Definition.DefinitionType == TableDefinitionType.PROJECTION)
             {
-                ComColumn column = table.Definition.GeneratingDimensions[0];
+                ComColumn column = table.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
 
                 ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
                 dlg.Owner = this;
@@ -1156,9 +1156,9 @@ namespace Samm
             var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { set }), new List<ComTable>(), false, DimensionType.GENERATING);
             foreach (var path in paths)
             {
-                for (int i = path.Path.Count - 1; i >= 0; i--)
+                for (int i = path.Segments.Count - 1; i >= 0; i--)
                 {
-                    schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
+                    schema.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
                 }
             }
 
@@ -1318,7 +1318,7 @@ namespace Samm
             else if (SelectedTable != null) e.CanExecute = false;
             else if (SelectedColumn != null)
             {
-                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.NONE) e.CanExecute = false;
+                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.FREE) e.CanExecute = false;
                 else e.CanExecute = true;
             }
             else e.CanExecute = false;
@@ -1345,7 +1345,7 @@ namespace Samm
 
             ComSchema schema = MashupTop;
 
-            if (column.Definition.DefinitionType == ColumnDefinitionType.NONE)
+            if (column.Definition.DefinitionType == ColumnDefinitionType.FREE)
             {
                 return;
             }
@@ -1432,9 +1432,9 @@ namespace Samm
                 var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { gTab }), new List<ComTable>(), false, DimensionType.GENERATING);
                 foreach (var path in paths)
                 {
-                    for (int i = path.Path.Count - 1; i >= 0; i--)
+                    for (int i = path.Segments.Count - 1; i >= 0; i--)
                     {
-                        schema.DeleteTable(path.Path[i].Output); // Delete (indirectly) generated table
+                        schema.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
                     }
                 }
                 schema.DeleteTable(gTab); // Delete (directly) generated table
@@ -1442,7 +1442,7 @@ namespace Samm
             }
             else if (column.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
             {
-                ComColumn projDim = column.Input.Definition.GeneratingDimensions[0];
+                ComColumn projDim = column.Input.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
                 Mapping mapping = projDim.Definition.Mapping;
                 PathMatch match = mapping.GetMatchForTarget(new DimPath(column));
                 mapping.RemoveMatch(match.SourcePath, match.TargetPath);

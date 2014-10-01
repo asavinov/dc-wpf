@@ -62,10 +62,10 @@ namespace Samm
             Paths = new List<DimPath>();
             foreach(var path in pathEnum) 
             {
-                if (path.Path.Count == 0) continue; // ERROR
-                if (path.Path.Exists(x => x.IsSuper)) continue;
+                if (path.Segments.Count == 0) continue; // ERROR
+                if (path.Segments.Exists(x => x.IsSuper)) continue;
 
-                if (path.Path.Count == 1)
+                if (path.Segments.Count == 1)
                 {
                     path.Name = path.FirstSegment.Name;
                 }
@@ -222,18 +222,18 @@ namespace Samm
                 {
                     DimPath path = GridView.Paths[index];
                     int ofs;
-                    for (int i = 0; i < path.Path.Count; i++)
+                    for (int i = 0; i < path.Segments.Count; i++)
                     {
                         ofs = (int)cell; // Use output as an input for the next iteration
 
-                        if (path.Path[i].Data.IsNull(ofs))
+                        if (path.Segments[i].Data.IsNull(ofs))
                         {
                             cell = null;
                             break; // Cannot continue with next segments
                         }
                         else
                         {
-                            cell = path.Path[i].Data.GetValue(ofs);
+                            cell = path.Segments[i].Data.GetValue(ofs);
                         }
                     }
                 }
