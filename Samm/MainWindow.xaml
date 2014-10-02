@@ -1,4 +1,4 @@
-﻿<RibbonWindow x:Class="Samm.MainWindow"
+﻿<Window x:Class="Samm.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:com="clr-namespace:Com.Model;assembly=Com"
@@ -11,7 +11,7 @@
         Closing="Window_Closing"
         >
 
-    <RibbonWindow.Resources>
+    <Window.Resources>
 
         <!-- Grid for visualizing a set -->
         <Style x:Key="GridHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
@@ -64,7 +64,7 @@
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
 
-    </RibbonWindow.Resources>
+    </Window.Resources>
 
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New" Executed="NewCommand_Executed" />
@@ -101,139 +101,53 @@
 
     <DockPanel LastChildFill="True">
 
-        <Ribbon x:Name="RibbonWin" DockPanel.Dock="Top" SelectedIndex="0">
-
-            <!-- Help Pane, located at the right-hand side -->
-            <Ribbon.HelpPaneContent>
-                <RibbonButton SmallImageSource="Images\dc-32x32.png" Label=" Info: conceptoriented.com " KeyTip="H" Command="{StaticResource HelpCommand}" />
-            </Ribbon.HelpPaneContent>
-
-            <!-- Quick Access Toolbar - located at the upper-left corner -->
-            <!--
-            <Ribbon.QuickAccessToolBar>
-                <RibbonQuickAccessToolBar>
-                    <RibbonButton x:Name ="Save" SmallImageSource="Images\default.ico" />
-                    <RibbonSplitButton x:Name ="Update" SmallImageSource="Images\default.ico">
-                        <RibbonSplitMenuItem Header="Update All"/>
-                        <RibbonSplitMenuItem Header="Update local (recompute)"/>
-                        <RibbonSplitMenuItem Header="Update table (and depending tables)"/>
-                    </RibbonSplitButton>
-                </RibbonQuickAccessToolBar>
-            </Ribbon.QuickAccessToolBar>
-            -->
-            
-            <!-- Application Menu, located at the left-hand side (down arrow) -->
-            <Ribbon.ApplicationMenu>
-                <RibbonApplicationMenu KeyTip="F">
-                    <RibbonApplicationMenuItem Header="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" ImageSource="Images\file_new.png" Command="ApplicationCommands.New"/>
-                    <RibbonApplicationMenuItem Header="Open" ImageSource="Images\file_open.png" IsEnabled="True" Command="ApplicationCommands.Open"/>
+        <ToolBarTray DockPanel.Dock="Top" >
+            <ToolBar IsOverflowOpen="True" Focusable="True" >
+                    <Button ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" Command="ApplicationCommands.New">
+                        <Image Source="Images\file_new.png" />
+                    </Button>
+                    <Button ToolTip="Open" IsEnabled="True" Command="ApplicationCommands.Open">
+                        <Image Source="Images\file_open.png" />
+                    </Button>
                     <!-- <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/> -->
-                    <RibbonApplicationMenuItem Header="Save" ImageSource="Images\file_save.png" IsEnabled="True" Command="ApplicationCommands.Save"/>
-                    <RibbonApplicationMenuItem Header="Save As..." ImageSource="Images\file_saveas.png" IsEnabled="True" Command="ApplicationCommands.SaveAs"/>
+                    <Button ToolTip="Save" IsEnabled="True" Command="ApplicationCommands.Save">
+                        <Image Source="Images\file_save.png" />
+                    </Button>
+                    <Button ToolTip="Save As..." IsEnabled="True" Command="ApplicationCommands.SaveAs">
+                        <Image Source="Images\file_saveas.png" />
+                    </Button>
                     <!-- <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" /> -->
-                    <RibbonApplicationMenuItem Header="About" ImageSource="Images\dc-32x32.png" Command="{StaticResource AboutCommand}" />
-                    <RibbonApplicationMenuItem Header="Exit" ImageSource="Images\file_exit.png"  Command="{StaticResource ExitCommand}" />
-                </RibbonApplicationMenu>
-            </Ribbon.ApplicationMenu>
+                    <Button ToolTip="About" Command="{StaticResource AboutCommand}">
+                        <Image Source="Images\dc-32x32.png" />
+                    </Button>
+                    <Button ToolTip="Exit" Command="{StaticResource ExitCommand}">
+                        <Image Source="Images\file_exit.png" />
+                    </Button>
+                </ToolBar>
 
-            <!-- Ribbon Tab Home/File -->
-            <!--
-            <RibbonTab Header="Home" KeyTip="H" >
-                <RibbonGroup x:Name="ClipboardGroup" Header="Home">
-                    <RibbonMenuButton LargeImageSource="Images\paste.png" Label="Paste" KeyTip="V">
-                        <RibbonMenuItem ImageSource="Images\paste.png" Header="Keep Text Only" KeyTip="T"/>
-                        <RibbonMenuItem ImageSource="Images\paste.png" Header="Paste Special..." KeyTip="S"/>
-                    </RibbonMenuButton>
-                    <RibbonButton SmallImageSource="Images\cut.png" Label="Cut" KeyTip="X" />
-                    <RibbonButton SmallImageSource="Images\copy.png" Label="Copy" KeyTip="C" />
-                </RibbonGroup>
-            </RibbonTab>
-            -->
-
-            <RibbonTab Header="Data" KeyTip="D">
-                <RibbonGroup x:Name="importGroup" Header="Import">
-                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource ImportTextCommand}" />
-                    <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
-                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource ImportAccessCommand}" IsEnabled="False" />
-                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource ImportSqlserverCommand}" IsEnabled="False" />
-                    </RibbonMenuButton>
-                    <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
-                        <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
-                        <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
-                    </RibbonMenuButton>
-                </RibbonGroup>
-                <RibbonGroup x:Name="exportGroup" Header="Export">
-                    <RibbonButton LargeImageSource="Images\add_csv.png" Label="Text File" KeyTip="T" Command="{StaticResource ExportTextCommand}" />
-                    <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
-                        <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" IsEnabled="False" />
-                        <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" IsEnabled="False" />
-                    </RibbonMenuButton>
-                    <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
-                        <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
-                        <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
-                    </RibbonMenuButton>
-                </RibbonGroup>
-            </RibbonTab>
-
-            <!-- Ribbon Tab View -->
-            <RibbonTab Header="View" KeyTip="V">
-                <RibbonGroup x:Name="visualizeGroup" Header="View Data">
-                    <RibbonButton LargeImageSource="Images\view_table.png" Label="Table" KeyTip="T" Command="{StaticResource OpenTableCommand}" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="closeGroup" Header="Close">
-                    <RibbonButton LargeImageSource="Images\close_view.png" Label="Close" KeyTip="C" Command="{StaticResource CloseViewCommand}" />
-                </RibbonGroup>
-                <RibbonGroup Header="Update">
-                    <RibbonButton LargeImageSource="Images\update_table.png" Label="Update" KeyTip="U" Command="{StaticResource UpdateElementCommand}" />
-                </RibbonGroup>
-                <RibbonGroup Header="Edit">
-                    <RibbonButton LargeImageSource="Images\rename.png" Label="Rename" KeyTip="N" Command="{StaticResource RenameElementCommand}" />
-                </RibbonGroup>
+            <ToolBar IsOverflowOpen="True" Focusable="True" >
+                <Button ToolTip="Text File" Command="{StaticResource ImportTextCommand}">
+                    <Image Source="Images\add_csv.png" />
+                </Button>
                 <!--
-                <RibbonGroup x:Name="windowGroup" Header="Window">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Window" KeyTip="W" />
-                </RibbonGroup>
-                <RibbonGroup Header="Selection Propagation">
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
-                </RibbonGroup>
+                <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
+                    <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource ImportAccessCommand}" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource ImportSqlserverCommand}" IsEnabled="False" />
+                </RibbonMenuButton>
+                <RibbonMenuButton LargeImageSource="Images\add_cloud.png" Label="Cloud" KeyTip="C">
+                    <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
+                    <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
+                </RibbonMenuButton>
                 -->
-            </RibbonTab>
+            </ToolBar>
 
-            <RibbonTab Header="Table" KeyTip="T" >
-                <RibbonGroup x:Name="insertTablesMenuGroup" Header="Create">
-                    <!-- <RibbonButton LargeImageSource="Images\filtered_table.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />  -->
-                    <RibbonButton LargeImageSource="Images\product_table.png" Label="Product" KeyTip="P" Command="{StaticResource ProductTableCommand}" />
-                    <RibbonButton LargeImageSource="Images\extract_table.png" Label="Extract" KeyTip="X" Command="{StaticResource ExtractTableCommand}" /><!-- Create one greater table and a new dimension referencing it. -->
-                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> --> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
-                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
-                </RibbonGroup>
-                <RibbonGroup x:Name="editTablesMenuGroup" Header="Edit">
-                    <RibbonButton LargeImageSource="Images\edit_table.png" Label="Edit" KeyTip="E" Command="{StaticResource EditTableCommand}" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="deleteTablesMenuGroup" Header="Delete">
-                    <RibbonButton LargeImageSource="Images\delete_table.png" Label="Delete" KeyTip="D" Command="{StaticResource DeleteTableCommand}" />
-                </RibbonGroup>
-            </RibbonTab>
+            <ToolBar IsOverflowOpen="True" Focusable="True" >
+                <Button ToolTip="Text File" Command="{StaticResource ExportTextCommand}">
+                    <Image Source="Images\add_csv.png" />
+                </Button>
+            </ToolBar>
 
-            <RibbonTab Header="Column" KeyTip="C" >
-                <RibbonGroup x:Name="insertColumnsMenuGroup" Header="Create">
-                    <RibbonButton LargeImageSource="Images\add_calculation.png" Label="Arithmetic" KeyTip="R" Command="{StaticResource AddCalculationCommand}" />
-                    <RibbonButton LargeImageSource="Images\change_type2.png" Label="Link" KeyTip="T" Command="{StaticResource AddLinkCommand}" />
-                    <RibbonButton LargeImageSource="Images\add_aggregation.png" Label="Aggregation" KeyTip="A" Command="{StaticResource AddAggregationCommand}" />
-                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->
-                    <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
-                </RibbonGroup>
-                <RibbonGroup x:Name="editColumnsMenuGroup" Header="Edit">
-                    <RibbonButton LargeImageSource="Images\edit_column.png" Label="Edit" KeyTip="E" Command="{StaticResource EditColumnCommand}" />
-                </RibbonGroup>
-                <RibbonGroup x:Name="deleteColumnsMenuGroup" Header="Delete">
-                    <RibbonButton LargeImageSource="Images\delete_column.png" Label="Delete" KeyTip="D" Command="{StaticResource DeleteColumnCommand}" />
-                </RibbonGroup>
-            </RibbonTab>
-
-        </Ribbon>
+        </ToolBarTray>
 
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
@@ -246,29 +160,140 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-            <!-- Mashup panel -->
-            <Grid Name="MashupPanel" Grid.Column="0" >
+            <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+
+            <!-- Table panel -->
+            <Grid Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
-                <Label Name="lblMashup" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">STRUCTURE</Label>
+                <Border Grid.Row="0" Background="Lavender" />
+                <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
-                <controls:SubsetTreeControl 
+                <!-- TableList control -->
+                <DockPanel Grid.Row="1" >
+                    <ToolBarTray DockPanel.Dock="Top" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                            <!--
+                            <Menu ToolBar.OverflowMode="Never" >
+                                <MenuItem Header="" >
+                                    <MenuItem.Icon>
+                                        <Image Source="Images\default.png" />
+                                    </MenuItem.Icon>
+                                    <MenuItem Header="Product" Command="{StaticResource ProductTableCommand}" >
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\product_table.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem Header="Extract" Command="{StaticResource ExtractTableCommand}" >
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\extract_table.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuItem>
+                            </Menu>
+                            -->
+                            <Button ToolTip="Product of tables" Command="{StaticResource ProductTableCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\product_table.png" />
+                            </Button>
+                            <Button ToolTip="Extract table" Command="{StaticResource ExtractTableCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\extract_table.png" />
+                            </Button>
+                            <Button ToolTip="Edit table" Command="{StaticResource EditTableCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\edit_table.png" />
+                            </Button>
+                            <Button ToolTip="Delete table" Command="{StaticResource DeleteTableCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\delete_table.png" />
+                            </Button>
+                            <Button ToolTip="Update table" Command="{StaticResource UpdateElementCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\update_table.png" />
+                            </Button>
+                            <Button ToolTip="Rename table" Command="{StaticResource RenameElementCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\rename.png" />
+                            </Button>
+                            <Button ToolTip="Table" Command="{StaticResource OpenTableCommand}" ToolBar.OverflowMode="Never" >
+                                <Image Source="Images\view_table.png" />
+                            </Button>
+
+                            <!-- <RibbonButton LargeImageSource="Images\filtered_table.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilteredTableCommand}" />  -->
+                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> --> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
+                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
+                        </ToolBar>
+                    </ToolBarTray>
+
+                    <controls:SubsetTreeControl 
                     x:Name="MashupsView" 
-                    Grid.Column="0" Grid.Row="1" 
+                    Grid.Row="1" 
                     DataContext="{Binding Path=MashupsModel}" 
                     />
+                </DockPanel>
             </Grid>
 
-            <!-- Workspace panel -->
-            <Grid Name="WorkspacePanel" Grid.Column="2" >
+            <!-- Column panel -->
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="Lavender" />
+                <Label Name="lblColumnPanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">COLUMNS</Label>
+
+                <!-- ColumnList control -->
+                <DockPanel Grid.Row="1" >
+                    <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                            <Button ToolTip="Arithmetic column" Command="{StaticResource AddCalculationCommand}">
+                                <Image Source="Images\add_calculation.png" />
+                            </Button>
+                            <Button ToolTip="Link column" Command="{StaticResource AddLinkCommand}">
+                                <Image Source="Images\change_type2.png" />
+                            </Button>
+                            <Button ToolTip="Aggregated column" Command="{StaticResource AddAggregationCommand}">
+                                <Image Source="Images\add_aggregation.png" />
+                            </Button>
+                            <Button ToolTip="Edit column" Command="{StaticResource EditColumnCommand}">
+                                <Image Source="Images\edit_column.png" />
+                            </Button>
+                            <Button ToolTip="Delete column" Command="{StaticResource DeleteColumnCommand}">
+                                <Image Source="Images\delete_column.png" />
+                            </Button>
+                            <Button ToolTip="Update column" Command="{StaticResource UpdateElementCommand}">
+                                <Image Source="Images\update_table.png" />
+                            </Button>
+                            <Button ToolTip="Rename column" Command="{StaticResource RenameElementCommand}">
+                                <Image Source="Images\rename.png" />
+                            </Button>
+
+                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->
+                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
+
+                            <!--
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
+                -->
+                        </ToolBar>
+                    </ToolBarTray>
+
+                    <controls:SubsetTreeControl 
+                    x:Name="MashupsView2" 
+                    Grid.Row="1" 
+                    DataContext="{Binding Path=MashupsModel}" 
+                    />
+                </DockPanel>
+            </Grid>
+
+            <!-- Data visualization panel -->
+            <Grid Grid.Column="4" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -277,11 +302,28 @@
                 <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
                 <Label Name="lblWorkspace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
 
-                <ContentControl Name="GridPanel" Grid.Row="1">
-                </ContentControl>
+                <!-- Data view -->
+                <DockPanel Grid.Row="1" >
+                    <ToolBarTray DockPanel.Dock="Top" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                            <Button ToolTip="Close" Command="{StaticResource CloseViewCommand}">
+                                <Image Source="Images\close_view.png" />
+                            </Button>
+                            <!--
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
+                            -->
+                        </ToolBar>
+                    </ToolBarTray>
+
+                    <ContentControl Name="GridPanel" Grid.Row="1">
+                    </ContentControl>
+                </DockPanel>
+
             </Grid>
 
         </Grid>
 
     </DockPanel>
-</RibbonWindow>
+</Window>
