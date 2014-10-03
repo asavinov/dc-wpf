@@ -201,25 +201,25 @@
                                 </MenuItem>
                             </Menu>
                             -->
-                            <Button ToolTip="Product of tables" Command="{StaticResource ProductTableCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Product of tables" ToolBar.OverflowMode="Never" Command="{StaticResource ProductTableCommand}" >
                                 <Image Source="Images\product_table.png" />
                             </Button>
-                            <Button ToolTip="Extract table" Command="{StaticResource ExtractTableCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Extract table" ToolBar.OverflowMode="Never" Command="{StaticResource ExtractTableCommand}" >
                                 <Image Source="Images\extract_table.png" />
                             </Button>
-                            <Button ToolTip="Edit table" Command="{StaticResource EditTableCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Edit table" ToolBar.OverflowMode="Never" Command="{StaticResource EditTableCommand}" >
                                 <Image Source="Images\edit_table.png" />
                             </Button>
-                            <Button ToolTip="Delete table" Command="{StaticResource DeleteTableCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Delete table" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteTableCommand}" >
                                 <Image Source="Images\delete_table.png" />
                             </Button>
-                            <Button ToolTip="Update table" Command="{StaticResource UpdateElementCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Update table" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateElementCommand}" >
                                 <Image Source="Images\update_table.png" />
                             </Button>
-                            <Button ToolTip="Rename table" Command="{StaticResource RenameElementCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Rename table" ToolBar.OverflowMode="Never" Command="{StaticResource RenameElementCommand}" >
                                 <Image Source="Images\rename.png" />
                             </Button>
-                            <Button ToolTip="Table" Command="{StaticResource OpenTableCommand}" ToolBar.OverflowMode="Never" >
+                            <Button ToolTip="Table" ToolBar.OverflowMode="Never" Command="{StaticResource OpenTableCommand}" >
                                 <Image Source="Images\view_table.png" />
                             </Button>
 
@@ -229,11 +229,11 @@
                         </ToolBar>
                     </ToolBarTray>
 
-                    <controls:SubsetTreeControl 
-                    x:Name="MashupsView" 
-                    Grid.Row="1" 
-                    DataContext="{Binding Path=MashupsModel}" 
+                    <controls:TableListControl 
+                        x:Name="TableListView" 
+                        DataContext="{Binding Path=.}"
                     />
+
                 </DockPanel>
             </Grid>
 
@@ -251,25 +251,25 @@
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
-                            <Button ToolTip="Arithmetic column" Command="{StaticResource AddCalculationCommand}">
+                            <Button ToolTip="Arithmetic column" ToolBar.OverflowMode="Never" Command="{StaticResource AddCalculationCommand}">
                                 <Image Source="Images\add_calculation.png" />
                             </Button>
-                            <Button ToolTip="Link column" Command="{StaticResource AddLinkCommand}">
+                            <Button ToolTip="Link column" ToolBar.OverflowMode="Never" Command="{StaticResource AddLinkCommand}">
                                 <Image Source="Images\change_type2.png" />
                             </Button>
-                            <Button ToolTip="Aggregated column" Command="{StaticResource AddAggregationCommand}">
+                            <Button ToolTip="Aggregated column" ToolBar.OverflowMode="Never" Command="{StaticResource AddAggregationCommand}">
                                 <Image Source="Images\add_aggregation.png" />
                             </Button>
-                            <Button ToolTip="Edit column" Command="{StaticResource EditColumnCommand}">
+                            <Button ToolTip="Edit column" ToolBar.OverflowMode="Never" Command="{StaticResource EditColumnCommand}">
                                 <Image Source="Images\edit_column.png" />
                             </Button>
-                            <Button ToolTip="Delete column" Command="{StaticResource DeleteColumnCommand}">
+                            <Button ToolTip="Delete column" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteColumnCommand}">
                                 <Image Source="Images\delete_column.png" />
                             </Button>
-                            <Button ToolTip="Update column" Command="{StaticResource UpdateElementCommand}">
+                            <Button ToolTip="Update column" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateElementCommand}">
                                 <Image Source="Images\update_table.png" />
                             </Button>
-                            <Button ToolTip="Rename column" Command="{StaticResource RenameElementCommand}">
+                            <Button ToolTip="Rename column" ToolBar.OverflowMode="Never" Command="{StaticResource RenameElementCommand}">
                                 <Image Source="Images\rename.png" />
                             </Button>
 
@@ -277,18 +277,18 @@
                             <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
 
                             <!--
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
-                    <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
-                -->
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
+                            <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
+                            -->
                         </ToolBar>
                     </ToolBarTray>
 
-                    <controls:SubsetTreeControl 
-                    x:Name="MashupsView2" 
-                    Grid.Row="1" 
-                    DataContext="{Binding Path=MashupsModel}" 
+                    <controls:ColumnListControl 
+                        x:Name="ColumnListView" 
+                        DataContext="{Binding Path=.}" 
                     />
+
                 </DockPanel>
             </Grid>
 
@@ -319,6 +319,7 @@
 
                     <ContentControl Name="GridPanel" Grid.Row="1">
                     </ContentControl>
+
                 </DockPanel>
 
             </Grid>

@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="Samm.Controls.TableListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:samm="clr-namespace:Samm"
+             xmlns:com="clr-namespace:Com.Model;assembly=Com"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+
+        <Style x:Key="ColumnMappingHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+
+        <DataTemplate x:Key="TableListCellTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="../Images/node_table.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
+            </StackPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ListView 
+            Name="TablesList" 
+            Grid.Column="0" Grid.Row="0" 
+            ItemsSource="{Binding Path=MashupTables}" 
+            SelectedItem="{Binding Path=CurrentTable}"
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch" 
+            BorderThickness="0" 
+            Margin="5"
+            ItemTemplate="{StaticResource TableListCellTemplate}"
+            >
+
+            <!--
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{StaticResource ColumnMappingHeaderStyle}">
+
+                    <GridViewColumn 
+                        Header="Source" 
+                        Width="Auto" 
+                        CellTemplate="{StaticResource TableListCellTemplate}" 
+                        />
+                    
+                    <GridViewColumn Header="Key">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsKey}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <GridViewColumn Header="Type">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding Path=TargetTypes}" SelectedItem="{Binding Path=TargetType}" DisplayMemberPath="Name"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Select">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsMatched}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+            -->
+
+        </ListView>
+
+    </Grid>
+
+</UserControl>

@@ -2,20 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -64,40 +55,57 @@ namespace Samm
         //
         // Selection state
         //
-        public SubsetTree SelectedItem 
-        { 
-            get { if (MashupsView == null || MashupsView.SubsetTree == null) return null; return (SubsetTree)MashupsView.SubsetTree.SelectedItem; }
-        }
         public ComTable SelectedRoot
         {
-            get 
-            { 
-                SubsetTree item = SelectedItem; 
-                if (item == null) return null;
-                if (item.IsSubsetNode && item.Input.IsPrimitive && item.Input.Name == "Root") return (ComTable)item.Input; 
-                return null;
-            }
+            get { return null; }
         }
         public ComTable SelectedTable 
         {
-            get
+            get { return CurrentTable; }
+            set 
             {
-                SubsetTree item = SelectedItem;
-                if (item == null) return null;
-                if (item.IsSubsetNode)
-                {
-                    if (item.Input.IsPrimitive) return null;
-                    else return item.Input;
-                }
-                return null;
-            }
-            set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); } 
+                if (TableListView == null || TableListView.TablesList == null) return;
+                TableListView.TablesList.SelectedItem = value; 
+            } 
         }
         public ComColumn SelectedColumn 
-        { 
-            get { SubsetTree item = SelectedItem; if (item == null) return null; if (item.IsDimensionNode) return item.Dim; return null; }
-            set { if (MashupsView == null || MashupsView.SubsetTree == null) return; MashupsView.Select(value); }
+        {
+            get { return CurrentColumn; }
+            set 
+            {
+                if (ColumnListView == null || ColumnListView.ColumnList == null) return;
+                ColumnListView.ColumnList.SelectedItem = value;
+            }
         }
+
+        //
+        // New table-column model
+        //
+
+        // Table list has to listen for changes in the model (schema object) and add/remove itself, as well as change properties of the shown items
+        public ObservableCollection<ComTable> MashupTables { get; set; } // What is shown in TableListControl
+        private ComTable _currentTable;
+        public ComTable CurrentTable 
+        {
+            get { return _currentTable; }
+            set // Update other models as the current table changes or notify other components
+            {
+                if (_currentTable == value) return;
+                _currentTable = value;
+                // Here we might want to notify (PropertyChangedEvent) others about this change
+                MashupColumns.Clear();
+                if(_currentTable == null) return;
+                foreach(var col in _currentTable.Columns) 
+                {
+                    if(col.IsSuper) continue;
+                    MashupColumns.Add(col);
+                }
+            }
+        }
+
+        // Column list has to listen for changes in the currently selected table (or to the whole schema) and add/remove columns, as well as update their properties.
+        public ObservableCollection<ComColumn> MashupColumns { get; set; } // What is shown in ColumnListControl
+        public ComColumn CurrentColumn { get; set; }
 
         //
         // Configuration and options
@@ -115,8 +123,16 @@ namespace Samm
             Mashups = new ObservableCollection<ComSchema>();
             MashupsModel = new ObservableCollection<SubsetTree>();
 
+            MashupTables = new ObservableCollection<ComTable>();
+            MashupColumns = new ObservableCollection<ComColumn>();
+
             // Create new empty mashup
             Operation_NewMashup();
+
+            foreach (ComTable t in MashupTop.Root.AllSubTables)
+            {
+                MashupTables.Add(t);
+            }
 
             DragDropHelper = new DragDropHelper();
 
@@ -221,7 +237,7 @@ namespace Samm
             //
             Mashups.Clear();
             ComSchema mashupTop = new SetTop("New Mashup");
-            //mashupTop = CreateSampleSchema();
+            mashupTop = CreateSampleSchema();
             Mashups.Add(mashupTop);
 
             //
@@ -740,9 +756,7 @@ namespace Samm
 
         private void ExportTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void ExportTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -822,9 +836,7 @@ namespace Samm
 
         private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -866,8 +878,7 @@ namespace Samm
 
         private void UpdateElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = true;
-            else if (SelectedTable != null) e.CanExecute = true;
+            if (SelectedTable != null) e.CanExecute = true;
             else if (SelectedColumn != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
@@ -903,7 +914,8 @@ namespace Samm
 
         private void RenameElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedItem != null) e.CanExecute = true;
+            if (SelectedTable != null) e.CanExecute = true;
+            else if (SelectedColumn != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void RenameElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -943,9 +955,7 @@ namespace Samm
 
         private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1003,9 +1013,7 @@ namespace Samm
 
         private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = true;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1063,9 +1071,7 @@ namespace Samm
 
         private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1125,9 +1131,7 @@ namespace Samm
 
         private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1173,9 +1177,7 @@ namespace Samm
 
         private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void AddArithmeticCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1218,9 +1220,7 @@ namespace Samm
 
         private void AddLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1263,9 +1263,7 @@ namespace Samm
 
         private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = false;
+            if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1313,9 +1311,7 @@ namespace Samm
 
         private void EditColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null)
+            if (SelectedColumn != null)
             {
                 if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.FREE) e.CanExecute = false;
                 else e.CanExecute = true;
@@ -1389,9 +1385,7 @@ namespace Samm
 
         private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedRoot != null) e.CanExecute = false;
-            else if (SelectedTable != null) e.CanExecute = false;
-            else if (SelectedColumn != null) e.CanExecute = true;
+            if (SelectedColumn != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
         private void DeleteColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1455,6 +1449,7 @@ namespace Samm
         }
 
         #endregion
+
     }
 
     public class DragDropHelper

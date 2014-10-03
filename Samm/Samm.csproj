@@ -101,6 +101,9 @@
     <Compile Include="CompositeCollectionConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\ColumnListControl.xaml.cs">
+      <DependentUpon>ColumnListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ExprTreeControl.xaml.cs">
       <DependentUpon>ExprTreeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -112,6 +115,9 @@
     <Compile Include="Controls\SubsetTreeControl.xaml.cs">
       <DependentUpon>SubsetTreeControl.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\TableListControl.xaml.cs">
+      <DependentUpon>TableListControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Dialogs\AboutBox.xaml.cs">
@@ -142,6 +148,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SetGridView.cs" />
+    <Page Include="Controls\ColumnListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ExprTreeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -151,6 +161,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SubsetTreeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TableListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
