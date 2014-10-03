@@ -30,24 +30,21 @@ namespace Samm
         public ObservableCollection<ComSchema> RemoteSources { get; set; }
 
         //
-        // Mashups (only one is used)
+        // Mashup
         //
-        public ObservableCollection<ComSchema> Mashups { get; set; }
-        public ComSchema MashupTop { get { return Mashups.Count != 0 ? Mashups[0] : null; } }
-        public ComTable MashupRoot { get { return Mashups.Count != 0 ? Mashups[0].Root : null; } }
+        public ComSchema MashupTop { get; set; }
+        public ComTable MashupRoot { get { return MashupTop != null ? MashupTop.Root : null; } }
 
-        public ObservableCollection<SubsetTree> MashupsModel { get; set; } // What is shown in SubsetTree for mashups
-        public SubsetTree MashupModelRoot { get { return MashupsModel.Count != 0 ? (SubsetTree)MashupsModel[0] : null; } }
 
         public bool IsInMashups(ComTable set) // Determine if the specified set belongs to some mashup
         {
-            if (set == null || Mashups == null) return false;
-            foreach (ComSchema t in Mashups) { if (set.Schema == t) return true; }
+            if (set == null || MashupTop == null) return false;
+            if (set.Schema == MashupTop) return true;
             return false;
         }
         public bool IsInMashups(ComColumn dim) // Determine if the specified dimension belongs to some mashup
         {
-            if (dim == null || Mashups == null) return false;
+            if (dim == null || MashupTop == null) return false;
             if (IsInMashups(dim.Input) && IsInMashups(dim.Output)) return true;
             return false;
         }
@@ -61,51 +58,23 @@ namespace Samm
         }
         public ComTable SelectedTable 
         {
-            get { return CurrentTable; }
+            get { return TableListView != null ? TableListView.SelectedItem : null; }
             set 
             {
                 if (TableListView == null || TableListView.TablesList == null) return;
-                TableListView.TablesList.SelectedItem = value; 
+                TableListView.TablesList.SelectedItem = value;
             } 
         }
-        public ComColumn SelectedColumn 
+
+        public ComColumn SelectedColumn
         {
-            get { return CurrentColumn; }
-            set 
+            get { return ColumnListView != null ? ColumnListView.SelectedItem : null; }
+            set
             {
                 if (ColumnListView == null || ColumnListView.ColumnList == null) return;
                 ColumnListView.ColumnList.SelectedItem = value;
             }
         }
-
-        //
-        // New table-column model
-        //
-
-        // Table list has to listen for changes in the model (schema object) and add/remove itself, as well as change properties of the shown items
-        public ObservableCollection<ComTable> MashupTables { get; set; } // What is shown in TableListControl
-        private ComTable _currentTable;
-        public ComTable CurrentTable 
-        {
-            get { return _currentTable; }
-            set // Update other models as the current table changes or notify other components
-            {
-                if (_currentTable == value) return;
-                _currentTable = value;
-                // Here we might want to notify (PropertyChangedEvent) others about this change
-                MashupColumns.Clear();
-                if(_currentTable == null) return;
-                foreach(var col in _currentTable.Columns) 
-                {
-                    if(col.IsSuper) continue;
-                    MashupColumns.Add(col);
-                }
-            }
-        }
-
-        // Column list has to listen for changes in the currently selected table (or to the whole schema) and add/remove columns, as well as update their properties.
-        public ObservableCollection<ComColumn> MashupColumns { get; set; } // What is shown in ColumnListControl
-        public ComColumn CurrentColumn { get; set; }
 
         //
         // Configuration and options
@@ -120,24 +89,14 @@ namespace Samm
         public MainWindow()
         {
             RemoteSources = new ObservableCollection<ComSchema>();
-            Mashups = new ObservableCollection<ComSchema>();
-            MashupsModel = new ObservableCollection<SubsetTree>();
-
-            MashupTables = new ObservableCollection<ComTable>();
-            MashupColumns = new ObservableCollection<ComColumn>();
-
-            // Create new empty mashup
-            Operation_NewMashup();
-
-            foreach (ComTable t in MashupTop.Root.AllSubTables)
-            {
-                MashupTables.Add(t);
-            }
 
             DragDropHelper = new DragDropHelper();
 
             //this.DataContext = this;
             InitializeComponent();
+
+            // Create new empty mashup
+            Operation_NewMashup();
         }
 
         public ComSchema CreateSampleSchema()
@@ -235,18 +194,14 @@ namespace Samm
             //
             // Initialize mashup schema
             //
-            Mashups.Clear();
             ComSchema mashupTop = new SetTop("New Mashup");
             mashupTop = CreateSampleSchema();
-            Mashups.Add(mashupTop);
+            MashupTop = mashupTop;
 
             //
-            // Update visual component (views)
+            // Update the model that is shown in the visual component
             //
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
+            TableListView.Schema = MashupTop;
         }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -323,13 +278,12 @@ namespace Samm
             workspace.FromJson(json, workspace);
 
             // User workspace objects
-            Mashups.Clear();
             RemoteSources.Clear();
             foreach (var remote in workspace.Schemas)
             {
                 if (remote == workspace.Mashup)
                 {
-                    Mashups.Add(workspace.Mashup);
+                    MashupTop = workspace.Mashup;
                 }
                 else
                 {
@@ -337,11 +291,10 @@ namespace Samm
                 }
             }
 
-            // Update visual component (views)
-            MashupsModel.Clear();
-            SubsetTree mashupModel = new SubsetTree(MashupRoot.SuperColumn);
-            mashupModel.ExpandTree();
-            MashupsModel.Add(mashupModel);
+            //
+            // Update the model that is shown in the visual component
+            //
+            TableListView.Schema = MashupTop;
         }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -670,65 +623,65 @@ namespace Samm
         private static void Wizard_ImportSqlserver()
         {
             /*
-                                // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
+            // Read schema: http://www.simple-talk.com/dotnet/.net-framework/schema-and-metadata-retrieval-using-ado.net/
 
-            //                    DataTable schema = connection.GetSchema();
-            //                    DataTable schema = connection.GetSchema("Databases", new string[] { "Northwind" });
-            //                    DataTable schema = connection.GetSchema("Databases");
-            //                    DataTable schema = connection.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Databases);
+            // DataTable schema = connection.GetSchema();
+            // DataTable schema = connection.GetSchema("Databases", new string[] { "Northwind" });
+            // DataTable schema = connection.GetSchema("Databases");
+            // DataTable schema = connection.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Databases);
 
-                                using (DataTableReader tableReader = schema.CreateDataReader())
-                                {
-                                    while (tableReader.Read())
-                                    {
-                                        Console.WriteLine(tableReader.ToString());
-                                    }
-                                }
+            using (DataTableReader tableReader = schema.CreateDataReader())
+            {
+                while (tableReader.Read())
+                {
+                    Console.WriteLine(tableReader.ToString());
+                }
+            }
 
-                                SqlCommand cmd = new SqlCommand("SELECT * FROM sys.Tables", connection);
+            SqlCommand cmd = new SqlCommand("SELECT * FROM sys.Tables", connection);
 
-                                using (SqlDataReader reader = cmd.ExecuteReader())
-                                {
-                                    while (reader.Read())
-                                    {
-                                        Console.WriteLine(reader.HasRows);
-                                    }
-                                }
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Console.WriteLine(reader.HasRows);
+                }
+            }
             */
 
 
             /*
-                        //
-                        // OLEDB Connection string dialog: http://support.microsoft.com/default.aspx?scid=kb;EN-US;310083
-                        //
-                        // References (COM):
-                        // MSDASC: Microsoft OLEDB Service Component 1.0 Type Library
-                        MSDASC.DataLinks mydlg = new MSDASC.DataLinks();
-                        // ADODB: Microsoft ActiveX Data Objects 2.7
-                        ADODB._Connection ADOcon;
-                        //Cast the generic object that PromptNew returns to an ADODB._Connection.
-                        ADOcon = (ADODB._Connection) mydlg.PromptNew();
-                        ADOcon.Open("", "", "", 0);
-                        if (ADOcon.State == 1)
-                        {
-                            MessageBox.Show("Connection Opened");
-                            ADOcon.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Connection Failed");
-                        }
+            //
+            // OLEDB Connection string dialog: http://support.microsoft.com/default.aspx?scid=kb;EN-US;310083
+            //
+            // References (COM):
+            // MSDASC: Microsoft OLEDB Service Component 1.0 Type Library
+            MSDASC.DataLinks mydlg = new MSDASC.DataLinks();
+            // ADODB: Microsoft ActiveX Data Objects 2.7
+            ADODB._Connection ADOcon;
+            //Cast the generic object that PromptNew returns to an ADODB._Connection.
+            ADOcon = (ADODB._Connection) mydlg.PromptNew();
+            ADOcon.Open("", "", "", 0);
+            if (ADOcon.State == 1)
+            {
+                MessageBox.Show("Connection Opened");
+                ADOcon.Close();
+            }
+            else
+            {
+                MessageBox.Show("Connection Failed");
+            }
             */
             /*
-                        //
-                        // Custom dialog
-                        //
-                        // Instantiate the dialog box
-                        Connections.SqlServerDialog dlg = new Connections.SqlServerDialog();
-                        // Configure the dialog box
-                        dlg.Owner = this;
-                        // Open the dialog box modally 
-                        dlg.ShowDialog();
+            //
+            // Custom dialog
+            //
+            // Instantiate the dialog box
+            Connections.SqlServerDialog dlg = new Connections.SqlServerDialog();
+            // Configure the dialog box
+            dlg.Owner = this;
+            // Open the dialog box modally 
+            dlg.ShowDialog();
             */
             //
             // http://archive.msdn.microsoft.com/Connection
@@ -874,73 +827,6 @@ namespace Samm
             GridPanel.Content = null;
 
             e.Handled = true;
-        }
-
-        private void UpdateElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void UpdateElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (SelectedRoot != null) // Update all
-            {
-                // Use dependency graph to update elements starting from independent and ending with dependent
-            }
-            else if (SelectedTable != null) // Update table
-            {
-                try
-                {
-                    SelectedTable.Definition.Populate();
-                }
-                catch (System.Exception ex)
-                {
-                    GenericError(ex);
-                }
-            }
-            else if (SelectedColumn != null) // Update column
-            {
-                try
-                {
-                    SelectedColumn.Definition.Evaluate();
-                }
-                catch (System.Exception ex)
-                {
-                    GenericError(ex);
-                }
-            }
-        }
-
-        private void RenameElementCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedTable != null) e.CanExecute = true;
-            else if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void RenameElementCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            object element = null;
-            if (SelectedRoot != null) // Rename schema
-            {
-                element = SelectedRoot.Schema;
-            }
-            else if (SelectedTable != null) // Rename table
-            {
-                element = SelectedTable;
-            }
-            else if (SelectedColumn != null) // Rename column
-            {
-                element = SelectedColumn;
-            }
-
-            RenameBox dlg = new RenameBox(element, null);
-            dlg.Owner = this;
-            dlg.ShowDialog();
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
         }
 
         #endregion
@@ -1121,12 +1007,28 @@ namespace Samm
                 throw new NotImplementedException("A table must have a definition of certain type.");
             }
 
-            MashupModelRoot.NotifyAllOnPropertyChanged(""); // Notify visual components about changes in this column
+            ((Set)table).NotifyPropertyChanged(""); // Notify visual components about changes in this column
 
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             table.Definition.Populate();
 
             SelectedTable = table;
+        }
+
+        private void RenameTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void RenameTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+
+            RenameBox dlg = new RenameBox(SelectedTable, null);
+            dlg.Owner = this;
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
         }
 
         private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1169,6 +1071,24 @@ namespace Samm
             schema.DeleteTable(set);
 
             e.Handled = true;
+        }
+
+        private void UpdateTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void UpdateTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+            try
+            {
+                SelectedTable.Definition.Populate();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
         }
 
         #endregion
@@ -1374,13 +1294,28 @@ namespace Samm
                 throw new NotImplementedException("A column must have a definition of certain type.");
             }
 
-            // Notify visual components about changes in this column
-            MashupModelRoot.NotifyAllOnPropertyChanged("");
+            ((Dim)column).NotifyPropertyChanged(""); // Notify visual components about changes in this column
 
             // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
             column.Definition.Evaluate();
 
             SelectedColumn = column;
+        }
+
+        private void RenameColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void RenameColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedColumn == null) return;
+
+            RenameBox dlg = new RenameBox(SelectedColumn, null);
+            dlg.Owner = this;
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
         }
 
         private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1445,6 +1380,24 @@ namespace Samm
             else // Just delete this column
             {
                 schema.DeleteColumn(column);
+            }
+        }
+
+        private void UpdateColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedColumn != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void UpdateColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedColumn == null) return;
+            try
+            {
+                SelectedColumn.Definition.Evaluate();
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
             }
         }
 

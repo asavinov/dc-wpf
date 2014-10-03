@@ -74,16 +74,19 @@ namespace Samm.Dialogs
             {
                 Schema.RenameTable(Schema, NewName);
                 Schema.Name = NewName;
+                ((Set)Schema).NotifyPropertyChanged("");
             }
             else if (Element is ComTable)
             {
                 Schema.RenameTable(Table, NewName);
                 Table.Name = NewName;
+                ((Set)Table).NotifyPropertyChanged("");
             }
             else if (Element is ComColumn)
             {
                 Schema.RenameColumn(Column, NewName);
                 Column.Name = NewName;
+                ((Dim)Column).NotifyPropertyChanged("");
             }
 
             this.DialogResult = true;

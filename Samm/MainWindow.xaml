@@ -49,20 +49,22 @@
 
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
         <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
-        <RoutedUICommand x:Key="UpdateElementCommand" Text="Update Element" />
-        <RoutedUICommand x:Key="RenameElementCommand" Text="Rename Element" />
 
         <RoutedUICommand x:Key="FilteredTableCommand" Text="Filter Table" />
         <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
         <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
         <RoutedUICommand x:Key="EditTableCommand" Text="Edit Table" />
+        <RoutedUICommand x:Key="RenameTableCommand" Text="Rename Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
+        <RoutedUICommand x:Key="UpdateTableCommand" Text="Update Table" />
 
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
         <RoutedUICommand x:Key="AddLinkCommand" Text="Add Link" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
+        <RoutedUICommand x:Key="RenameColumnCommand" Text="Rename Column" />
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
+        <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update Column" />
 
     </Window.Resources>
 
@@ -82,20 +84,22 @@
 
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
-        <CommandBinding Command="{StaticResource UpdateElementCommand}" CanExecute="UpdateElementCommand_CanExecute" Executed="UpdateElementCommand_Executed" />
-        <CommandBinding Command="{StaticResource RenameElementCommand}" CanExecute="RenameElementCommand_CanExecute" Executed="RenameElementCommand_Executed" />
 
         <CommandBinding Command="{StaticResource FilteredTableCommand}" Executed="FilteredTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ProductTableCommand}" CanExecute="ProductTableCommand_CanExecute" Executed="ProductTableCommand_Executed" />
         <CommandBinding Command="{StaticResource ExtractTableCommand}" CanExecute="ExtractTableCommand_CanExecute" Executed="ExtractTableCommand_Executed" />
         <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
         <CommandBinding Command="{StaticResource AddLinkCommand}" CanExecute="AddLinkCommand_CanExecute" Executed="AddLinkCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
+        <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
+        <CommandBinding Command="{StaticResource UpdateColumnCommand}" CanExecute="UpdateColumnCommand_CanExecute" Executed="UpdateColumnCommand_Executed" />
 
     </Window.CommandBindings>
 
@@ -210,16 +214,16 @@
                             <Button ToolTip="Edit table" ToolBar.OverflowMode="Never" Command="{StaticResource EditTableCommand}" >
                                 <Image Source="Images\edit_table.png" />
                             </Button>
+                            <Button ToolTip="Rename table" ToolBar.OverflowMode="Never" Command="{StaticResource RenameTableCommand}" >
+                                <Image Source="Images\rename.png" />
+                            </Button>
                             <Button ToolTip="Delete table" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteTableCommand}" >
                                 <Image Source="Images\delete_table.png" />
                             </Button>
-                            <Button ToolTip="Update table" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateElementCommand}" >
+                            <Button ToolTip="Update table" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateTableCommand}" >
                                 <Image Source="Images\update_table.png" />
                             </Button>
-                            <Button ToolTip="Rename table" ToolBar.OverflowMode="Never" Command="{StaticResource RenameElementCommand}" >
-                                <Image Source="Images\rename.png" />
-                            </Button>
-                            <Button ToolTip="Table" ToolBar.OverflowMode="Never" Command="{StaticResource OpenTableCommand}" >
+                            <Button ToolTip="View Table" ToolBar.OverflowMode="Never" Command="{StaticResource OpenTableCommand}" >
                                 <Image Source="Images\view_table.png" />
                             </Button>
 
@@ -231,7 +235,6 @@
 
                     <controls:TableListControl 
                         x:Name="TableListView" 
-                        DataContext="{Binding Path=.}"
                     />
 
                 </DockPanel>
@@ -263,14 +266,14 @@
                             <Button ToolTip="Edit column" ToolBar.OverflowMode="Never" Command="{StaticResource EditColumnCommand}">
                                 <Image Source="Images\edit_column.png" />
                             </Button>
+                            <Button ToolTip="Rename column" ToolBar.OverflowMode="Never" Command="{StaticResource RenameColumnCommand}">
+                                <Image Source="Images\rename.png" />
+                            </Button>
                             <Button ToolTip="Delete column" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteColumnCommand}">
                                 <Image Source="Images\delete_column.png" />
                             </Button>
-                            <Button ToolTip="Update column" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateElementCommand}">
-                                <Image Source="Images\update_table.png" />
-                            </Button>
-                            <Button ToolTip="Rename column" ToolBar.OverflowMode="Never" Command="{StaticResource RenameElementCommand}">
-                                <Image Source="Images\rename.png" />
+                            <Button ToolTip="Update column" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateColumnCommand}">
+                                <Image Source="Images\update_column.png" />
                             </Button>
 
                             <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->
@@ -286,7 +289,6 @@
 
                     <controls:ColumnListControl 
                         x:Name="ColumnListView" 
-                        DataContext="{Binding Path=.}" 
                     />
 
                 </DockPanel>
