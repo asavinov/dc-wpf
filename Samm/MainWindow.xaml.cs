@@ -21,8 +21,15 @@ namespace Samm
     /// </summary>
     public partial class MainWindow : Window
     {
+        //
         // File where mash is stored
+        //
         public string MashupFile { get; set; }
+
+        //
+        // Configuration and options
+        //
+        public bool Config_CompressFile = true;
 
         //
         // Data sources
@@ -75,11 +82,6 @@ namespace Samm
                 ColumnListView.ColumnList.SelectedItem = value;
             }
         }
-
-        //
-        // Configuration and options
-        //
-        public bool Config_CompressFile = true;
 
         //
         // Operations and behavior
@@ -808,7 +810,7 @@ namespace Samm
         }
         public void Operation_OpenTable(ComTable table)
         {
-            lblWorkspace.Content = table.Name;
+            //lblWorkspace.Content = table.Name;
 
             var gridView = new SetGridView(table);
             GridPanel.Content = gridView.Grid;

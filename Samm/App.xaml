@@ -19,6 +19,26 @@
             <clr:String x:Key="DeleteTableMsg" xml:space="preserve">Do you really want to delete this table as well as all tables generated from this table?</clr:String>
             <clr:String x:Key="DeleteColumnMsg" xml:space="preserve">Do you really want to delete this column as well as all tables/column generated from this column?</clr:String>
 
+            <!-- Graying out a disabled toolbar button: http://stackoverflow.com/questions/2530912/graying-out-a-wpf-button-image -->
+            <Style x:Key="ButtonEnabled" TargetType="Button">
+                <Style.Resources>
+                    <Style TargetType="Image">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
             <Style x:Key="RelevanceStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="TextAlignment" Value="Left"></Setter>
             </Style>

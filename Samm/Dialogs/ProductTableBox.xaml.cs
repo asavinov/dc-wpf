@@ -29,7 +29,9 @@ namespace Samm.Dialogs
 
         public string NewTableName { get; set; }
 
-        public List<ComTable> GreaterTables { get; set; }
+        public List<GreaterTableEntry> GreaterTables { get; set; }
+        public int SelectedCount { get { return GreaterTables.Count(x => x.IsSelected); } }
+
 
         public ProductTableBox(ComSchema schema, ComTable table, ComTable greaterTable)
         {
@@ -38,8 +40,18 @@ namespace Samm.Dialogs
             Schema = schema;
             SourceTable = table;
 
-            GreaterTables = new List<ComTable>();
-            GreaterTables.AddRange(Schema.Root.AllSubTables); // Fill the list with potential greater tables
+            GreaterTables = new List<GreaterTableEntry>();
+
+            // For each table, create an entry object
+            foreach (ComTable gTab in schema.Root.SubTables)
+            {
+                GreaterTableEntry entry = new GreaterTableEntry(gTab);
+                if (gTab == greaterTable)
+                {
+                    entry.IsSelected = true;
+                }
+                GreaterTables.Add(entry);
+            }
 
             InitializeComponent();
 
@@ -71,7 +83,7 @@ namespace Samm.Dialogs
         {
             if (string.IsNullOrWhiteSpace(newTableName.Text)) return false;
 
-            if (greaterTables.SelectedItems.Count == 0) return false;
+            if (SelectedCount == 0) return false;
 
             return true;
         }
@@ -79,7 +91,8 @@ namespace Samm.Dialogs
         {
             // Save name
             string productTableName = newTableName.Text;
-            if (string.IsNullOrWhiteSpace(productTableName) || string.IsNullOrWhiteSpace(productTableName) || greaterTables.SelectedItems.Count == 0) return;
+            if (string.IsNullOrWhiteSpace(productTableName) || string.IsNullOrWhiteSpace(productTableName)) return;
+            if (SelectedCount == 0) return;
 
             SourceTable.Name = productTableName;
 
@@ -90,9 +103,10 @@ namespace Samm.Dialogs
 
             // Initialize a list of selected dimensions (from the whole list of all greater dimensions
             List<ComTable> greaterSets = new List<ComTable>();
-            foreach (var item in greaterTables.SelectedItems)
+            foreach (var entry in GreaterTables)
             {
-                greaterSets.Add((ComTable)item);
+                if (!entry.IsSelected) continue;
+                greaterSets.Add(entry.Table);
             }
 
             // Create identity dimensions for the product set
@@ -108,4 +122,34 @@ namespace Samm.Dialogs
         {
         }
     }
+
+    /// <summary>
+    /// It corresponds to one greater table shown in the list.
+    /// </summary>
+    public class GreaterTableEntry
+    {
+        public ComTable Table { get; set; }
+
+        public string Name { get { return Table.Name; } }
+
+        protected bool _isSelected;
+        public bool IsSelected 
+        {
+            get { return _isSelected; }
+            set 
+            {
+                if (_isSelected == value) return;
+                _isSelected = value;
+            } 
+        }
+
+        public GreaterTableEntry(ComTable table)
+        {
+            Table = table;
+
+            IsSelected = false;
+        }
+
+    }
+
 }
