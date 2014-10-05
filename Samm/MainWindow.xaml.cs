@@ -434,6 +434,13 @@ namespace Samm
 
         # region Import/export operations
 
+        private void UpdateAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            throw new NotImplementedException("Update All not implemented.");
+
+            e.Handled = true;
+        }
+
         private void ImportTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
@@ -835,10 +842,46 @@ namespace Samm
 
         # region Table operations
 
-        private void FilteredTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+        private void AddTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void FilterTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void FilterTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedTable == null) return;
+            Wizard_FilterTable(SelectedTable);
             e.Handled = true;
+        }
+        public void Wizard_FilterTable(ComTable table)
+        {
+            if (table == null) return;
+
+            ComSchema schema = MashupTop;
+
+            // Create a new column (temporary, just to store a where expression which is used in the dialog)
+            ComColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);
+
+            // Show dialog for authoring arithmetic expression
+            ArithmeticBox whereDlg = new ArithmeticBox(column, true);
+            whereDlg.Owner = this;
+            whereDlg.ShowDialog(); // Open the dialog box modally 
+
+            ((Set)table).NotifyPropertyChanged(""); // Notify visual components about changes in this column
+
+            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
+            table.Definition.Populate();
+
+            SelectedTable = table;
         }
 
         private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -848,55 +891,7 @@ namespace Samm
         }
         private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            try
-            {
-                Wizard_ProductTable(SelectedTable);
-            }
-            catch (System.Exception ex)
-            {
-                GenericError(ex);
-            }
-
             e.Handled = true;
-        }
-        public void Wizard_ProductTable(ComTable set)
-        {
-            ComSchema schema = MashupTop;
-
-            // Create a new (product) set
-            string productTableName = "New Table";
-            ComTable productSet = schema.CreateTable(productTableName);
-
-            // Show parameters for creating a product set
-            ProductTableBox dlg = new ProductTableBox(schema, productSet, SelectedTable);
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            //
-            // Add filter expression for the new table
-            //
-
-            // Create a new column (temporary, just to store a where expression)
-            ComColumn column = schema.CreateColumn("Where Expression", productSet, schema.GetPrimitive("Boolean"), false);
-
-            // Show dialog for authoring arithmetic expression
-            ArithmeticBox whereDlg = new ArithmeticBox(column, true);
-            whereDlg.Owner = this;
-            whereDlg.ShowDialog(); // Open the dialog box modally 
-
-            // if cancelled then remove the new set and all its columns
-            if (whereDlg.DialogResult == false)
-            {
-                schema.DeleteTable(productSet);
-                return;
-            }
-
-            // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
-            productSet.Definition.Populate();
-
-            SelectedTable = productSet;
         }
 
         private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -955,66 +950,6 @@ namespace Samm
             targetTable.Definition.Populate();
 
             SelectedTable = targetTable;
-        }
-
-        private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedTable != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComTable table = SelectedTable;
-            if (table == null) return;
-
-            try
-            {
-                Wizard_EditTable(table);
-            }
-            catch (System.Exception ex)
-            {
-                GenericError(ex);
-            }
-
-            e.Handled = true;
-        }
-        public void Wizard_EditTable(ComTable table)
-        {
-            if (table == null) return;
-
-            ComSchema schema = MashupTop;
-
-            if (table.Definition.DefinitionType == TableDefinitionType.PROJECTION)
-            {
-                ComColumn column = table.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
-
-                ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
-                dlg.Owner = this;
-                dlg.ShowDialog(); // Open the dialog box modally 
-
-                if (dlg.DialogResult == false) return; // Cancel
-            }
-            else if (table.Definition.DefinitionType == TableDefinitionType.PRODUCT)
-            {
-                // Create a new column (temporary, just to store a where expression)
-                ComColumn column = schema.CreateColumn("Where Expression", table, schema.GetPrimitive("Boolean"), false);
-
-                // Show dialog for authoring arithmetic expression
-                ArithmeticBox whereDlg = new ArithmeticBox(column, true);
-                whereDlg.Owner = this;
-                whereDlg.ShowDialog(); // Open the dialog box modally 
-            }
-            else
-            {
-                throw new NotImplementedException("A table must have a definition of certain type.");
-            }
-
-            ((Set)table).NotifyPropertyChanged(""); // Notify visual components about changes in this column
-
-            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
-            table.Definition.Populate();
-
-            SelectedTable = table;
         }
 
         private void RenameTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1096,6 +1031,48 @@ namespace Samm
         #endregion
 
         # region Column operations
+
+        private void FreeColumnsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void FreeColumnsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            ComTable table = SelectedTable;
+            if (table == null) return;
+
+            try
+            {
+                Wizard_FreeColumns(table);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Wizard_FreeColumns(ComTable set)
+        {
+            ComSchema schema = MashupTop;
+
+            // Create a new (product) set
+            string productTableName = "New Table";
+            ComTable productSet = schema.CreateTable(productTableName);
+
+            // Show parameters for creating a product set
+            ProductTableBox dlg = new ProductTableBox(schema, productSet, SelectedTable);
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
+            productSet.Definition.Populate();
+
+            SelectedTable = productSet;
+        }
 
         private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -1277,11 +1254,25 @@ namespace Samm
             }
             else if (column.Definition.DefinitionType == ColumnDefinitionType.LINK)
             {
-                LinkColumnBox dlg = new LinkColumnBox(column);
-                dlg.Owner = this;
-                dlg.ShowDialog(); // Open the dialog box modally 
+                if (!column.Definition.IsGenerating)
+                {
+                    LinkColumnBox dlg = new LinkColumnBox(column);
+                    dlg.Owner = this;
+                    dlg.ShowDialog(); // Open the dialog box modally 
 
-                if (dlg.DialogResult == false) return; // Cancel
+                    if (dlg.DialogResult == false) return; // Cancel
+                }
+                else // Generating (import) column
+                {
+                    // ComColumn column = table.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
+
+                    ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
+                    dlg.Owner = this;
+                    dlg.ShowDialog(); // Open the dialog box modally 
+
+                    if (dlg.DialogResult == false) return; // Cancel
+                }
+
             }
             else if (column.Definition.DefinitionType == ColumnDefinitionType.AGGREGATION)
             {
