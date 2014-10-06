@@ -884,74 +884,6 @@ namespace Samm
             SelectedTable = table;
         }
 
-        private void ProductTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedTable != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void ProductTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void ExtractTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (SelectedTable != null) e.CanExecute = true;
-            else e.CanExecute = false;
-        }
-        private void ExtractTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            ComTable table = null;
-            if (SelectedTable != null)
-                table = SelectedTable;
-            else if (SelectedColumn != null && SelectedColumn.Input != null)
-                table = SelectedColumn.Input;
-            else
-                return;
-
-            try
-            {
-                Wizard_ExtractTable(table);
-            }
-            catch (System.Exception ex)
-            {
-                GenericError(ex);
-            }
-            
-            e.Handled = true;
-        }
-        public void Wizard_ExtractTable(ComTable set)
-        {
-            ComSchema schema = MashupTop;
-
-            // Create a new (extracted) set
-            string newTableName = "New Table";
-            ComTable targetTable = schema.CreateTable(newTableName);
-            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-
-            // Create a new (mapped, generating) dimension to the new set
-            string newColumnName = "New Column";
-            ComColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
-
-            //
-            // Show parameters for set extraction
-            //
-            List<ComColumn> initialSelection = new List<ComColumn>();
-            initialSelection.Add(SelectedColumn);
-            ColumnMappingBox dlg = new ColumnMappingBox(schema, extractedDim, initialSelection);
-            dlg.Owner = this;
-            dlg.RefreshAll();
-
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
-            targetTable.Definition.Populate();
-
-            SelectedTable = targetTable;
-        }
-
         private void RenameTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
@@ -1158,6 +1090,63 @@ namespace Samm
             column.Definition.Evaluate();
 
             SelectedColumn = column;
+        }
+
+        private void AddProjectionCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void AddProjectionCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+
+            try
+            {
+                Wizard_AddProjection(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Wizard_AddProjection(ComTable set)
+        {
+            ComSchema schema = MashupTop;
+
+            // Create a new (extracted) set
+            string newTableName = "New Table";
+            ComTable targetTable = schema.CreateTable(newTableName);
+            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            //
+            // We acutally do not need PROJECTION flag - it is determined by the existence of generating columns
+            // Also, we do not need PRODUCT because it is determined by free columns
+            // Also, we do not need them because we do not edit table defs - we edit column defs
+            //
+
+            // Create a new (mapped, generating) dimension to the new set
+            string newColumnName = "New Column";
+            ComColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
+
+            //
+            // Show parameters for set extraction
+            //
+            List<ComColumn> initialSelection = new List<ComColumn>();
+            initialSelection.Add(SelectedColumn);
+            ColumnMappingBox dlg = new ColumnMappingBox(schema, extractedDim, initialSelection);
+            dlg.Owner = this;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
+            targetTable.Definition.Populate();
+
+            SelectedTable = targetTable;
         }
 
         private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

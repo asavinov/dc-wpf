@@ -54,20 +54,19 @@
 
         <RoutedUICommand x:Key="AddTableCommand" Text="Add Table" />
         <RoutedUICommand x:Key="FilterTableCommand" Text="Filter Table" />
-        <RoutedUICommand x:Key="ProductTableCommand" Text="Product Table" />
-        <RoutedUICommand x:Key="ExtractTableCommand" Text="Extract Table" />
         <RoutedUICommand x:Key="RenameTableCommand" Text="Rename Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
         <RoutedUICommand x:Key="UpdateTableCommand" Text="Update Table" />
 
-        <RoutedUICommand x:Key="FreeColumnsCommand" Text="Add Free Column" />
-        <RoutedUICommand x:Key="AddCalculationCommand" Text="Add Calculation" />
-        <RoutedUICommand x:Key="AddLinkCommand" Text="Add Link" />
-        <RoutedUICommand x:Key="AddAggregationCommand" Text="Add Aggregation" />
-        <RoutedUICommand x:Key="EditColumnCommand" Text="Edit Column" />
-        <RoutedUICommand x:Key="RenameColumnCommand" Text="Rename Column" />
-        <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete Column" />
-        <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update Column" />
+        <RoutedUICommand x:Key="FreeColumnsCommand" Text="Add free column" />
+        <RoutedUICommand x:Key="AddCalculationCommand" Text="Add calculated column" />
+        <RoutedUICommand x:Key="AddLinkCommand" Text="Add link column" />
+        <RoutedUICommand x:Key="AddProjectionCommand" Text="Add projection column" />
+        <RoutedUICommand x:Key="AddAggregationCommand" Text="Add aggregated column" />
+        <RoutedUICommand x:Key="EditColumnCommand" Text="Edit column" />
+        <RoutedUICommand x:Key="RenameColumnCommand" Text="Rename column" />
+        <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete column" />
+        <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update column" />
 
     </Window.Resources>
 
@@ -92,8 +91,6 @@
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource ProductTableCommand}" CanExecute="ProductTableCommand_CanExecute" Executed="ProductTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource ExtractTableCommand}" CanExecute="ExtractTableCommand_CanExecute" Executed="ExtractTableCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
@@ -101,6 +98,7 @@
         <CommandBinding Command="{StaticResource FreeColumnsCommand}" CanExecute="FreeColumnsCommand_CanExecute" Executed="FreeColumnsCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
         <CommandBinding Command="{StaticResource AddLinkCommand}" CanExecute="AddLinkCommand_CanExecute" Executed="AddLinkCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddProjectionCommand}" CanExecute="AddProjectionCommand_CanExecute" Executed="AddProjectionCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
@@ -220,14 +218,6 @@
                             <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource FilterTableCommand}" >
                                 <Image Source="Images\table_filter.png" />
                             </Button>
-                            <!--
-                            <Button ToolTip="Product of tables" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource ProductTableCommand}" >
-                                <Image Source="Images\product_table.png" />
-                            </Button>
-                            <Button ToolTip="Extract table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource ExtractTableCommand}" >
-                                <Image Source="Images\extract_table.png" />
-                            </Button>
-                            -->
                             <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource RenameTableCommand}" >
                                 <Image Source="Images\rename.png" />
                             </Button>
@@ -268,18 +258,41 @@
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
-                            <Button ToolTip="Free columns" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource FreeColumnsCommand}" >
-                                <Image Source="Images\add_free.png" />
-                            </Button>
-                            <Button ToolTip="Arithmetic column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddCalculationCommand}">
-                                <Image Source="Images\add_calculation.png" />
-                            </Button>
-                            <Button ToolTip="Link column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddLinkCommand}">
-                                <Image Source="Images\change_type2.png" />
-                            </Button>
-                            <Button ToolTip="Aggregated column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddAggregationCommand}">
-                                <Image Source="Images\add_aggregation.png" />
-                            </Button>
+                            <Menu ToolBar.OverflowMode="Never" >
+                                <MenuItem ToolTip="Add column" >
+                                    <MenuItem.Icon>
+                                        <Image Source="Images\add_column.png" />
+                                    </MenuItem.Icon>
+
+                                    <MenuItem ToolTip="Free columns" Command="{StaticResource FreeColumnsCommand}" >
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\add_free.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem ToolTip="Arithmetic column" ToolBar.OverflowMode="Never" Command="{StaticResource AddCalculationCommand}">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\add_calculation.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem ToolTip="Link column" ToolBar.OverflowMode="Never" Command="{StaticResource AddLinkCommand}">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\add_link.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem ToolTip="Projection column" ToolBar.OverflowMode="Never" Command="{StaticResource AddProjectionCommand}">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\add_projection.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem ToolTip="Aggregated column" ToolBar.OverflowMode="Never" Command="{StaticResource AddAggregationCommand}">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\add_aggregation.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                </MenuItem>
+                            </Menu>
+
                             <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource EditColumnCommand}">
                                 <Image Source="Images\edit_column.png" />
                             </Button>

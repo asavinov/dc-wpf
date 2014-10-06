@@ -299,9 +299,6 @@
     <Resource Include="Images\add_calculation.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\change_type.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\delete_column.png" />
   </ItemGroup>
   <ItemGroup>
@@ -324,9 +321,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\node_column_key.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\change_type2.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\node_column_number.png" />
@@ -390,6 +384,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\add_free.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_link.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_projection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\add_column.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
