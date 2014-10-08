@@ -132,6 +132,9 @@
     <Compile Include="Dialogs\ColumnMappingBox.xaml.cs">
       <DependentUpon>ColumnMappingBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ImportMappingBox.xaml.cs">
+      <DependentUpon>ImportMappingBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\LinkColumnBox.xaml.cs">
       <DependentUpon>LinkColumnBox.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -181,6 +184,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\ColumnMappingBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\ImportMappingBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
