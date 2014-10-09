@@ -47,6 +47,8 @@
         <RoutedUICommand x:Key="ImportTextCommand" Text="Text Table" />
         <RoutedUICommand x:Key="ImportAccessCommand" Text="Access table" />
         <RoutedUICommand x:Key="ImportSqlserverCommand" Text="Sql Server table" />
+        <RoutedUICommand x:Key="EditImportCommand" Text="Edit import" />
+
         <RoutedUICommand x:Key="ExportTextCommand" Text="Text Table" />
 
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
@@ -84,6 +86,8 @@
         <CommandBinding Command="{StaticResource ImportTextCommand}" Executed="ImportTextCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportAccessCommand}" Executed="ImportAccessCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportSqlserverCommand}" Executed="ImportSqlserverCommand_Executed" />
+        <CommandBinding Command="{StaticResource EditImportCommand}" CanExecute="EditImportCommand_CanExecute" Executed="EditImportCommand_Executed" />
+
         <CommandBinding Command="{StaticResource ExportTextCommand}" CanExecute="ExportTextCommand_CanExecute" Executed="ExportTextCommand_Executed" />
 
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
@@ -110,35 +114,38 @@
     <DockPanel LastChildFill="True">
 
         <ToolBarTray DockPanel.Dock="Top" >
-            <ToolBar IsOverflowOpen="True" Focusable="True" >
+            <ToolBar IsOverflowOpen="False" Focusable="False" >
                 <Button ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}" Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.New">
-                        <Image Source="Images\file_new.png" />
-                    </Button>
-                    <Button ToolTip="Open" Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.Open">
-                        <Image Source="Images\file_open.png" />
-                    </Button>
-                    <!-- <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/> -->
-                    <Button ToolTip="Save" Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.Save">
-                        <Image Source="Images\file_save.png" />
-                    </Button>
-                    <Button ToolTip="Save As..." Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.SaveAs">
-                        <Image Source="Images\file_saveas.png" />
-                    </Button>
-                    <Button ToolTip="Update All" Style="{StaticResource ButtonEnabled}" Command="{StaticResource UpdateAllCommand}">
-                        <Image Source="Images\update_all.png" />
-                    </Button>
-                    <!-- <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" /> -->
-                    <Button ToolTip="About" Style="{StaticResource ButtonEnabled}" Command="{StaticResource AboutCommand}">
-                        <Image Source="Images\dc-32x32.png" />
-                    </Button>
-                    <Button ToolTip="Exit" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ExitCommand}">
-                        <Image Source="Images\file_exit.png" />
-                    </Button>
-                </ToolBar>
+                    <Image Source="Images\file_new.png" />
+                </Button>
+                <Button ToolTip="Open" Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.Open">
+                    <Image Source="Images\file_open.png" />
+                </Button>
+                <!-- <RibbonApplicationMenuItem Header="Close" ImageSource="Images\file_close.png" IsEnabled="True" Command="ApplicationCommands.Close"/> -->
+                <Button ToolTip="Save" Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.Save">
+                    <Image Source="Images\file_save.png" />
+                </Button>
+                <Button ToolTip="Save As..." Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.SaveAs">
+                    <Image Source="Images\file_saveas.png" />
+                </Button>
+                <Button ToolTip="Update All" Style="{StaticResource ButtonEnabled}" Command="{StaticResource UpdateAllCommand}">
+                    <Image Source="Images\update_all.png" />
+                </Button>
+                <!-- <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" /> -->
+                <Button ToolTip="About" Style="{StaticResource ButtonEnabled}" Command="{StaticResource AboutCommand}">
+                    <Image Source="Images\dc-32x32.png" />
+                </Button>
+                <Button ToolTip="Exit" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ExitCommand}">
+                    <Image Source="Images\file_exit.png" />
+                </Button>
+            </ToolBar>
 
-            <ToolBar IsOverflowOpen="True" Focusable="True" >
-                <Button ToolTip="Text File" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ImportTextCommand}">
+            <ToolBar IsOverflowOpen="False" Focusable="False" >
+                <Button ToolTip="Add text File" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ImportTextCommand}">
                     <Image Source="Images\add_csv.png" />
+                </Button>
+                <Button ToolTip="Edit import" Style="{StaticResource ButtonEnabled}" Command="{StaticResource EditImportCommand}">
+                    <Image Source="Images\table_edit.png" />
                 </Button>
                 <!--
                 <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
@@ -152,7 +159,7 @@
                 -->
             </ToolBar>
 
-            <ToolBar IsOverflowOpen="True" Focusable="True" >
+            <ToolBar IsOverflowOpen="False" Focusable="False" >
                 <Button ToolTip="Text File" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ExportTextCommand}">
                     <Image Source="Images\add_csv.png" />
                 </Button>
@@ -192,7 +199,7 @@
                 <!-- TableList control -->
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
                             <!--
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem Header="" >
@@ -215,19 +222,19 @@
                             <Button ToolTip="New table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
                                 <Image Source="Images\table_add.png" />
                             </Button>
-                            <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource FilterTableCommand}" >
+                            <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
                                 <Image Source="Images\table_filter.png" />
                             </Button>
-                            <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource RenameTableCommand}" >
+                            <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
                                 <Image Source="Images\rename.png" />
                             </Button>
-                            <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteTableCommand}" >
+                            <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
                                 <Image Source="Images\table_delete.png" />
                             </Button>
-                            <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateTableCommand}" >
+                            <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
                                 <Image Source="Images\update_table.png" />
                             </Button>
-                            <Button ToolTip="View Table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource OpenTableCommand}" >
+                            <Button ToolTip="View Table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
                                 <Image Source="Images\view_table.png" />
                            </Button>
 
@@ -257,7 +264,7 @@
                 <!-- ColumnList control -->
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem ToolTip="Add column" >
                                     <MenuItem.Icon>
@@ -293,16 +300,16 @@
                                 </MenuItem>
                             </Menu>
 
-                            <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource EditColumnCommand}">
+                            <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
                                 <Image Source="Images\edit_column.png" />
                             </Button>
-                            <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource RenameColumnCommand}">
+                            <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
                                 <Image Source="Images\rename.png" />
                             </Button>
-                            <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource DeleteColumnCommand}">
+                            <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
                                 <Image Source="Images\delete_column.png" />
                             </Button>
-                            <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource UpdateColumnCommand}">
+                            <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateColumnCommand}">
                                 <Image Source="Images\update_column.png" />
                             </Button>
 
@@ -337,7 +344,7 @@
                 <!-- Data view -->
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="True" Focusable="False" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
                             <Button ToolTip="Close" Style="{StaticResource ButtonEnabled}" Command="{StaticResource CloseViewCommand}">
                                 <Image Source="Images\close_view.png" />
                             </Button>

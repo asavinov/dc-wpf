@@ -456,61 +456,26 @@ namespace Samm
         }
         public void Wizard_ImportCsv()
         {
-            SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
-            ComSchema schema = MashupTop;
+            SetTopCsv sourceSchema = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            ComSchema targetSchema = MashupTop;
 
-            var ofg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
-            //ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            ofg.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
-            ofg.RestoreDirectory = true;
-            ofg.CheckFileExists = true;
-            ofg.Multiselect = false;
-
-            Nullable<bool> result = ofg.ShowDialog();
-            if (result != true) return;
-
-            string filePath = ofg.FileName;
-            string safeFilePath = ofg.SafeFileName;
-            string fileDir = System.IO.Path.GetDirectoryName(filePath);
-            string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
-
-            //
-            // Create a source table and load its structure into the schema
-            //
-            // TODO: Check that this table has not been loaded yet (compare paths). Or do it in dialog. 
-            // If already exists then either allow for imports into different local tables (with different parameters along different projection dimensions) or reuse the existing imported table.
-            SetCsv sourceTable = (SetCsv)top.CreateTable(tableName);
-            sourceTable.FilePath = filePath;
-            top.LoadSchema(sourceTable);
-
-            //
-            // Create a target table and configure import using a mapping stored in projection dimensions
-            //
-
-            // Create a new (imported) set
-            string newTableName = tableName;
-            ComTable targetTable = schema.CreateTable(newTableName);
+            string tableName = "New Table";
+            ComTable targetTable = targetSchema.CreateTable(tableName);
             targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
 
-            // Create generating/import column
-            string newColumnName = sourceTable.Name;
-            ComColumn importDim = schema.CreateColumn(newColumnName, sourceTable, targetTable, false);
-            importDim.Definition.DefinitionType = ColumnDefinitionType.LINK;
-            importDim.Definition.IsGenerating = true;
+            string columnName = "New Column";
+            ComColumn column = sourceSchema.CreateColumn(columnName, null, targetTable, false);
 
             //
-            // Show parameters for set extraction
+            // Show import dialog with mapping and other parameters
             //
-            List<ComColumn> initialSelection = new List<ComColumn>();
-            initialSelection.Add(SelectedColumn);
-            ColumnMappingBox dlg = new ColumnMappingBox(schema, importDim, initialSelection);
+            ImportMappingBox dlg = new ImportMappingBox(sourceSchema, targetSchema, column, null);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            // Populate this new table (in fact, can be done separately during Update)
-            targetTable.Definition.Populate();
+            targetTable.Definition.Populate(); // Populate this new table
 
             SelectedTable = targetTable;
         }
@@ -564,7 +529,7 @@ namespace Samm
 
             dim.Add();
 
-            // Populate this new table (in fact, can be done separately during Update)
+            // Populate this new table 
             schema.AddTable(targetTable, null, null);
             targetTable.Definition.Populate();
 
@@ -714,6 +679,40 @@ namespace Samm
 
             dcs.SaveConfiguration(dcd);
             */
+        }
+
+        private void EditImportCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable == null) e.CanExecute = false;
+            else
+            {
+                var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsGenerating && x.Input.Schema != MashupTop);
+                if (importDims == null || importDims.Count() == 0) e.CanExecute = false;
+                else e.CanExecute = true;
+            }
+        }
+        private void EditImportCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsGenerating && x.Input.Schema != MashupTop);
+            if (importDims == null || importDims.Count() == 0) return;
+
+            ComColumn column = importDims.ToList()[0];
+
+            SetTopCsv sourceSchema = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            ComSchema targetSchema = MashupTop;
+
+            //
+            // Show import dialog with mapping and other parameters
+            //
+            ImportMappingBox dlg = new ImportMappingBox(sourceSchema, targetSchema, column, null);
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            column.Output.Definition.Populate(); // Populate table
+
+            e.Handled = true;
         }
 
         private void ExportTextCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1000,7 +999,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            // Populate the set and its dimensions (alternatively, it can be done explicitly by Update command).
+            // Populate the set and its dimensions
             productSet.Definition.Populate();
 
             SelectedTable = productSet;
@@ -1143,7 +1142,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            // Populate the set and the dimension. The dimension is populated precisely as any (mapped) dimension
+            // Populate the set and the dimension 
             targetTable.Definition.Populate();
 
             SelectedTable = targetTable;
