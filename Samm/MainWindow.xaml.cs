@@ -1039,7 +1039,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            if (column.Definition.Formula == null) return; // No formula
+            if (column.Definition.FormulaExpr == null) return; // No formula
 
             column.Add();
 

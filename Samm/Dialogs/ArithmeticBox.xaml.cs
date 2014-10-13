@@ -91,9 +91,9 @@ namespace Samm.Dialogs
             }
             else
             {
-                if (Column.Definition.Formula != null)
+                if (Column.Definition.FormulaExpr != null)
                 {
-                    ExpressionModel.Add(Column.Definition.Formula);
+                    ExpressionModel.Add(Column.Definition.FormulaExpr);
                 }
             }
 
@@ -342,7 +342,7 @@ namespace Samm.Dialogs
                 expr.Resolve(schema, new List<ComVariable>() { new Variable("this", SourceTable) });
                 Column.Output = expr.Result.TypeTable;
 
-                Column.Definition.Formula = expr;
+                Column.Definition.FormulaExpr = expr;
             }
 
             this.DialogResult = true;

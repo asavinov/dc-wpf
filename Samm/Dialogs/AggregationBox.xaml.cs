@@ -159,7 +159,7 @@ namespace Samm.Dialogs
             {
                 foreach (var p in GroupingPaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
                 {
-                    if (p.HashName != Column.Definition.GroupPaths[0].HashName) continue;
+                    if (!p.SamePath(Column.Definition.GroupPaths[0])) continue;
                     GroupingPath = p;
                     break;
                 }
@@ -186,7 +186,7 @@ namespace Samm.Dialogs
             {
                 foreach (var p in MeasurePaths) // Definition can store a different instance of the same path (so either override Equals for DimPath or compare manually)
                 {
-                    if (p.HashName != Column.Definition.MeasurePaths[0].HashName) continue;
+                    if (!p.SamePath(Column.Definition.MeasurePaths[0])) continue;
                     MeasurePath = p;
                     break;
                 }

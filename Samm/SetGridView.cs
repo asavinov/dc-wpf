@@ -71,7 +71,7 @@ namespace Samm
                 }
                 else
                 {
-                    path.Name = path.ColumnNamePath;
+                    path.Name = path.NamePath;
                 }
 
                 Paths.Add(path);
