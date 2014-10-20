@@ -70,7 +70,7 @@ namespace Samm.Dialogs
             if (column.Output.SuperColumn != null) IsNew = false;
             else IsNew = true;
 
-            if (column.Input.Schema.GetType() == typeof(SetTop)) IsImport = false;
+            if (column.Input.Schema.GetType() == typeof(Schema)) IsImport = false;
             else IsImport = true;
 
             List<ComTable> targetTypes = new List<ComTable>();
@@ -287,7 +287,7 @@ namespace Samm.Dialogs
             {
                 Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
-                Column.Definition.IsGenerating = true;
+                Column.Definition.IsAppendData = true;
                 Column.Add();
 
                 Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;

@@ -103,7 +103,7 @@ namespace Samm
 
         public ComSchema CreateSampleSchema()
         {
-            ComSchema ds = new SetTop("Sample Mashup");
+            ComSchema ds = new Schema("Sample Mashup");
             ComColumn d1, d2, d3, d4;
 
             ComTable departments = ds.CreateTable("Departments");
@@ -189,14 +189,14 @@ namespace Samm
             // Initialize schemas
             //
             RemoteSources.Clear();
-            SetTopCsv csvSchema = new SetTopCsv("My Files");
+            SchemaCsv csvSchema = new SchemaCsv("My Files");
             ConnectionCsv conn = new ConnectionCsv();
             RemoteSources.Add(csvSchema);
 
             //
             // Initialize mashup schema
             //
-            ComSchema mashupTop = new SetTop("New Mashup");
+            ComSchema mashupTop = new Schema("New Mashup");
             mashupTop = CreateSampleSchema();
             MashupTop = mashupTop;
 
@@ -456,7 +456,7 @@ namespace Samm
         }
         public void Wizard_ImportCsv()
         {
-            SetTopCsv sourceSchema = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            SchemaCsv sourceSchema = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
             ComSchema targetSchema = MashupTop;
 
             string tableName = "New Table";
@@ -503,7 +503,7 @@ namespace Samm
             ConnectionOledb conn = new ConnectionOledb();
             conn.ConnectionString = connectionString;
 
-            SetTopOledb top = new SetTopOledb("");
+            SchemaOledb top = new SchemaOledb("");
             top.connection = conn;
             top.LoadSchema(); // Load complete schema
             ComTable sourceTable = top.GetSubTable(tableName);
@@ -525,7 +525,7 @@ namespace Samm
             ComColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
             dim.Definition.Mapping = map;
             dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
-            dim.Definition.IsGenerating = true;
+            dim.Definition.IsAppendData = true;
 
             dim.Add();
 
@@ -566,7 +566,7 @@ namespace Samm
             string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filePath;
 
             // Initialize a new data source schema
-            SetTopOledb top = new SetTopOledb("My Data Source");
+            SchemaOledb top = new SchemaOledb("My Data Source");
 
             //top.ConnectionString = connectionString;
 
@@ -686,19 +686,19 @@ namespace Samm
             if (SelectedTable == null) e.CanExecute = false;
             else
             {
-                var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsGenerating && x.Input.Schema != MashupTop);
+                var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsAppendData && x.Input.Schema != MashupTop);
                 if (importDims == null || importDims.Count() == 0) e.CanExecute = false;
                 else e.CanExecute = true;
             }
         }
         private void EditImportCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsGenerating && x.Input.Schema != MashupTop);
+            var importDims = SelectedTable.InputColumns.Where(x => x.Definition.IsAppendData && x.Input.Schema != MashupTop);
             if (importDims == null || importDims.Count() == 0) return;
 
             ComColumn column = importDims.ToList()[0];
 
-            SetTopCsv sourceSchema = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            SchemaCsv sourceSchema = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
             ComSchema targetSchema = MashupTop;
 
             //
@@ -735,7 +735,7 @@ namespace Samm
         }
         public void Wizard_ExportCsv(ComTable table)
         {
-            SetTopCsv top = (SetTopCsv)RemoteSources.FirstOrDefault(x => x is SetTopCsv);
+            SchemaCsv top = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
             ComSchema schema = MashupTop;
 
             var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();
@@ -1242,7 +1242,7 @@ namespace Samm
             }
             else if (column.Definition.DefinitionType == ColumnDefinitionType.LINK)
             {
-                if (!column.Definition.IsGenerating)
+                if (!column.Definition.IsAppendData)
                 {
                     LinkColumnBox dlg = new LinkColumnBox(column);
                     dlg.Owner = this;
@@ -1252,7 +1252,7 @@ namespace Samm
                 }
                 else // Generating (import) column
                 {
-                    // ComColumn column = table.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
+                    // ComColumn column = table.InputColumns.Where(d => d.Definition.IsAppendData).ToList()[0];
 
                     ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
                     dlg.Owner = this;
@@ -1335,7 +1335,7 @@ namespace Samm
             // 
             // Delete related columns/tables
             //
-            if (column.Definition.IsGenerating) // Delete all tables that are directly or indirectly generated by this column
+            if (column.Definition.IsAppendData) // Delete all tables that are directly or indirectly generated by this column
             {
                 ComTable gTab = column.Output;
                 var paths = new PathEnumerator(new List<ComTable>(new ComTable[] { gTab }), new List<ComTable>(), false, DimensionType.GENERATING);
@@ -1351,7 +1351,7 @@ namespace Samm
             }
             else if (column.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
             {
-                ComColumn projDim = column.Input.InputColumns.Where(d => d.Definition.IsGenerating).ToList()[0];
+                ComColumn projDim = column.Input.InputColumns.Where(d => d.Definition.IsAppendData).ToList()[0];
                 Mapping mapping = projDim.Definition.Mapping;
                 PathMatch match = mapping.GetMatchForTarget(new DimPath(column));
                 mapping.RemoveMatch(match.SourcePath, match.TargetPath);

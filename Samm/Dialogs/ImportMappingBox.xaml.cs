@@ -171,7 +171,7 @@ namespace Samm.Dialogs
         }
         private void ChooseSourceCommand_Executed(object state)
         {
-            if (SourceSchema.GetType() == typeof(SetTopCsv))
+            if (SourceSchema.GetType() == typeof(SchemaCsv))
             {
                 var ofg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
                 //ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
@@ -198,7 +198,7 @@ namespace Samm.Dialogs
 
                 //sourceTable.HasHeaderRecord = (bool)hasHeaderRecord.IsChecked;
 
-                ((SetTopCsv)SourceSchema).LoadSchema(sourceTable);
+                ((SchemaCsv)SourceSchema).LoadSchema(sourceTable);
 
                 Column.Input = sourceTable;
 
@@ -292,7 +292,7 @@ namespace Samm.Dialogs
             {
                 Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
-                Column.Definition.IsGenerating = true;
+                Column.Definition.IsAppendData = true;
                 Column.Add();
 
                 Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
