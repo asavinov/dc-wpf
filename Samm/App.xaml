@@ -72,7 +72,7 @@
             <DataTemplate x:Key="DimPathListItemTemplate">
                 <StackPanel Orientation="Horizontal">
                     <Image x:Name="node_icon" Source="Images/node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                    <TextBlock Text="{Binding Path=ColumnNamePath}" FontWeight="SemiBold" Foreground="Blue"/>
+                    <TextBlock Text="{Binding Path=NamePath}" FontWeight="SemiBold" Foreground="Blue"/>
                     <!-- <TextBlock Text="" Width="10"/> -->
                     <TextBlock Text=" ("/>
                     <TextBlock Text="{Binding Path=Output.Name}"/>

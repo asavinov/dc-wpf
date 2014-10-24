@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 
 using Com.Model;
 using Samm.Dialogs;
+using System.Globalization;
 
 namespace Samm
 {
@@ -30,6 +31,9 @@ namespace Samm
         // Configuration and options
         //
         public bool Config_CompressFile = true;
+        NumberFormatInfo defaultNumberFormat = new CultureInfo("en-US").NumberFormat;
+
+        CultureInfo defaultCultureInfo = new System.Globalization.CultureInfo("en-US");
 
         //
         // Data sources
@@ -90,6 +94,12 @@ namespace Samm
 
         public MainWindow()
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = defaultCultureInfo;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = defaultCultureInfo;
+
+            Utils.cultureInfo = defaultCultureInfo;
+            ExprNode.cultureInfo = defaultCultureInfo;
+
             RemoteSources = new ObservableCollection<ComSchema>();
 
             DragDropHelper = new DragDropHelper();
