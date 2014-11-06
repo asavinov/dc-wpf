@@ -23,11 +23,6 @@ namespace Samm
     public partial class MainWindow : Window
     {
         //
-        // File where mash is stored
-        //
-        public string MashupFile { get; set; }
-
-        //
         // Configuration and options
         //
         public bool Config_CompressFile = true;
@@ -36,14 +31,16 @@ namespace Samm
         CultureInfo defaultCultureInfo = new System.Globalization.CultureInfo("en-US");
 
         //
-        // Data sources
+        // Workspace
         //
-        public ObservableCollection<ComSchema> RemoteSources { get; set; }
+        public string WorkspaceFile { get; set; } // File where the workspace is stored
 
-        //
-        // Mashup
-        //
-        public ComSchema MashupTop { get; set; }
+        public Workspace Workspace { get; set; }
+
+        public ComSchema MashupTop { 
+            get { return Workspace.Mashup; } 
+            set { if (value == Workspace.Mashup) return; Workspace.Schemas.Remove(Workspace.Mashup); Workspace.Schemas.Add(value); } 
+        }
         public ComTable MashupRoot { get { return MashupTop != null ? MashupTop.Root : null; } }
 
 
@@ -63,10 +60,16 @@ namespace Samm
         //
         // Selection state
         //
-        public ComTable SelectedRoot
+        public ComSchema SelectedSchema
         {
-            get { return null; }
+            get { return SchemaListView != null ? (ComSchema)SchemaListView.SelectedItem : null; }
+            set
+            {
+                if (SchemaListView == null) return;
+                SchemaListView.SelectedItem = value;
+            }
         }
+
         public ComTable SelectedTable 
         {
             get { return TableListView != null ? TableListView.SelectedItem : null; }
@@ -100,7 +103,7 @@ namespace Samm
             Utils.cultureInfo = defaultCultureInfo;
             ExprNode.cultureInfo = defaultCultureInfo;
 
-            RemoteSources = new ObservableCollection<ComSchema>();
+            Workspace = new Workspace();
 
             DragDropHelper = new DragDropHelper();
 
@@ -108,7 +111,7 @@ namespace Samm
             InitializeComponent();
 
             // Create new empty mashup
-            Operation_NewMashup();
+            Operation_NewWorkspace();
         }
 
         public ComSchema CreateSampleSchema()
@@ -173,7 +176,7 @@ namespace Samm
         }
         private bool NewFileWizard()
         {
-            // Ask if changes have to be saved before loading a new mashup
+            // Ask if changes have to be saved before loading a new workspace
             var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
             if (saveChanges == MessageBoxResult.Yes)
             {
@@ -189,26 +192,29 @@ namespace Samm
                 return false;
             }
 
-            Operation_NewMashup();
+            Operation_NewWorkspace();
 
             return true;
         }
-        protected void Operation_NewMashup()
+        protected void Operation_NewWorkspace()
         {
-            //
-            // Initialize schemas
-            //
-            RemoteSources.Clear();
-            SchemaCsv csvSchema = new SchemaCsv("My Files");
-            ConnectionCsv conn = new ConnectionCsv();
-            RemoteSources.Add(csvSchema);
+            if (Workspace == null) Workspace = new Workspace();
+            else Workspace.Schemas.Clear();
 
             //
             // Initialize mashup schema
             //
             ComSchema mashupTop = new Schema("New Mashup");
             mashupTop = CreateSampleSchema();
-            MashupTop = mashupTop;
+            Workspace.Schemas.Add(mashupTop);
+            Workspace.Mashup = mashupTop;
+
+            //
+            // Initialize predefined schemas
+            //
+            SchemaCsv csvSchema = new SchemaCsv("My Files");
+            ConnectionCsv conn = new ConnectionCsv();
+            Workspace.Schemas.Add(csvSchema);
 
             //
             // Update the model that is shown in the visual component
@@ -247,7 +253,7 @@ namespace Samm
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
-            // Ask if changes have to be saved before loading a new mashup
+            // Ask if changes have to be saved before loading a new workspace
             var saveChanges = MessageBox.Show(this, "Do you want to save changes?", "New...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
             if (saveChanges == MessageBoxResult.Yes)
             {
@@ -264,12 +270,12 @@ namespace Samm
             }
 
             // Read from the file and de-serialize workspace
-            Operation_ReadMashup(filePath);
-            MashupFile = filePath;
+            Operation_ReadWorkspace(filePath);
+            WorkspaceFile = filePath;
 
             return true;
         }
-        protected void Operation_ReadMashup(string filePath)
+        protected void Operation_ReadWorkspace(string filePath)
         {
             byte[] jsonBytes = System.IO.File.ReadAllBytes(filePath);
 
@@ -289,19 +295,8 @@ namespace Samm
 
             workspace.FromJson(json, workspace);
 
-            // User workspace objects
-            RemoteSources.Clear();
-            foreach (var remote in workspace.Schemas)
-            {
-                if (remote == workspace.Mashup)
-                {
-                    MashupTop = workspace.Mashup;
-                }
-                else
-                {
-                    RemoteSources.Add(remote);
-                }
-            }
+            // Switch to new workspace
+            Workspace = workspace;
 
             //
             // Update the model that is shown in the visual component
@@ -324,14 +319,14 @@ namespace Samm
         }
         private bool SaveFileWizard()
         {
-            if (string.IsNullOrEmpty(MashupFile))
+            if (string.IsNullOrEmpty(WorkspaceFile))
             {
                 bool isSaved = SaveAsFileWizard(); // Choose a file to save to. It will call this method again.
                 return isSaved;
             }
             else
             {
-                Operation_WriteMashup(MashupFile); // Simply write to file
+                Operation_WriteWorkspace(WorkspaceFile); // Simply write to file
                 return true;
             }
         }
@@ -365,24 +360,16 @@ namespace Samm
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
-            MashupFile = filePath;
-            Operation_WriteMashup(MashupFile); // Really save
+            WorkspaceFile = filePath;
+            Operation_WriteWorkspace(WorkspaceFile); // Really save
 
             return true; // Saved
         }
-        protected void Operation_WriteMashup(string filePath)
+        protected void Operation_WriteWorkspace(string filePath)
         {
-            var workspace = new Workspace();
-            workspace.Schemas.Add(MashupTop);
-            workspace.Mashup = MashupTop;
-            foreach (var remote in RemoteSources)
-            {
-                workspace.Schemas.Add(remote);
-            }
-
             // Serialize
-            JObject json = Utils.CreateJsonFromObject(workspace);
-            workspace.ToJson(json);
+            JObject json = Utils.CreateJsonFromObject(Workspace);
+            Workspace.ToJson(json);
             string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
 
             byte[] jsonBytes;
@@ -466,7 +453,7 @@ namespace Samm
         }
         public void Wizard_ImportCsv()
         {
-            SchemaCsv sourceSchema = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
+            SchemaCsv sourceSchema = (SchemaCsv)Workspace.Schemas.FirstOrDefault(x => x is SchemaCsv);
             ComSchema targetSchema = MashupTop;
 
             string tableName = "New Table";
@@ -708,7 +695,7 @@ namespace Samm
 
             ComColumn column = importDims.ToList()[0];
 
-            SchemaCsv sourceSchema = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
+            SchemaCsv sourceSchema = (SchemaCsv)Workspace.Schemas.FirstOrDefault(x => x is SchemaCsv);
             ComSchema targetSchema = MashupTop;
 
             //
@@ -745,7 +732,7 @@ namespace Samm
         }
         public void Wizard_ExportCsv(ComTable table)
         {
-            SchemaCsv top = (SchemaCsv)RemoteSources.FirstOrDefault(x => x is SchemaCsv);
+            SchemaCsv top = (SchemaCsv)Workspace.Schemas.FirstOrDefault(x => x is SchemaCsv);
             ComSchema schema = MashupTop;
 
             var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();

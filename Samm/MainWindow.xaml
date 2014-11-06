@@ -190,14 +190,18 @@
             <Grid Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Background="Lavender" />
                 <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
+                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+                <!--ItemTemplate="{StaticResource DimPathListItemTemplate}" -->
+
                 <!-- TableList control -->
-                <DockPanel Grid.Row="1" >
+                <DockPanel Grid.Row="2" >
                     <ToolBarTray DockPanel.Dock="Top" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
                             <!--
