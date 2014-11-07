@@ -197,7 +197,7 @@
                 <Border Grid.Row="0" Background="Lavender" />
                 <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
-                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" SelectedItem="{Binding Path=SelectedSchema_Bound}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
                 <!--ItemTemplate="{StaticResource DimPathListItemTemplate}" -->
 
                 <!-- TableList control -->

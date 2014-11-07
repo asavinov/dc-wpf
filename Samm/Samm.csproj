@@ -146,6 +146,12 @@
     <Compile Include="Dialogs\RenameBox.xaml.cs">
       <DependentUpon>RenameBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\TableBox.xaml.cs">
+      <DependentUpon>TableBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TableCsvBox.xaml.cs">
+      <DependentUpon>TableCsvBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -204,6 +210,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Dialogs\RenameBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TableBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TableCsvBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

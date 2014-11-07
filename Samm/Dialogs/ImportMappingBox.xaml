@@ -27,14 +27,17 @@
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
 
-        <Label  Grid.Column="0" Grid.Row="0" Content="Source File:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <DockPanel Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5">
+        <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="Source File:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <DockPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5">
             <Button DockPanel.Dock="Right" Content=" ... " Visibility="Visible" Command="{Binding ChooseSourceCommand}" />
             <TextBox Name="sourceTable" Text="{Binding Path=Column.Input.FilePath}"  IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
         </DockPanel>
 
-        <Label  Grid.Column="0" Grid.Row="1" Content="Parameters:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <StackPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Horizontal">
+        <Label  Grid.Column="0" Grid.Row="2" Content="Parameters:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Horizontal">
             <Label Content="Decimal separator:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
             <ComboBox Name="decimalChar" Text="Decimal separator:" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25">
                 <ComboBoxItem IsSelected="True">,</ComboBoxItem>
@@ -42,9 +45,6 @@
             </ComboBox>
             <CheckBox Name="hasHeaderRecord" Content="Header line" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" />
         </StackPanel>
-
-        <Label  Grid.Column="0" Grid.Row="2" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="2" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Column mapping:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ListView Name="columnMappings" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=SourceColumnEntries}" Margin="5">

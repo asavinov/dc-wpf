@@ -53,8 +53,8 @@ namespace Samm.Dialogs
         {
             SourceColumnEntries = new ObservableCollection<ImportMappingEntry>();
 
-            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
             this.chooseSourceCommand = new DelegateCommand(this.ChooseSourceCommand_Executed, this.ChooseSourceCommand_CanExecute);
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
             if (column.Output.SuperColumn != null) IsNew = false;
             else IsNew = true;
@@ -198,7 +198,9 @@ namespace Samm.Dialogs
 
                 //sourceTable.HasHeaderRecord = (bool)hasHeaderRecord.IsChecked;
 
-                ((SchemaCsv)SourceSchema).LoadSchema(sourceTable);
+                var columns = ((SchemaCsv)SourceSchema).LoadSchema(sourceTable);
+                columns.ForEach(x => x.Add());
+                SourceSchema.AddTable(sourceTable, null, null);
 
                 Column.Input = sourceTable;
 

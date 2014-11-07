@@ -60,13 +60,31 @@ namespace Samm
         //
         // Selection state
         //
-        public ComSchema SelectedSchema
+        protected ComSchema _selectedSchema;
+        public ComSchema SelectedSchema_Bound
         {
-            get { return SchemaListView != null ? (ComSchema)SchemaListView.SelectedItem : null; }
+            get { return _selectedSchema; }
             set
             {
-                if (SchemaListView == null) return;
-                SchemaListView.SelectedItem = value;
+                _selectedSchema = value;
+
+                // Notify TableList
+                if (TableListView != null)
+                {
+                    TableListView.Schema = value;
+                }
+            }
+        }
+        public ComSchema SelectedSchema
+        {
+            get { return SelectedSchema_Bound; }
+            set
+            {
+                // Change selected item directly in the control -> it will triger notifications
+                if (SchemaListView != null)
+                {
+                    SchemaListView.SelectedItem = value;
+                }
             }
         }
 
@@ -219,7 +237,7 @@ namespace Samm
             //
             // Update the model that is shown in the visual component
             //
-            TableListView.Schema = MashupTop;
+            SelectedSchema = MashupTop;
         }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -301,7 +319,7 @@ namespace Samm
             //
             // Update the model that is shown in the visual component
             //
-            TableListView.Schema = MashupTop;
+            SelectedSchema = MashupTop;
         }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -840,10 +858,31 @@ namespace Samm
 
         private void AddTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            if (SelectedSchema != null) e.CanExecute = true;
+            else e.CanExecute = false;
         }
         private void AddTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            if (SelectedSchema == null) return;
+
+            // For each schema/connection type, we use a specific dialog
+            if (SelectedSchema is SchemaCsv)
+            {
+                TableCsvBox dlg = new TableCsvBox(SelectedSchema, null);
+                dlg.Owner = this;
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+            else // Mashup
+            {
+                TableBox dlg = new TableBox(SelectedSchema, null);
+                dlg.Owner = this;
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+
             e.Handled = true;
         }
 
