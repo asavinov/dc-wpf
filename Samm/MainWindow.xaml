@@ -44,12 +44,14 @@
 
         <RoutedUICommand x:Key="UpdateAllCommand" Text="Update All" />
 
+        <!--
         <RoutedUICommand x:Key="ImportTextCommand" Text="Text Table" />
         <RoutedUICommand x:Key="ImportAccessCommand" Text="Access table" />
         <RoutedUICommand x:Key="ImportSqlserverCommand" Text="Sql Server table" />
         <RoutedUICommand x:Key="EditImportCommand" Text="Edit import" />
 
         <RoutedUICommand x:Key="ExportTextCommand" Text="Text Table" />
+        -->
 
         <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
         <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
@@ -83,12 +85,14 @@
 
         <CommandBinding Command="{StaticResource UpdateAllCommand}" Executed="UpdateAllCommand_Executed" />
 
+        <!--
         <CommandBinding Command="{StaticResource ImportTextCommand}" Executed="ImportTextCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportAccessCommand}" Executed="ImportAccessCommand_Executed" />
         <CommandBinding Command="{StaticResource ImportSqlserverCommand}" Executed="ImportSqlserverCommand_Executed" />
         <CommandBinding Command="{StaticResource EditImportCommand}" CanExecute="EditImportCommand_CanExecute" Executed="EditImportCommand_Executed" />
 
         <CommandBinding Command="{StaticResource ExportTextCommand}" CanExecute="ExportTextCommand_CanExecute" Executed="ExportTextCommand_Executed" />
+        -->
 
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
@@ -140,6 +144,7 @@
                 </Button>
             </ToolBar>
 
+            <!--
             <ToolBar IsOverflowOpen="False" Focusable="False" >
                 <Button ToolTip="Add text File" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ImportTextCommand}">
                     <Image Source="Images\add_csv.png" />
@@ -147,7 +152,6 @@
                 <Button ToolTip="Edit import" Style="{StaticResource ButtonEnabled}" Command="{StaticResource EditImportCommand}">
                     <Image Source="Images\table_edit.png" />
                 </Button>
-                <!--
                 <RibbonMenuButton LargeImageSource="Images\add_database.png" Label="Database" KeyTip="D">
                     <RibbonButton LargeImageSource="Images\add_access.png" Label="Access" KeyTip="A" Command="{StaticResource ImportAccessCommand}" IsEnabled="False" />
                     <RibbonButton LargeImageSource="Images\add_sql_server.png" Label="SQL Server" KeyTip="Q" Command="{StaticResource ImportSqlserverCommand}" IsEnabled="False" />
@@ -156,14 +160,16 @@
                     <RibbonButton LargeImageSource="Images\add_odata.png" Label="OData" KeyTip="O" IsEnabled="False" />
                     <RibbonButton LargeImageSource="Images\add_salesforce.png" Label="Salesforce" KeyTip="S" IsEnabled="False" />
                 </RibbonMenuButton>
-                -->
             </ToolBar>
+            -->
 
+            <!--
             <ToolBar IsOverflowOpen="False" Focusable="False" >
                 <Button ToolTip="Text File" Style="{StaticResource ButtonEnabled}" Command="{StaticResource ExportTextCommand}">
                     <Image Source="Images\add_csv.png" />
                 </Button>
             </ToolBar>
+            -->
 
         </ToolBarTray>
 
@@ -197,8 +203,7 @@
                 <Border Grid.Row="0" Background="Lavender" />
                 <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
-                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" SelectedItem="{Binding Path=SelectedSchema_Bound}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
-                <!--ItemTemplate="{StaticResource DimPathListItemTemplate}" -->
+                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" SelectedItem="{Binding Path=SelectedSchema_Bound}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
                 <!-- TableList control -->
                 <DockPanel Grid.Row="2" >

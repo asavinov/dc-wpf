@@ -67,7 +67,7 @@ namespace Samm
             set
             {
                 _selectedSchema = value;
-
+                
                 // Notify TableList
                 if (TableListView != null)
                 {
@@ -404,6 +404,13 @@ namespace Samm
             System.IO.File.WriteAllBytes(filePath, jsonBytes);
         }
 
+        private void UpdateAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            throw new NotImplementedException("Update All not implemented.");
+
+            e.Handled = true;
+        }
+
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box
@@ -448,13 +455,6 @@ namespace Samm
         #endregion
 
         # region Import/export operations
-
-        private void UpdateAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            throw new NotImplementedException("Update All not implemented.");
-
-            e.Handled = true;
-        }
 
         private void ImportTextCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -1170,7 +1170,7 @@ namespace Samm
             //
             List<ComColumn> initialSelection = new List<ComColumn>();
             initialSelection.Add(SelectedColumn);
-            ColumnMappingBox dlg = new ColumnMappingBox(schema, extractedDim, initialSelection);
+            ColumnMappingBox dlg = new ColumnMappingBox(Workspace.Schemas, extractedDim, initialSelection);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -1290,7 +1290,7 @@ namespace Samm
                 {
                     // ComColumn column = table.InputColumns.Where(d => d.Definition.IsAppendData).ToList()[0];
 
-                    ColumnMappingBox dlg = new ColumnMappingBox(schema, column, null);
+                    ColumnMappingBox dlg = new ColumnMappingBox(Workspace.Schemas, column, null);
                     dlg.Owner = this;
                     dlg.ShowDialog(); // Open the dialog box modally 
 

@@ -43,6 +43,13 @@
                 <Setter Property="TextAlignment" Value="Left"></Setter>
             </Style>
 
+            <DataTemplate x:Key="SchemaListItemTemplate">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Images/node_schema.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
+                    <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
+                </StackPanel>
+            </DataTemplate>
+
             <DataTemplate x:Key="TableListItemTemplate">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="Images/node_table.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
