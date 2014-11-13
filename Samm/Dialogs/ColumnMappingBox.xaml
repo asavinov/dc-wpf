@@ -32,7 +32,7 @@
         <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Column.Input.Name}" IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newColumnName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=NewColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="columnName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=ColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Column mapping:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <ListView Name="columnMappings" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding Path=Entries}" Margin="5">
@@ -67,10 +67,10 @@
         </ListView>
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Schema:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="schemaList" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetSchemas}" SelectedItem="{Binding Path=SelectedSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="SchemaList_SelectionChanged"/>
+        <ComboBox Name="schemaList" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetSchemas}" SelectedItem="{Binding Path=SelectedTargetSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="SchemaList_SelectionChanged"/>
 
         <Label  Grid.Column="0" Grid.Row="4" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="newTableName" Grid.Column="1" Grid.Row="4" Text="{Binding Path=NewTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="targetTableName" Grid.Column="1" Grid.Row="4" Text="{Binding Path=TargetTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" Height="25" IsDefault="True" Command="{Binding OkCommand}" />

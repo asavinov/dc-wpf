@@ -26,23 +26,45 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class ColumnMappingBox : Window
     {
-        bool IsNew { get; set; }
-        bool IsImport { get; set; }
+        //
+        // Options defining the regime of the dialog
+        //
+        bool IsNew { get; set; } // Set in constructor
+        bool IsImport // If source is not mashup (changes for each schema selection)
+        {
+            get 
+            { 
+                if (Column == null || Column.Input == null) return false; 
+                if (Column.Input.Schema.GetType() == typeof(Schema)) return false;
+                return true;
+            }
+        }
+        bool IsExport // If target is not mashup (changes for each schema selection)
+        {
+            get
+            {
+                if (Column == null || Column.Output == null) return false;
+                if (Column.Output.Schema.GetType() == typeof(Schema)) return false;
+                return true;
+            }
+        }
 
+        //
+        // Link column connecting an existing fixed source table with a target table
+        //
         public ComColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
+        public string ColumnName { get; set; }
 
-        public ObservableCollection<ColumnMappingEntry> Entries { get; set; }
+        public ObservableCollection<ColumnMappingEntry> Entries { get; set; } // Describe mapping 
 
-        public string NewTableName { get; set; }
 
-        public string NewColumnName { get; set; }
-
+        //
+        // Target table including its schema
+        //
         public ObservableCollection<ComSchema> TargetSchemas { get; set; }
-        public ComSchema SelectedSchema { get; set; }
+        public ComSchema SelectedTargetSchema { get; set; }
+        public string TargetTableName { get; set; } // Table to be created if new and existing table name if edit operation
 
-        // Target existing columns
-
-        // Target table name (either new or existing, can be edited)
 
         public void RefreshAll()
         {
@@ -57,39 +79,44 @@ namespace Samm.Dialogs
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
-            TargetSchemas = targetSchemas;
-
-            if (column != null && column.Output != null)
-            {
-                SelectedSchema = column.Output.Schema;
-            }
-            if (SelectedSchema == null)
-            {
-                SelectedSchema = targetSchemas[0];
-            }
-
-            Column = column;
-
-            NewTableName = column.Output.Name;
-
-            NewColumnName = column.Name;
-
+            //
+            // Options and regime of the dialog
+            //
             if (column.Output.SuperColumn != null) IsNew = false;
             else IsNew = true;
 
-            if (column.Input.Schema.GetType() == typeof(Schema)) IsImport = false;
-            else IsImport = true;
+            //
+            // Column
+            //
+            if (column != null && column.Output != null)
+            {
+                SelectedTargetSchema = column.Output.Schema;
+            }
+            if (SelectedTargetSchema == null)
+            {
+                SelectedTargetSchema = targetSchemas[0];
+            }
+
+            Column = column;
+            ColumnName = column.Name;
+
+            //
+            // Target table including its schema
+            //
+            TargetSchemas = targetSchemas;
+            TargetTableName = column.Output.Name;
 
             //
             // Initialize a list of entries representing a mapping
             //
             Entries = new ObservableCollection<ColumnMappingEntry>();
+
             if (IsNew)
             {
                 if (IsImport)
                 {
                     Mapper mapper = new Mapper(); // Create mapping for an import dimension
-                    Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedSchema); // Complete mapping (all to all)
+                    Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedTargetSchema); // Complete mapping (all to all)
 
                     CreateEntries(mapping);
                 }
@@ -122,11 +149,11 @@ namespace Samm.Dialogs
                         targetTypes.ForEach(x => entry.TargetTypes.Add(x));
 
                         if (sourceColumn.Output.Name == "Integer")
-                            entry.TargetType = SelectedSchema.GetPrimitive("Integer");
+                            entry.TargetType = SelectedTargetSchema.GetPrimitive("Integer");
                         else if (sourceColumn.Output.Name == "Double")
-                            entry.TargetType = SelectedSchema.GetPrimitive("Double");
+                            entry.TargetType = SelectedTargetSchema.GetPrimitive("Double");
                         else if (sourceColumn.Output.Name == "String")
-                            entry.TargetType = SelectedSchema.GetPrimitive("String");
+                            entry.TargetType = SelectedTargetSchema.GetPrimitive("String");
 
                         Entries.Add(entry);
                     }
@@ -155,18 +182,22 @@ namespace Samm.Dialogs
             }
         }
 
-        private List<ComTable> GetSchemaTypes() // The user chooses the desired type from this list
+        private List<ComTable> GetSchemaTypes() // The user chooses the desired column type from this list
         {
             var targetTypes = new List<ComTable>();
-            if (SelectedSchema is SchemaCsv)
+            if (SelectedTargetSchema == null)
             {
-                targetTypes.Add(SelectedSchema.GetPrimitive("String"));
+                ;
+            }
+            if (SelectedTargetSchema is SchemaCsv)
+            {
+                targetTypes.Add(SelectedTargetSchema.GetPrimitive("String"));
             }
             else
             {
-                targetTypes.Add(SelectedSchema.GetPrimitive("Integer"));
-                targetTypes.Add(SelectedSchema.GetPrimitive("Double"));
-                targetTypes.Add(SelectedSchema.GetPrimitive("String"));
+                targetTypes.Add(SelectedTargetSchema.GetPrimitive("Integer"));
+                targetTypes.Add(SelectedTargetSchema.GetPrimitive("Double"));
+                targetTypes.Add(SelectedTargetSchema.GetPrimitive("String"));
             }
 
             return targetTypes;
@@ -209,11 +240,11 @@ namespace Samm.Dialogs
 
                     // Recommend a type
                     if (sourceColumn.Output.Name == "Integer")
-                        entry.TargetType = SelectedSchema.GetPrimitive("Integer");
+                        entry.TargetType = SelectedTargetSchema.GetPrimitive("Integer");
                     else if (sourceColumn.Output.Name == "Double")
-                        entry.TargetType = SelectedSchema.GetPrimitive("Double");
+                        entry.TargetType = SelectedTargetSchema.GetPrimitive("Double");
                     else if (sourceColumn.Output.Name == "String")
-                        entry.TargetType = SelectedSchema.GetPrimitive("String");
+                        entry.TargetType = SelectedTargetSchema.GetPrimitive("String");
 
                 }
 
@@ -229,7 +260,7 @@ namespace Samm.Dialogs
             Entries.Clear();
 
             Mapper mapper = new Mapper(); // Create mapping for an import dimension
-            Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedSchema); // Complete mapping (all to all)
+            Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedTargetSchema); // Complete mapping (all to all)
 
             CreateEntries(mapping);
         }
@@ -241,9 +272,9 @@ namespace Samm.Dialogs
         }
         private bool OkCommand_CanExecute(object state)
         {
-            if (string.IsNullOrWhiteSpace(newTableName.Text)) return false;
+            if (string.IsNullOrWhiteSpace(targetTableName.Text)) return false;
 
-            if (string.IsNullOrWhiteSpace(newColumnName.Text)) return false;
+            if (string.IsNullOrWhiteSpace(columnName.Text)) return false;
             
             bool selected = false;
             foreach (var entry in Entries)
@@ -282,7 +313,7 @@ namespace Samm.Dialogs
                 {
                     ComTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
-                    targetColumn = SelectedSchema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
+                    targetColumn = SelectedTargetSchema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
                     targetColumn.Add();
 
                     mapping.AddMatch(new PathMatch(new DimPath(sourceColumn), new DimPath(targetColumn)));
@@ -309,8 +340,8 @@ namespace Samm.Dialogs
                 }
             }
 
-            Column.Name = NewColumnName;
-            Column.Output.Name = NewTableName;
+            Column.Name = ColumnName;
+            Column.Output.Name = TargetTableName;
 
             if (IsNew)
             {
@@ -320,7 +351,7 @@ namespace Samm.Dialogs
                 Column.Add();
 
                 Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-                SelectedSchema.AddTable(Column.Output, null, null);
+                SelectedTargetSchema.AddTable(Column.Output, null, null);
             }
 
             this.DialogResult = true;
