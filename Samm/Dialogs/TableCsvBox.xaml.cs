@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for TableCsvBox.xaml
     /// </summary>
-    public partial class TableCsvBox : Window
+    public partial class TableCsvBox : Window, INotifyPropertyChanged
     {
         bool IsNew { get; set; }
 
@@ -30,6 +31,8 @@ namespace Samm.Dialogs
         public string TableName { get; set; }
 
         public ObservableCollection<ComColumn> TableColumns { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RefreshAll()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for ProductTableBox.xaml
     /// </summary>
-    public partial class ProductTableBox : Window
+    public partial class ProductTableBox : Window, INotifyPropertyChanged
     {
         bool IsNew { get; set; }
 
@@ -32,6 +33,8 @@ namespace Samm.Dialogs
         public List<GreaterTableEntry> GreaterTables { get; set; }
         public int SelectedCount { get { return GreaterTables.Count(x => x.IsSelected); } }
 
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public ProductTableBox(ComSchema schema, ComTable table, ComTable greaterTable)
         {

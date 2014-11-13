@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for LinkColumnBox.xaml
     /// </summary>
-    public partial class LinkColumnBox : Window
+    public partial class LinkColumnBox : Window, INotifyPropertyChanged
     {
         bool IsNew { get; set; }
 
@@ -32,6 +33,8 @@ namespace Samm.Dialogs
         public MappingModel MappingModel { get; set; }
 
         public List<ComTable> TargetTables { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RefreshAll()
         {

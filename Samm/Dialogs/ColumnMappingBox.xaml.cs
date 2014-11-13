@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace Samm.Dialogs
     /// - New: Possible/existing target columns are empty: Import: initially all are automatically included. Extract: either no or explicitly specified are initially included
     /// - Edit: initial inclusion is taken from the existing mapping (what about posible targets?)
     /// </summary>
-    public partial class ColumnMappingBox : Window
+    public partial class ColumnMappingBox : Window, INotifyPropertyChanged
     {
         //
         // Options defining the regime of the dialog
@@ -43,9 +44,17 @@ namespace Samm.Dialogs
         {
             get
             {
-                if (Column == null || Column.Output == null) return false;
-                if (Column.Output.Schema.GetType() == typeof(Schema)) return false;
-                return true;
+                if (SelectedTargetSchema != null)
+                {
+                    if (SelectedTargetSchema.GetType() == typeof(Schema)) return false;
+                    else return true;
+                }
+                else
+                {
+                    if (Column == null || Column.Output == null) return false;
+                    if (Column.Output.Schema.GetType() == typeof(Schema)) return false;
+                    return true;
+                }
             }
         }
 
@@ -57,7 +66,6 @@ namespace Samm.Dialogs
 
         public ObservableCollection<ColumnMappingEntry> Entries { get; set; } // Describe mapping 
 
-
         //
         // Target table including its schema
         //
@@ -65,6 +73,7 @@ namespace Samm.Dialogs
         public ComSchema SelectedTargetSchema { get; set; }
         public string TargetTableName { get; set; } // Table to be created if new and existing table name if edit operation
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RefreshAll()
         {
@@ -73,6 +82,8 @@ namespace Samm.Dialogs
             sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             //sourceColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
 
+            columnMappings.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
+            columnMappings.Items.Refresh();
         }
 
         public ColumnMappingBox(ObservableCollection<ComSchema> targetSchemas, ComColumn column, List<ComColumn> initialColumns)
@@ -99,75 +110,25 @@ namespace Samm.Dialogs
 
             Column = column;
             ColumnName = column.Name;
+            Entries = new ObservableCollection<ColumnMappingEntry>();
+            InitEntries();
 
             //
             // Target table including its schema
             //
-            TargetSchemas = targetSchemas;
+            TargetSchemas = targetSchemas; // It will trigger filling the list of entries
             TargetTableName = column.Output.Name;
 
             //
-            // Initialize a list of entries representing a mapping
-            //
-            Entries = new ObservableCollection<ColumnMappingEntry>();
-
-            if (IsNew)
+            // Initial selection for new column mapping
+            // 
+            if (IsNew && initialColumns != null)
             {
-                if (IsImport)
+                foreach (var entry in Entries)
                 {
-                    Mapper mapper = new Mapper(); // Create mapping for an import dimension
-                    Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedTargetSchema); // Complete mapping (all to all)
-
-                    CreateEntries(mapping);
+                    if (initialColumns.Contains(entry.Source)) entry.IsMatched = true;
+                    else entry.IsMatched = false;
                 }
-                else
-                {
-                    foreach (ComColumn sourceColumn in Column.Input.Columns)
-                    {
-                        if (sourceColumn.IsSuper) continue;
-                        if (!sourceColumn.IsPrimitive) continue;
-                        if (sourceColumn == Column) continue; // Do not include the generating/projection column
-
-                        ColumnMappingEntry entry = new ColumnMappingEntry(sourceColumn);
-
-                        // Use parameter to select some columns
-                        if (initialColumns != null)
-                        {
-                            if (initialColumns.Contains(sourceColumn)) entry.IsMatched = true;
-                            else entry.IsMatched = false;
-                        }
-                        else // No selection parameters
-                        {
-                            if (IsImport) entry.IsMatched = true;
-                            else entry.IsMatched = false;
-                        }
-
-                        if (IsImport) entry.IsKey = false;
-                        else entry.IsKey = true;
-
-                        var targetTypes = GetSchemaTypes();
-                        targetTypes.ForEach(x => entry.TargetTypes.Add(x));
-
-                        if (sourceColumn.Output.Name == "Integer")
-                            entry.TargetType = SelectedTargetSchema.GetPrimitive("Integer");
-                        else if (sourceColumn.Output.Name == "Double")
-                            entry.TargetType = SelectedTargetSchema.GetPrimitive("Double");
-                        else if (sourceColumn.Output.Name == "String")
-                            entry.TargetType = SelectedTargetSchema.GetPrimitive("String");
-
-                        Entries.Add(entry);
-                    }
-                }
-            }
-            else // Edit
-            {
-                Mapping existingMapping = Column.Definition.Mapping;
-                if (existingMapping == null)
-                {
-                    existingMapping = new Mapping(Column.Input, Column.Output);
-                }
-
-                CreateEntries(existingMapping);
             }
 
             InitializeComponent();
@@ -180,6 +141,146 @@ namespace Samm.Dialogs
             {
                 schemaList.IsEnabled = false;
             }
+        }
+
+        private void InitEntries()
+        {
+            // It is called one time only from constructor
+
+            Mapping mapping;
+            if (IsNew)
+            {
+                if (IsImport || IsExport)
+                {
+                    Mapper mapper = new Mapper(); // Create mapping for an import dimension
+                    mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedTargetSchema); // Complete mapping (all to all)
+                }
+                else // Intra-mashup
+                {
+                    mapping = new Mapping(Column.Input, Column.Output); // Empty
+                }
+            }
+            else // Edit
+            {
+                mapping = Column.Definition.Mapping;
+                if (mapping == null)
+                {
+                    mapping = new Mapping(Column.Input, Column.Output); // Empty
+                }
+            }
+
+            CreateEntries(mapping);
+        }
+
+        private void CreateEntries(Mapping mapping)
+        {
+            ComTable sourceTable = mapping.SourceSet;
+            ComTable targetTable = mapping.TargetSet;
+
+            Entries.Clear();
+
+            foreach (ComColumn sourceColumn in sourceTable.Columns)
+            {
+                if (sourceColumn.IsSuper) continue;
+                if (!sourceColumn.IsPrimitive) continue;
+                if (sourceColumn == Column) continue; // Do not include the generating/projection column
+
+                ColumnMappingEntry entry = new ColumnMappingEntry(sourceColumn);
+
+                PathMatch match = mapping.GetMatchForSource(new DimPath(sourceColumn));
+
+                if (match != null)
+                {
+                    entry.Target = match.TargetPath.FirstSegment;
+                    entry.TargetType = entry.Target.Output;
+
+                    entry.IsKey = entry.Target.IsKey;
+
+                    entry.IsMatched = true;
+                }
+                else
+                {
+                    entry.Target = null;
+                    entry.TargetType = null;
+
+                    if (IsImport) entry.IsKey = false;
+                    else entry.IsKey = true;
+
+                    entry.IsMatched = false;
+                }
+
+                Entries.Add(entry);
+            }
+        }
+
+        private void FillEntriesTypes()
+        {
+            // Change available target type lists for each source column without changing the list itself
+            // If some current type is not present in the new schema then deselect this entry
+            // If an entry is selected then it must have some type selected (it is error if an entry does not have a selected type)
+
+            List<ComTable> targetTypes = GetSchemaTypes();
+
+            ComTable defaultType = null;
+            foreach (ComTable table in targetTypes)
+            {
+                if (StringSimilarity.SameTableName(table.Name, "String"))
+                {
+                    defaultType = table;
+                    break;
+                }
+            }
+
+            foreach (ColumnMappingEntry entry in Entries)
+            {
+                entry.TargetTypes.Clear();
+                targetTypes.ForEach(x => entry.TargetTypes.Add(x));
+
+                // Now find a good new match for the current type
+                // In fact, it should be done by some automatic matching procedure for inter-schema primitive matches
+
+                // Target type has been selected. Try to find the same type
+                if (entry.TargetType != null)
+                {
+                    ComTable targetType = null;
+                    foreach (ComTable table in targetTypes)
+                    {
+                        if (StringSimilarity.SameTableName(table.Name, entry.TargetType.Name))
+                        {
+                            targetType = table;
+                            break; // Found
+                        }
+                    }
+                    if (targetType != null) // Found
+                    {
+                        entry.TargetType = targetType;
+                        continue;
+                    }
+                }
+
+                // Either not selected or not found. Try to select the source type
+                if (entry.Source.Output != null)
+                {
+                    ComTable targetType = null;
+                    foreach (ComTable table in targetTypes)
+                    {
+                        if (StringSimilarity.SameTableName(table.Name, entry.Source.Output.Name))
+                        {
+                            targetType = table;
+                            break; // Found
+                        }
+                    }
+                    if (targetType != null) // Found
+                    {
+                        entry.TargetType = targetType;
+                        continue;
+                    }
+                }
+
+                // Nothing helps
+                entry.TargetType = defaultType;
+            }
+
         }
 
         private List<ComTable> GetSchemaTypes() // The user chooses the desired column type from this list
@@ -203,66 +304,13 @@ namespace Samm.Dialogs
             return targetTypes;
         }
 
-        private void CreateEntries(Mapping mapping)
-        {
-            ComTable sourceTable = mapping.SourceSet;
-            ComTable targetTable = mapping.TargetSet;
-
-            List<ComTable> targetTypes = GetSchemaTypes();
-
-            foreach (ComColumn sourceColumn in sourceTable.Columns)
-            {
-                if (sourceColumn.IsSuper) continue;
-                if (!sourceColumn.IsPrimitive) continue;
-                if (sourceColumn == Column) continue; // Do not include the generating/projection column
-
-                ColumnMappingEntry entry = new ColumnMappingEntry(sourceColumn);
-
-                PathMatch match = mapping.GetMatchForSource(new DimPath(sourceColumn));
-
-                targetTypes.ForEach(x => entry.TargetTypes.Add(x));
-
-                if (match != null)
-                {
-                    entry.Target = match.TargetPath.FirstSegment;
-                    entry.IsMatched = true;
-                    entry.IsKey = entry.Target.IsKey;
-
-                    entry.TargetType = entry.Target.Output;
-                }
-                else
-                {
-                    entry.Target = null;
-                    entry.IsMatched = false;
-
-                    if (IsImport) entry.IsKey = false;
-                    else entry.IsKey = true;
-
-                    // Recommend a type
-                    if (sourceColumn.Output.Name == "Integer")
-                        entry.TargetType = SelectedTargetSchema.GetPrimitive("Integer");
-                    else if (sourceColumn.Output.Name == "Double")
-                        entry.TargetType = SelectedTargetSchema.GetPrimitive("Double");
-                    else if (sourceColumn.Output.Name == "String")
-                        entry.TargetType = SelectedTargetSchema.GetPrimitive("String");
-
-                }
-
-                Entries.Add(entry);
-            }
-        }
-
         private void SchemaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // We can change target schema for new tables only. 
-            // In this case, we need to change target types of all entries
+            // The use can change target schema for new tables only
 
-            Entries.Clear();
+            FillEntriesTypes();
 
-            Mapper mapper = new Mapper(); // Create mapping for an import dimension
-            Mapping mapping = mapper.CreatePrimitive(Column.Input, Column.Output, SelectedTargetSchema); // Complete mapping (all to all)
-
-            CreateEntries(mapping);
+            RefreshAll();
         }
 
         private readonly ICommand okCommand;

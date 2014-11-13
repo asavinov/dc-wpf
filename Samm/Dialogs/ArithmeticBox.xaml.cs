@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace Samm.Dialogs
     /// Dimensin constraints for all choosers: first segment(s), last segment(s), name pattern (starts from, ends with, contains, regular calcExpr pattern, approximate etc.)
     /// 
     /// </summary>
-    public partial class ArithmeticBox : Window
+    public partial class ArithmeticBox : Window, INotifyPropertyChanged
     {
         bool IsWhere { get; set; } // True if we edit Where expression of a table (lesser table of the column parameter)
         bool IsNew { get; set; }
@@ -51,6 +52,8 @@ namespace Samm.Dialogs
         public List<DimPath> SourcePaths { get; set; }
 
         public ObservableCollection<ExprNode> ExpressionModel { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RefreshAll()
         {

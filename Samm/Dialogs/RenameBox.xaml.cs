@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for RenameBox.xaml
     /// </summary>
-    public partial class RenameBox : Window
+    public partial class RenameBox : Window, INotifyPropertyChanged
     {
         public object Element { get; set; }
         public string OldName { get; set; }
@@ -33,6 +34,7 @@ namespace Samm.Dialogs
         protected ComTable Table { get { if (Element is ComSchema) return (ComTable)Element; else if (Element is ComTable) return ((ComTable)Element); else if (Element is ComColumn) return ((ComColumn)Element).Input; else return null; } }
         protected ComColumn Column { get { if (Element is ComSchema) return null; else if (Element is ComTable) return null; else if (Element is ComColumn) return (ComColumn)Element; else return null; } }
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public RenameBox(object element, string name)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for TableBox.xaml
     /// </summary>
-    public partial class TableBox : Window
+    public partial class TableBox : Window, INotifyPropertyChanged
     {
         bool IsNew { get; set; }
 
@@ -27,6 +28,8 @@ namespace Samm.Dialogs
 
         public ComTable Table { get; set; }
         public string TableName { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public TableBox(ComSchema schema, ComTable table)
         {

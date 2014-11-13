@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Samm.Dialogs
     /// <summary>
     /// Interaction logic for ImportMappingBox.xaml
     /// </summary>
-    public partial class ImportMappingBox : Window
+    public partial class ImportMappingBox : Window, INotifyPropertyChanged
     {
         bool IsNew { get; set; }
 
@@ -39,6 +40,8 @@ namespace Samm.Dialogs
         // Target existing columns
 
         // Target table name (either new or existing, can be edited)
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void RefreshAll()
         {
