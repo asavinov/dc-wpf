@@ -404,13 +404,6 @@ namespace Samm
             System.IO.File.WriteAllBytes(filePath, jsonBytes);
         }
 
-        private void UpdateAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            throw new NotImplementedException("Update All not implemented.");
-
-            e.Handled = true;
-        }
-
         private void AboutCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             AboutBox dlg = new AboutBox(); // Instantiate the dialog box
@@ -808,46 +801,32 @@ namespace Samm
         
         #endregion
 
-        # region View operations
+        # region Schema operations
 
-        private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void RenameSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedTable != null) e.CanExecute = true;
+            if (SelectedSchema != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
-        private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void RenameSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (SelectedTable == null) return;
-            try
-            {
-                Operation_OpenTable(SelectedTable);
-            }
-            catch (System.Exception ex)
-            {
-                GenericError(ex);
-            }
+            if (SelectedSchema == null) return;
 
-            e.Handled = true;
-        }
-        public void Operation_OpenTable(ComTable table)
-        {
-            //lblWorkspace.Content = table.Name;
+            RenameBox dlg = new RenameBox(SelectedSchema, null);
+            dlg.Owner = this;
+            dlg.ShowDialog();
 
-            var gridView = new SetGridView(table);
-            GridPanel.Content = gridView.Grid;
+            if (dlg.DialogResult == false) return; // Cancel
         }
 
-
-        private void CloseViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void UpdateSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (GridPanel != null && GridPanel.Content != null) e.CanExecute = true;
+            if (SelectedSchema != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
-        private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void UpdateSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            lblWorkspace.Content = "DATA";
-
-            GridPanel.Content = null;
+            throw new NotImplementedException("Update Schema not implemented.");
 
             e.Handled = true;
         }
@@ -1416,6 +1395,52 @@ namespace Samm
             {
                 GenericError(ex);
             }
+        }
+
+        #endregion
+
+        # region Data operations
+
+        private void OpenTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void OpenTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+            try
+            {
+                Operation_OpenTable(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Operation_OpenTable(ComTable table)
+        {
+            //lblWorkspace.Content = table.Name;
+
+            var gridView = new SetGridView(table);
+            GridPanel.Content = gridView.Grid;
+        }
+
+
+        private void CloseViewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (GridPanel != null && GridPanel.Content != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            lblWorkspace.Content = "DATA";
+
+            GridPanel.Content = null;
+
+            e.Handled = true;
         }
 
         #endregion

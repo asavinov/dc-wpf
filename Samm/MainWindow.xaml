@@ -42,8 +42,6 @@
         <RoutedUICommand x:Key="ExitCommand" Text="Exit" />
         <RoutedUICommand x:Key="HelpCommand" Text="Help" />
 
-        <RoutedUICommand x:Key="UpdateAllCommand" Text="Update All" />
-
         <!--
         <RoutedUICommand x:Key="ImportTextCommand" Text="Text Table" />
         <RoutedUICommand x:Key="ImportAccessCommand" Text="Access table" />
@@ -53,8 +51,8 @@
         <RoutedUICommand x:Key="ExportTextCommand" Text="Text Table" />
         -->
 
-        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
-        <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
+        <RoutedUICommand x:Key="RenameSchemaCommand" Text="Rename Schema" />
+        <RoutedUICommand x:Key="UpdateSchemaCommand" Text="Update Schema" />
 
         <RoutedUICommand x:Key="AddTableCommand" Text="Add Table" />
         <RoutedUICommand x:Key="FilterTableCommand" Text="Filter Table" />
@@ -72,6 +70,9 @@
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete column" />
         <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update column" />
 
+        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
+        <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
+
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -83,7 +84,8 @@
         <CommandBinding Command="{StaticResource ExitCommand}" Executed="ExitCommand_Executed" />
         <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
 
-        <CommandBinding Command="{StaticResource UpdateAllCommand}" Executed="UpdateAllCommand_Executed" />
+        <CommandBinding Command="{StaticResource RenameSchemaCommand}" CanExecute="RenameSchemaCommand_CanExecute" Executed="RenameSchemaCommand_Executed" />
+        <CommandBinding Command="{StaticResource UpdateSchemaCommand}" Executed="UpdateSchemaCommand_Executed" />
 
         <!--
         <CommandBinding Command="{StaticResource ImportTextCommand}" Executed="ImportTextCommand_Executed" />
@@ -93,9 +95,6 @@
 
         <CommandBinding Command="{StaticResource ExportTextCommand}" CanExecute="ExportTextCommand_CanExecute" Executed="ExportTextCommand_Executed" />
         -->
-
-        <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />
@@ -112,6 +111,9 @@
         <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateColumnCommand}" CanExecute="UpdateColumnCommand_CanExecute" Executed="UpdateColumnCommand_Executed" />
+
+        <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />
 
     </Window.CommandBindings>
 
@@ -131,9 +133,6 @@
                 </Button>
                 <Button ToolTip="Save As..." Style="{StaticResource ButtonEnabled}" Command="ApplicationCommands.SaveAs">
                     <Image Source="Images\file_saveas.png" />
-                </Button>
-                <Button ToolTip="Update All" Style="{StaticResource ButtonEnabled}" Command="{StaticResource UpdateAllCommand}">
-                    <Image Source="Images\update_all.png" />
                 </Button>
                 <!-- <RibbonApplicationMenuItem Header="Options" ImageSource="Images\file_settings.png" /> -->
                 <Button ToolTip="About" Style="{StaticResource ButtonEnabled}" Command="{StaticResource AboutCommand}">
@@ -184,18 +183,55 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="8*"/>
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
             <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+            <GridSplitter Grid.Column ="5" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
-            <!-- Table panel -->
+            <!-- Database panel -->
             <Grid Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Background="Lavender" />
+                <Label Name="lblDatabasePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA SOURCES</Label>
+
+                <DockPanel Grid.Row="1" >
+                    <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                            <Button ToolTip="Rename data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameSchemaCommand}">
+                                <Image Source="Images\rename.png" />
+                            </Button>
+                            <Button ToolTip="Update data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateSchemaCommand}">
+                                <Image Source="Images\update_all.png" />
+                            </Button>
+
+                        </ToolBar>
+                    </ToolBarTray>
+
+                    <ListBox 
+                        Name="SchemaListView" 
+                        ItemsSource="{Binding Path=Workspace.Schemas}" 
+                        SelectedItem="{Binding Path=SelectedSchema_Bound}" 
+                        ItemTemplate="{StaticResource SchemaListItemTemplate}" 
+                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                        Margin="0" 
+                        />
+
+                </DockPanel>
+            </Grid>
+
+            <!-- Table panel -->
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
@@ -203,9 +239,6 @@
                 <Border Grid.Row="0" Background="Lavender" />
                 <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
-                <ComboBox Name="SchemaListView" Grid.Row="1" ItemsSource="{Binding Path=Workspace.Schemas}" SelectedItem="{Binding Path=SelectedSchema_Bound}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
-
-                <!-- TableList control -->
                 <DockPanel Grid.Row="2" >
                     <ToolBarTray DockPanel.Dock="Top" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
@@ -261,7 +294,7 @@
             </Grid>
 
             <!-- Column panel -->
-            <Grid Grid.Column="2" >
+            <Grid Grid.Column="4" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -270,7 +303,6 @@
                 <Border Grid.Row="0" Background="Lavender" />
                 <Label Name="lblColumnPanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">COLUMNS</Label>
 
-                <!-- ColumnList control -->
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
@@ -340,8 +372,8 @@
                 </DockPanel>
             </Grid>
 
-            <!-- Data visualization panel -->
-            <Grid Grid.Column="4" >
+            <!-- Data panel -->
+            <Grid Grid.Column="6" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -350,7 +382,6 @@
                 <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
                 <Label Name="lblWorkspace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
 
-                <!-- Data view -->
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >

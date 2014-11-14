@@ -35,11 +35,11 @@
             Grid.Column="0" Grid.Row="0" 
             ItemsSource="{Binding Path=Items}" 
             SelectedItem="{Binding Path=SelectedItem}"
+            ItemTemplate="{StaticResource TableListCellTemplate}"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 
             BorderThickness="0" 
             Margin="5"
-            ItemTemplate="{StaticResource TableListCellTemplate}"
             >
 
             <!--

@@ -17,10 +17,18 @@
         </Style>
 
         <DataTemplate x:Key="ColumnListCellTemplate">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="../Images/node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left"  />
-                <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" Margin="5"/>
+            <StackPanel Orientation="Horizontal" Margin="5" >
+                <Image x:Name="node_icon" Source="../Images/node_column.png" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" />
+                <TextBlock Text=" (" FontSize="12" />
+                <TextBlock Text="{Binding Path=Output.Name}" FontSize="12" />
+                <TextBlock Text=")" FontSize="12" />
             </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Path=IsKey}" Value="true">
+                    <Setter Property="Source" Value="../Images/node_column_key.png" TargetName="node_icon" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
 
     </UserControl.Resources>
@@ -35,11 +43,11 @@
             Grid.Column="0" Grid.Row="0" 
             ItemsSource="{Binding Path=Items}" 
             SelectedItem="{Binding Path=SelectedItem}"
+            ItemTemplate="{StaticResource ColumnListCellTemplate}"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 
             BorderThickness="0" 
             Margin="0"
-            ItemTemplate="{StaticResource ColumnListCellTemplate}"
             >
 
             <!--
