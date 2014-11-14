@@ -223,6 +223,7 @@
                         SelectedItem="{Binding Path=SelectedSchema_Bound}" 
                         ItemTemplate="{StaticResource SchemaListItemTemplate}" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                        BorderThickness="0" 
                         Margin="0" 
                         />
 
