@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:samm="clr-namespace:Samm"
         xmlns:controls="clr-namespace:Samm.Controls"
-        Title="Arithmetic Expression" Height="350" Width="400"
+        Title="Arithmetic Column" 
+        Height="350" Width="400"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >

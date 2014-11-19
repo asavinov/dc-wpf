@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:samm="clr-namespace:Samm"
-        Title="Aggregated Column" Height="350" Width="400"
+        Title="Aggregated Column" 
+        Height="350" Width="400"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >

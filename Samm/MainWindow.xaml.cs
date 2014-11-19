@@ -985,12 +985,11 @@ namespace Samm
         }
         private void FreeColumnsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ComTable table = SelectedTable;
-            if (table == null) return;
+            if (SelectedTable == null) return;
 
             try
             {
-                Wizard_FreeColumns(table);
+                Wizard_FreeColumns(SelectedTable);
             }
             catch (System.Exception ex)
             {
@@ -999,25 +998,19 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_FreeColumns(ComTable set)
+        public void Wizard_FreeColumns(ComTable table)
         {
             ComSchema schema = MashupTop;
 
-            // Create a new (product) set
-            string productTableName = "New Table";
-            ComTable productSet = schema.CreateTable(productTableName);
-
             // Show parameters for creating a product set
-            ProductTableBox dlg = new ProductTableBox(schema, productSet, SelectedTable);
+            FreeColumnBox dlg = new FreeColumnBox(schema, table);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
 
             // Populate the set and its dimensions
-            productSet.Definition.Populate();
-
-            SelectedTable = productSet;
+            table.Definition.Populate();
         }
 
         private void AddArithmeticCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1038,14 +1031,14 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_AddArithmetic(ComTable srcSet)
+        public void Wizard_AddArithmetic(ComTable table)
         {
-            if (srcSet == null) return;
+            if (table == null) return;
 
             ComSchema schema = MashupTop;
 
             // Create a new column
-            ComColumn column = schema.CreateColumn("New Column", srcSet, null, false); // We do not know its output type
+            ComColumn column = schema.CreateColumn("New Column", table, null, false); // We do not know its output type
 
             // Show dialog for authoring arithmetic expression
             ArithmeticBox dlg = new ArithmeticBox(column, false);
@@ -1126,7 +1119,7 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_AddProjection(ComTable set)
+        public void Wizard_AddProjection(ComTable table)
         {
             ComSchema schema = MashupTop;
 
@@ -1142,7 +1135,7 @@ namespace Samm
 
             // Create a new (mapped, generating) dimension to the new set
             string newColumnName = "New Column";
-            ComColumn extractedDim = schema.CreateColumn(newColumnName, set, targetTable, false);
+            ComColumn extractedDim = schema.CreateColumn(newColumnName, table, targetTable, false);
 
             //
             // Show parameters for set extraction
@@ -1170,16 +1163,15 @@ namespace Samm
         }
         private void AddAggregationCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ComColumn selDim = SelectedColumn;
-            ComTable srcSet = SelectedTable;
-            if (srcSet == null && selDim != null)
+            ComTable table = SelectedTable;
+            if (table == null && SelectedColumn != null)
             {
-                srcSet = selDim.Input;
+                table = SelectedColumn.Input;
             }
 
             try
             {
-                Wizard_AddAggregation(srcSet, null);
+                Wizard_AddAggregation(table, null);
             }
             catch (System.Exception ex)
             {
@@ -1188,14 +1180,14 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_AddAggregation(ComTable srcSet, ComColumn measureColumn)
+        public void Wizard_AddAggregation(ComTable table, ComColumn measureColumn)
         {
-            if (srcSet == null) return;
+            if (table == null) return;
 
             ComSchema schema = MashupTop;
 
             // Create new aggregated column
-            ComColumn column = schema.CreateColumn("My Column", srcSet, null, false);
+            ComColumn column = schema.CreateColumn("My Column", table, null, false);
 
             // Show recommendations and let the user choose one of them
             AggregationBox dlg = new AggregationBox(column, measureColumn);
@@ -1222,12 +1214,11 @@ namespace Samm
         }
         private void EditColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            ComColumn column = SelectedColumn;
-            if (column == null) return;
+            if (SelectedColumn == null) return;
 
             try
             {
-                Wizard_EditColumn(column);
+                Wizard_EditColumn(SelectedColumn);
             }
             catch (System.Exception ex)
             {

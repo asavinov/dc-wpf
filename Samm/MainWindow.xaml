@@ -256,7 +256,7 @@
                                     </MenuItem>
                                     <MenuItem Header="Extract" Command="{StaticResource ExtractTableCommand}" >
                                         <MenuItem.Icon>
-                                            <Image Source="Images\extract_table.png" />
+                                            <Image Source="Images\table_extract.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 </MenuItem>
@@ -269,13 +269,13 @@
                                 <Image Source="Images\table_filter.png" />
                             </Button>
                             <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
-                                <Image Source="Images\rename.png" />
+                                <Image Source="Images\table_rename.png" />
                             </Button>
                             <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
                                 <Image Source="Images\table_delete.png" />
                             </Button>
                             <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
-                                <Image Source="Images\update_table.png" />
+                                <Image Source="Images\table_update.png" />
                             </Button>
                             <Button ToolTip="View Table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
                                 <Image Source="Images\view_table.png" />
@@ -310,10 +310,10 @@
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem ToolTip="Add column" >
                                     <MenuItem.Icon>
-                                        <Image Source="Images\add_column.png" />
+                                        <Image Source="Images\column_add.png" />
                                     </MenuItem.Icon>
 
-                                    <MenuItem ToolTip="Free columns" Command="{StaticResource FreeColumnsCommand}" >
+                                    <MenuItem ToolTip="Free columns" ToolBar.OverflowMode="Never" Command="{StaticResource FreeColumnsCommand}" >
                                         <MenuItem.Icon>
                                             <Image Source="Images\add_free.png" />
                                         </MenuItem.Icon>
@@ -343,16 +343,16 @@
                             </Menu>
 
                             <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
-                                <Image Source="Images\edit_column.png" />
+                                <Image Source="Images\column_edit.png" />
                             </Button>
                             <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
-                                <Image Source="Images\rename.png" />
+                                <Image Source="Images\column_rename.png" />
                             </Button>
                             <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
-                                <Image Source="Images\delete_column.png" />
+                                <Image Source="Images\column_delete.png" />
                             </Button>
                             <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateColumnCommand}">
-                                <Image Source="Images\update_column.png" />
+                                <Image Source="Images\column_update.png" />
                             </Button>
 
                             <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->

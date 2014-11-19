@@ -140,8 +140,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dialogs\MappingModel.cs" />
-    <Compile Include="Dialogs\ProductTableBox.xaml.cs">
-      <DependentUpon>ProductTableBox.xaml</DependentUpon>
+    <Compile Include="Dialogs\FreeColumnBox.xaml.cs">
+      <DependentUpon>FreeColumnBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\RenameBox.xaml.cs">
       <DependentUpon>RenameBox.xaml</DependentUpon>
@@ -201,7 +201,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\ProductTableBox.xaml">
+    <Page Include="Dialogs\FreeColumnBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -310,17 +310,7 @@
     <Resource Include="Images\remove_connection.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\update_column.png" />
-    <Resource Include="Images\update_table.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\extract_table.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\add_calculation.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\delete_column.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\add_csv.png" />
@@ -349,9 +339,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\product_table.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\edit_column.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\view_table.png" />
@@ -413,10 +400,23 @@
     <Resource Include="Images\add_projection.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_column.png" />
+    <Resource Include="Images\node_schema.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\node_schema.png" />
+    <Resource Include="Images\table_update.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\column_rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\table_rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\column_add.png" />
+    <Resource Include="Images\column_delete.png" />
+    <Resource Include="Images\column_edit.png" />
+    <Resource Include="Images\column_update.png" />
+    <Resource Include="Images\table_extract.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

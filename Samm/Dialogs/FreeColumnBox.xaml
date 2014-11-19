@@ -1,0 +1,61 @@
+﻿<Window x:Class="Samm.Dialogs.FreeColumnBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:samm="clr-namespace:Samm"
+        Title="Free Columns" 
+        Height="250" Width="450"
+        WindowStartupLocation="CenterOwner"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        >
+
+    <Window.Resources>
+        <Style x:Key="GreaterTablesHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Visible" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="60*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="0" Text="{Binding Path=TableName}" IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+
+        <Label  Grid.Column="0" Grid.Row="1" Content="Source Tables:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ListView Name="greaterTables" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Path=Entries}" Margin="5">
+            <ListView.View>
+                <GridView ColumnHeaderContainerStyle="{StaticResource GreaterTablesHeaderStyle}">
+                    <GridViewColumn Header="Select">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Column Name" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Name="columnName" Text="{Binding Path=ColumnName}" TextWrapping="NoWrap" BorderThickness="0" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Type" CellTemplate="{StaticResource TableListItemTemplate}" >
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+
+        <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
+            <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Command="{Binding OkCommand}" />
+            <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsCancel="True" />
+        </StackPanel>
+    </Grid>
+</Window>
