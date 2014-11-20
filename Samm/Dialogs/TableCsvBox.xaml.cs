@@ -30,6 +30,10 @@ namespace Samm.Dialogs
         public ComTable Table { get; set; }
         public string TableName { get; set; }
 
+        public bool HasHeaderRecord { get; set; }
+        public string Delimiter { get; set; }
+        public string Decimal { get; set; }
+
         public ObservableCollection<ComColumn> TableColumns { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -47,31 +51,43 @@ namespace Samm.Dialogs
             this.chooseSourceCommand = new DelegateCommand(this.ChooseSourceCommand_Executed, this.ChooseSourceCommand_CanExecute);
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
-            Schema = schema;
-
-            TableColumns = new ObservableCollection<ComColumn>();
-
             if (table == null)
             {
-                TableName = "";
-                Table = Schema.CreateTable(TableName);
                 IsNew = true;
             }
             else
             {
-                TableName = table.Name;
-                Table = table;
                 IsNew = false;
+            }
 
-                foreach(ComColumn column in Table.Columns) 
-                {
-                    TableColumns.Add(column);
-                }
+            Schema = schema;
+            Table = table;
+
+            TableColumns = new ObservableCollection<ComColumn>();
+
+            if (IsNew)
+            {
+                TableName = "";
+                Table = Schema.CreateTable(TableName);
+            }
+
+            //
+            // Initialize
+            //
+
+            TableName = Table.Name;
+
+            HasHeaderRecord = ((SetCsv)Table).HasHeaderRecord;
+            Delimiter = ((SetCsv)Table).Delimiter;
+            Decimal = ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator;
+
+            foreach (ComColumn column in Table.Columns)
+            {
+                TableColumns.Add(column);
             }
 
             InitializeComponent();
         }
-
 
         private readonly ICommand chooseSourceCommand;
         public ICommand ChooseSourceCommand
@@ -106,13 +122,17 @@ namespace Samm.Dialogs
             {
                 Table = Schema.CreateTable(tableName);
             }
-            ((SetCsv)Table).FilePath = filePath;
             TableName = tableName;
+            ((SetCsv)Table).FilePath = filePath;
 
-            //sourceTable.HasHeaderRecord = (bool)hasHeaderRecord.IsChecked;
+            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
+            ((SetCsv)Table).Delimiter = Delimiter;
+            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+
+            List<ComColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
 
             // Display new schema and maybe sample data
-            List<ComColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
+            TableColumns.Clear();
             foreach (ComColumn column in columns)
             {
                 TableColumns.Add(column);

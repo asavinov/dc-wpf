@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Samm.Dialogs.TableCsvBox"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="TableCsvBox" Height="300" Width="400"
+        Title="TableCsvBox" Height="350" Width="450"
         WindowStartupLocation="CenterOwner"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         >
@@ -30,12 +30,17 @@
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Parameters:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Horizontal">
-            <Label Content="Decimal separator:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
-            <ComboBox Name="decimalChar" Text="Decimal separator:" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25">
-                <ComboBoxItem IsSelected="True">,</ComboBoxItem>
-                <ComboBoxItem >.</ComboBoxItem>
+            <Label Content="Delimiter:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
+            <ComboBox Name="delimiter" Text="Delimiter:" SelectedValue="{Binding Path=Delimiter}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" >
+                <ComboBoxItem Name="comma" Content="," IsSelected="True" />
+                <ComboBoxItem Name="semi" Content=";" />
             </ComboBox>
-            <CheckBox Name="hasHeaderRecord" Content="Header line" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" />
+            <Label Content="Decimal:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
+            <ComboBox Name="decimal" Text="Decimal:" SelectedValue="{Binding Path=Decimal}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25">
+                <ComboBoxItem Name="decimal_comma" Content="," IsSelected="True" />
+                <ComboBoxItem Name="dot" Content="." />
+            </ComboBox>
+            <CheckBox Name="hasHeaderRecord" Content="Header" IsChecked="{Binding HasHeaderRecord}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" />
         </StackPanel>
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
