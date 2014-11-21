@@ -1,0 +1,4 @@
+"Id","Name","ModuleNamespace","Description","BusinessProcessId","SobjectType","IsActive","CreatedById","CreatedDate","LastModifiedById","LastModifiedDate","SystemModstamp","IsDeleted"
+"01224000000GvPcAAK","Internal Ideas: Idea Record Type","","Record Type used to associate ideas with a specific community","","Idea","1","00524000000U96AAAS","2014-11-04 18:19:09","00524000000U96AAAS","2014-11-04 18:19:09","2014-11-04 18:19:09","0"
+"01224000000L39ZAAS","Internal Zone: Question-Datensatztyp","","Datensatztyp für die Zuweisung von Question zu einer bestimmter Zone","","Question","1","00524000000YSzUAAW","2014-11-04 18:19:27","00524000000YSzUAAW","2014-11-04 18:19:27","2014-11-04 18:19:27","0"
+"01224000000L39aAAC","Internal Zone: Reply-Datensatztyp","","Datensatztyp für die Zuweisung von Reply zu einer bestimmter Zone","","Reply","1","00524000000YSzUAAW","2014-11-04 18:19:27","00524000000YSzUAAW","2014-11-04 18:19:27","2014-11-04 18:19:27","0"

@@ -56,11 +56,12 @@
 
         <RoutedUICommand x:Key="AddTableCommand" Text="Add Table" />
         <RoutedUICommand x:Key="FilterTableCommand" Text="Filter Table" />
+        <RoutedUICommand x:Key="EditTableCommand" Text="Edit table" />
         <RoutedUICommand x:Key="RenameTableCommand" Text="Rename Table" />
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
         <RoutedUICommand x:Key="UpdateTableCommand" Text="Update Table" />
 
-        <RoutedUICommand x:Key="FreeColumnsCommand" Text="Add free column" />
+        <RoutedUICommand x:Key="AddFreeCommand" Text="Add free column" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add calculated column" />
         <RoutedUICommand x:Key="AddLinkCommand" Text="Add link column" />
         <RoutedUICommand x:Key="AddProjectionCommand" Text="Add projection column" />
@@ -98,11 +99,12 @@
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
         <CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
 
-        <CommandBinding Command="{StaticResource FreeColumnsCommand}" CanExecute="FreeColumnsCommand_CanExecute" Executed="FreeColumnsCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddFreeCommand}" CanExecute="AddFreeCommand_CanExecute" Executed="AddFreeCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
         <CommandBinding Command="{StaticResource AddLinkCommand}" CanExecute="AddLinkCommand_CanExecute" Executed="AddLinkCommand_Executed" />
         <CommandBinding Command="{StaticResource AddProjectionCommand}" CanExecute="AddProjectionCommand_CanExecute" Executed="AddProjectionCommand_Executed" />
@@ -268,6 +270,9 @@
                             <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
                                 <Image Source="Images\table_filter.png" />
                             </Button>
+                            <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
+                                <Image Source="Images\table_edit.png" />
+                            </Button>
                             <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
                                 <Image Source="Images\table_rename.png" />
                             </Button>
@@ -313,7 +318,7 @@
                                         <Image Source="Images\column_add.png" />
                                     </MenuItem.Icon>
 
-                                    <MenuItem ToolTip="Free columns" ToolBar.OverflowMode="Never" Command="{StaticResource FreeColumnsCommand}" >
+                                    <MenuItem ToolTip="Free columns" ToolBar.OverflowMode="Never" Command="{StaticResource AddFreeCommand}" >
                                         <MenuItem.Icon>
                                             <Image Source="Images\add_free.png" />
                                         </MenuItem.Icon>

@@ -119,7 +119,6 @@ namespace Samm
             System.Threading.Thread.CurrentThread.CurrentUICulture = defaultCultureInfo;
 
             Utils.cultureInfo = defaultCultureInfo;
-            ExprNode.cultureInfo = defaultCultureInfo;
 
             Workspace = new Workspace();
 
@@ -898,6 +897,45 @@ namespace Samm
             SelectedTable = table;
         }
 
+        private void EditTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null)
+            {
+                if (IsInMashups(SelectedTable))
+                    e.CanExecute = false;
+                else
+                    e.CanExecute = true;
+            }
+            else
+            {
+                e.CanExecute = false;
+            }
+        }
+        private void EditTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+
+            // For each schema/connection type, we use a specific dialog
+            if (SelectedSchema is SchemaCsv)
+            {
+                TableCsvBox dlg = new TableCsvBox(SelectedSchema, SelectedTable);
+                dlg.Owner = this;
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+            else // Mashup
+            {
+                RenameBox dlg = new RenameBox(SelectedTable, null);
+                dlg.Owner = this;
+                dlg.ShowDialog();
+
+                if (dlg.DialogResult == false) return; // Cancel
+            }
+
+            e.Handled = true;
+        }
+
         private void RenameTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
@@ -978,12 +1016,12 @@ namespace Samm
 
         # region Column operations
 
-        private void FreeColumnsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void AddFreeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
-        private void FreeColumnsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddFreeCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedTable == null) return;
 
