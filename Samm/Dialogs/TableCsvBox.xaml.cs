@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,6 +90,72 @@ namespace Samm.Dialogs
             InitializeComponent();
         }
 
+        private void UpdateColumnList() // Read table structure from file and show (table itself is not changed)
+        {
+            // Display new schema and maybe sample data
+            TableColumns.Clear();
+
+            if (!File.Exists(((SetCsv)Table).FilePath))
+            {
+                return;
+            }
+
+            List<ComColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
+
+            foreach (ComColumn column in columns)
+            {
+                TableColumns.Add(column);
+            }
+        }
+
+        private void Delimiter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Table == null)
+            {
+                return;
+            }
+
+            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
+            ((SetCsv)Table).Delimiter = Delimiter;
+            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+
+            UpdateColumnList();
+
+            RefreshAll();
+        }
+
+        private void Decimal_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Table == null)
+            {
+                return;
+            }
+
+            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
+            ((SetCsv)Table).Delimiter = Delimiter;
+            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+
+            //UpdateColumnList();
+
+            RefreshAll();
+        }
+
+        private void Header_Changed(object sender, RoutedEventArgs e)
+        {
+            if (Table == null)
+            {
+                return;
+            }
+
+            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
+            ((SetCsv)Table).Delimiter = Delimiter;
+            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+
+            UpdateColumnList();
+
+            RefreshAll();
+        }
+
         private readonly ICommand chooseSourceCommand;
         public ICommand ChooseSourceCommand
         {
@@ -104,7 +171,8 @@ namespace Samm.Dialogs
             //ofg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
             ofg.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             ofg.RestoreDirectory = true;
-            ofg.CheckFileExists = true;
+            ofg.CheckFileExists = false;
+            ofg.CheckPathExists = true;
             ofg.Multiselect = false;
 
             Nullable<bool> result = ofg.ShowDialog();
@@ -129,15 +197,8 @@ namespace Samm.Dialogs
             ((SetCsv)Table).Delimiter = Delimiter;
             ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
 
-            List<ComColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
-
-            // Display new schema and maybe sample data
-            TableColumns.Clear();
-            foreach (ComColumn column in columns)
-            {
-                TableColumns.Add(column);
-            }
-
+            UpdateColumnList(); // Read table structure from file and show
+            
             RefreshAll();
         }
         

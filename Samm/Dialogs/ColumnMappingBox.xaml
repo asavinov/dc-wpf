@@ -66,12 +66,12 @@
             </ListView.View>
         </ListView>
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="Schema:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="schemaList" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetSchemas}" SelectedItem="{Binding Path=SelectedTargetSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="SchemaList_SelectionChanged"/>
+        <Label  Grid.Column="0" Grid.Row="3" Content="Target Schema:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="targetSchemaList" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TargetSchemas}" SelectedItem="{Binding Path=SelectedTargetSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="TargetSchemaList_SelectionChanged"/>
 
-        <Label  Grid.Column="0" Grid.Row="4" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="targetTableName" Grid.Column="1" Grid.Row="4" Text="{Binding Path=TargetTableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
-
+        <Label  Grid.Column="0" Grid.Row="4" Content="Target Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="targetTableList" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=TargetTables}" SelectedItem="{Binding Path=SelectedTargetTable}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="TargetTableList_SelectionChanged"/>
+        
         <StackPanel Grid.Column="1" Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" Height="25" IsDefault="True" Command="{Binding OkCommand}" />
             <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" Height="25" IsCancel="True" />

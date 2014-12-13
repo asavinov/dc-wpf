@@ -31,16 +31,16 @@
         <Label  Grid.Column="0" Grid.Row="2" Content="Parameters:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <StackPanel Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Horizontal">
             <Label Content="Delimiter:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
-            <ComboBox Name="delimiter" Text="Delimiter:" SelectedValue="{Binding Path=Delimiter}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" >
-                <ComboBoxItem Name="comma" Content="," IsSelected="True" />
-                <ComboBoxItem Name="semi" Content=";" />
+            <ComboBox Name="delimiter" Text="Delimiter:" SelectedValue="{Binding Path=Delimiter}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" SelectionChanged="Delimiter_SelectionChanged">
+                <ComboBoxItem Name="delimiter_comma" Content="," IsSelected="True" />
+                <ComboBoxItem Name="delimiter_semi" Content=";" />
             </ComboBox>
             <Label Content="Decimal:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
-            <ComboBox Name="decimal" Text="Decimal:" SelectedValue="{Binding Path=Decimal}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25">
-                <ComboBoxItem Name="decimal_comma" Content="," IsSelected="True" />
-                <ComboBoxItem Name="dot" Content="." />
+            <ComboBox Name="decimal" Text="Decimal:" SelectedValue="{Binding Path=Decimal}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" SelectionChanged="Decimal_SelectionChanged">
+                <ComboBoxItem Name="decimal_dot" Content="." IsSelected="True" />
+                <ComboBoxItem Name="decimal_comma" Content="," />
             </ComboBox>
-            <CheckBox Name="hasHeaderRecord" Content="Header" IsChecked="{Binding HasHeaderRecord}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" />
+            <CheckBox Name="hasHeaderRecord" Content="Header" IsChecked="{Binding HasHeaderRecord}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" Checked="Header_Changed" Unchecked="Header_Changed"/>
         </StackPanel>
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>

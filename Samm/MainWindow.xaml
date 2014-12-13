@@ -63,8 +63,8 @@
 
         <RoutedUICommand x:Key="AddFreeCommand" Text="Add free column" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add calculated column" />
-        <RoutedUICommand x:Key="AddLinkCommand" Text="Add link column" />
-        <RoutedUICommand x:Key="AddProjectionCommand" Text="Add projection column" />
+        <RoutedUICommand x:Key="AddPathLinkCommand" Text="Add link column" />
+        <RoutedUICommand x:Key="AddColumnLinkCommand" Text="Add generation column" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add aggregated column" />
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit column" />
         <RoutedUICommand x:Key="RenameColumnCommand" Text="Rename column" />
@@ -106,8 +106,8 @@
 
         <CommandBinding Command="{StaticResource AddFreeCommand}" CanExecute="AddFreeCommand_CanExecute" Executed="AddFreeCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddLinkCommand}" CanExecute="AddLinkCommand_CanExecute" Executed="AddLinkCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddProjectionCommand}" CanExecute="AddProjectionCommand_CanExecute" Executed="AddProjectionCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddPathLinkCommand}" CanExecute="AddPathLinkCommand_CanExecute" Executed="AddPathLinkCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddColumnLinkCommand}" CanExecute="AddColumnLinkCommand_CanExecute" Executed="AddColumnLinkCommand_Executed" />
         <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
@@ -328,12 +328,12 @@
                                             <Image Source="Images\add_calculation.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem ToolTip="Link column" ToolBar.OverflowMode="Never" Command="{StaticResource AddLinkCommand}">
+                                    <MenuItem ToolTip="Link column" ToolBar.OverflowMode="Never" Command="{StaticResource AddPathLinkCommand}">
                                         <MenuItem.Icon>
                                             <Image Source="Images\add_link.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
-                                    <MenuItem ToolTip="Projection column" ToolBar.OverflowMode="Never" Command="{StaticResource AddProjectionCommand}">
+                                    <MenuItem ToolTip="Generation column" ToolBar.OverflowMode="Never" Command="{StaticResource AddColumnLinkCommand}">
                                         <MenuItem.Icon>
                                             <Image Source="Images\add_projection.png" />
                                         </MenuItem.Icon>

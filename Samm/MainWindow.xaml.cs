@@ -1094,37 +1094,33 @@ namespace Samm
             SelectedColumn = column;
         }
 
-        private void AddLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void AddPathLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
-        private void AddLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddPathLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {
-                Wizard_AddLink(SelectedTable, null);
+                Wizard_AddPathLink(SelectedTable, null);
             }
             catch (System.Exception ex)
             {
                 GenericError(ex);
             }
         }
-        public void Wizard_AddLink(ComTable sourceTable, ComTable targetTable)
+        public void Wizard_AddPathLink(ComTable sourceTable, ComTable targetTable)
         {
             if (sourceTable == null) return;
 
             ComSchema schema = MashupTop;
 
-            // Check if linking is possible or create a message with info why it is not possible
-            var TargetTables = MappingModel.GetPossibleGreaterSets(sourceTable);
-            if (TargetTables.Count == 0) return;
-
             // Create a new (mapped) dimension using the mapping
             ComColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
 
             // Show link column dialog
-            LinkColumnBox dlg = new LinkColumnBox(column);
+            PathMappingBox dlg = new PathMappingBox(column);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
@@ -1137,18 +1133,18 @@ namespace Samm
             SelectedColumn = column;
         }
 
-        private void AddProjectionCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void AddColumnLinkCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
             else e.CanExecute = false;
         }
-        private void AddProjectionCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddColumnLinkCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedTable == null) return;
 
             try
             {
-                Wizard_AddProjection(SelectedTable);
+                Wizard_AddColumnLink(SelectedTable, null);
             }
             catch (System.Exception ex)
             {
@@ -1157,30 +1153,19 @@ namespace Samm
 
             e.Handled = true;
         }
-        public void Wizard_AddProjection(ComTable table)
+        public void Wizard_AddColumnLink(ComTable sourceTable, ComTable targetTable)
         {
             ComSchema schema = MashupTop;
 
-            // Create a new (extracted) set
-            string newTableName = "New Table";
-            ComTable targetTable = schema.CreateTable(newTableName);
-            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-            //
-            // We acutally do not need PROJECTION flag - it is determined by the existence of generating columns
-            // Also, we do not need PRODUCT because it is determined by free columns
-            // Also, we do not need them because we do not edit table defs - we edit column defs
-            //
-
             // Create a new (mapped, generating) dimension to the new set
-            string newColumnName = "New Column";
-            ComColumn extractedDim = schema.CreateColumn(newColumnName, table, targetTable, false);
+            ComColumn column = schema.CreateColumn("New Column", sourceTable, targetTable, false);
 
             //
             // Show parameters for set extraction
             //
             List<ComColumn> initialSelection = new List<ComColumn>();
             initialSelection.Add(SelectedColumn);
-            ColumnMappingBox dlg = new ColumnMappingBox(Workspace.Schemas, extractedDim, initialSelection);
+            ColumnMappingBox dlg = new ColumnMappingBox(Workspace.Schemas, column, initialSelection);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -1188,10 +1173,14 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
+            column.Add();
+
+            targetTable = column.Output;
+
             // Populate the set and the dimension 
             targetTable.Definition.Populate();
 
-            SelectedTable = targetTable;
+            SelectedColumn = column;
         }
 
         private void AddAggregationCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1206,7 +1195,6 @@ namespace Samm
             {
                 table = SelectedColumn.Input;
             }
-
             try
             {
                 Wizard_AddAggregation(table, null);
@@ -1288,7 +1276,7 @@ namespace Samm
             {
                 if (!column.Definition.IsAppendData)
                 {
-                    LinkColumnBox dlg = new LinkColumnBox(column);
+                    PathMappingBox dlg = new PathMappingBox(column);
                     dlg.Owner = this;
                     dlg.ShowDialog(); // Open the dialog box modally 
 
@@ -1527,7 +1515,7 @@ namespace Samm
             {
                 if (dropTarget is Set && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
                 {
-                    ((MainWindow)App.Current.MainWindow).Wizard_AddLink((ComTable)dropTarget, (ComTable)dropSource);
+                    ((MainWindow)App.Current.MainWindow).Wizard_AddPathLink((ComTable)dropTarget, (ComTable)dropSource);
                 }
             }
 

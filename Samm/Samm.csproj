@@ -69,8 +69,9 @@
     <StartupObject>Samm.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsvHelper">
-      <HintPath>..\packages\CsvHelper.2.8.2\lib\net40-client\CsvHelper.dll</HintPath>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -135,8 +136,8 @@
     <Compile Include="Dialogs\ImportMappingBox.xaml.cs">
       <DependentUpon>ImportMappingBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\LinkColumnBox.xaml.cs">
-      <DependentUpon>LinkColumnBox.xaml</DependentUpon>
+    <Compile Include="Dialogs\PathMappingBox.xaml.cs">
+      <DependentUpon>PathMappingBox.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dialogs\MappingModel.cs" />
@@ -197,7 +198,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\LinkColumnBox.xaml">
+    <Page Include="Dialogs\PathMappingBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

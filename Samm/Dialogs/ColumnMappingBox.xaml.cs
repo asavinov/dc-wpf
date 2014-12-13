@@ -71,7 +71,8 @@ namespace Samm.Dialogs
         //
         public ObservableCollection<ComSchema> TargetSchemas { get; set; }
         public ComSchema SelectedTargetSchema { get; set; }
-        public string TargetTableName { get; set; } // Table to be created if new and existing table name if edit operation
+        public ObservableCollection<ComTable> TargetTables { get; set; }
+        public ComTable SelectedTargetTable { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -84,6 +85,9 @@ namespace Samm.Dialogs
 
             columnMappings.GetBindingExpression(ListView.ItemsSourceProperty).UpdateTarget();
             columnMappings.Items.Refresh();
+
+            targetSchemaList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+            targetTableList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
         }
 
         public ColumnMappingBox(ObservableCollection<ComSchema> targetSchemas, ComColumn column, List<ComColumn> initialColumns)
@@ -93,59 +97,69 @@ namespace Samm.Dialogs
             //
             // Options and regime of the dialog
             //
-            if (column.Output.SuperColumn != null) IsNew = false;
+            if (column.Input.Columns.Contains(column)) IsNew = false;
             else IsNew = true;
-
-            //
-            // Column
-            //
-            if (column != null && column.Output != null)
-            {
-                SelectedTargetSchema = column.Output.Schema;
-            }
-            if (SelectedTargetSchema == null)
-            {
-                SelectedTargetSchema = targetSchemas[0];
-            }
 
             Column = column;
             ColumnName = column.Name;
+
+            //
+            // Init target schema list
+            //
+            TargetSchemas = targetSchemas;
+            TargetTables = new ObservableCollection<ComTable>();
+
             Entries = new ObservableCollection<ColumnMappingEntry>();
             InitEntries();
 
-            //
-            // Target table including its schema
-            //
-            TargetSchemas = targetSchemas; // It will trigger filling the list of entries
-            TargetTableName = column.Output.Name;
-
-            //
-            // Initial selection for new column mapping
-            // 
-            if (IsNew && initialColumns != null)
-            {
-                foreach (var entry in Entries)
-                {
-                    if (initialColumns.Contains(entry.Source)) entry.IsMatched = true;
-                    else entry.IsMatched = false;
-                }
-            }
-
             InitializeComponent();
 
+            
             if (IsNew)
             {
-                schemaList.IsEnabled = true;
+                if (initialColumns != null) 
+                {
+                    // Selection for new column mapping
+                    foreach (var entry in Entries) 
+                    {
+                        if (initialColumns.Contains(entry.Source)) entry.IsMatched = true;
+                        else entry.IsMatched = false;
+                    }
+                }
+
+                if (Column.Output != null)
+                {
+                    SelectedTargetSchema = column.Output.Schema;
+                }
+                if (SelectedTargetSchema == null)
+                {
+                    SelectedTargetSchema = targetSchemas[0];
+                }
+
+                targetSchemaList.IsEnabled = true;
+                targetTableList.IsEnabled = true;
             }
             else
             {
-                schemaList.IsEnabled = false;
+                targetSchemaList.IsEnabled = false;
+                targetTableList.IsEnabled = false;
+
+                SelectedTargetSchema = column.Output.Schema;
+                SelectedTargetTable = column.Output;
             }
+
+            RefreshAll();
         }
 
         private void InitEntries()
         {
             // It is called one time only from constructor
+
+            if (Column.Input == null || Column.Output == null)
+            {
+                CreateEntries(null);
+                return;
+            }
 
             Mapping mapping;
             if (IsNew)
@@ -174,10 +188,12 @@ namespace Samm.Dialogs
 
         private void CreateEntries(Mapping mapping)
         {
+            Entries.Clear();
+
+            if (mapping == null) return;
+
             ComTable sourceTable = mapping.SourceSet;
             ComTable targetTable = mapping.TargetSet;
-
-            Entries.Clear();
 
             foreach (ComColumn sourceColumn in sourceTable.Columns)
             {
@@ -304,13 +320,35 @@ namespace Samm.Dialogs
             return targetTypes;
         }
 
-        private void SchemaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TargetSchemaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // The use can change target schema for new tables only
+            TargetTables.Clear();
+            if (SelectedTargetSchema != null)
+            {
+                List<ComTable> targetTables;
+                if(SelectedTargetSchema == Column.Input.Schema) // Intra-schema link
+                {
+                    targetTables = MappingModel.GetPossibleGreaterSets(Column.Input);
+                }
+                else // Import-export link
+                {
+                    targetTables = SelectedTargetSchema.Root.SubTables;
+                }
+                targetTables.ForEach(x => TargetTables.Add(x));
+            }
 
             FillEntriesTypes();
 
             RefreshAll();
+        }
+
+        private void TargetTableList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Column.Output = SelectedTargetTable;
+
+            InitEntries();
+
+            FillEntriesTypes();
         }
 
         private readonly ICommand okCommand;
@@ -320,7 +358,8 @@ namespace Samm.Dialogs
         }
         private bool OkCommand_CanExecute(object state)
         {
-            if (string.IsNullOrWhiteSpace(targetTableName.Text)) return false;
+            if (SelectedTargetSchema == null) return false;
+            if (SelectedTargetTable == null) return false;
 
             if (string.IsNullOrWhiteSpace(columnName.Text)) return false;
             
@@ -389,17 +428,15 @@ namespace Samm.Dialogs
             }
 
             Column.Name = ColumnName;
-            Column.Output.Name = TargetTableName;
+            //Column.Output.Name = SelectedTargetTable.Name;
 
             if (IsNew)
             {
                 Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
                 Column.Definition.IsAppendData = true;
-                Column.Add();
 
                 Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
-                SelectedTargetSchema.AddTable(Column.Output, null, null);
             }
 
             this.DialogResult = true;
