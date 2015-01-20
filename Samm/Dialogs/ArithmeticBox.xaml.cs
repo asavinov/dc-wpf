@@ -342,7 +342,7 @@ namespace Samm.Dialogs
                 // Column type
                 // Derive output type of the expression and use it to set the type of the column. 
                 // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
-                expr.Resolve(schema, new List<ComVariable>() { new Variable("this", SourceTable) });
+                expr.Resolve(schema.Workspace, new List<ComVariable>() { new Variable(SourceTable, "this") });
                 Column.Output = expr.Result.TypeTable;
 
                 Column.Definition.FormulaExpr = expr;

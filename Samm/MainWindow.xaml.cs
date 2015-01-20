@@ -223,6 +223,7 @@ namespace Samm
             //
             ComSchema mashupTop = new Schema("New Mashup");
             mashupTop = CreateSampleSchema();
+            mashupTop.Workspace = Workspace;
             Workspace.Schemas.Add(mashupTop);
             Workspace.Mashup = mashupTop;
 
