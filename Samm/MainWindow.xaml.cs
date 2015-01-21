@@ -231,8 +231,9 @@ namespace Samm
             // Initialize predefined schemas
             //
             SchemaCsv csvSchema = new SchemaCsv("My Files");
-            ConnectionCsv conn = new ConnectionCsv();
+            csvSchema.Workspace = Workspace;
             Workspace.Schemas.Add(csvSchema);
+            ConnectionCsv conn = new ConnectionCsv();
 
             //
             // Update the model that is shown in the visual component
