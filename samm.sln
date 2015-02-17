@@ -8,9 +8,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samm", "Samm\Samm.csproj", 
 		{DC3924C8-D2E2-4BAE-B9CC-BF6BE5F85DF8} = {DC3924C8-D2E2-4BAE-B9CC-BF6BE5F85DF8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com", "..\comcsharp\Com\Com.csproj", "{DC3924C8-D2E2-4BAE-B9CC-BF6BE5F85DF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Com", "..\dce-csharp\Com\Com.csproj", "{DC3924C8-D2E2-4BAE-B9CC-BF6BE5F85DF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\comcsharp\Test\Test.csproj", "{9D4B88D3-9D2F-4774-9A9C-9942ECAF26F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "..\dce-csharp\Test\Test.csproj", "{9D4B88D3-9D2F-4774-9A9C-9942ECAF26F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

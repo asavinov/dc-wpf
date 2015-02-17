@@ -69,13 +69,12 @@
     <StartupObject>Samm.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CsvHelper.2.10.0\lib\net40-client\CsvHelper.dll</HintPath>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.11.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1-beta1\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -380,7 +379,7 @@
     <Folder Include="Connections\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\comcsharp\Com\Com.csproj">
+    <ProjectReference Include="..\..\dce-csharp\Com\Com.csproj">
       <Project>{dc3924c8-d2e2-4bae-b9cc-bf6be5f85df8}</Project>
       <Name>Com</Name>
     </ProjectReference>
