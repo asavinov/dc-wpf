@@ -400,8 +400,19 @@ namespace Samm.Dialogs
                 {
                     ComTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
-                    targetColumn = SelectedTargetSchema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
-                    targetColumn.Add();
+
+                    // Check if a column with this name already exists
+                    targetColumn = Column.Output.GetColumn(targetColumnName);
+                    if (targetColumn != null)
+                    {
+                        targetColumn.Output = targetType; // Alternatively, we can remove it and create a new column below
+                    }
+
+                    if (targetColumn == null) // Could not reuse an existing column
+                    {
+                        targetColumn = SelectedTargetSchema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
+                        targetColumn.Add();
+                    }
 
                     mapping.AddMatch(new PathMatch(new DimPath(sourceColumn), new DimPath(targetColumn)));
                 }
@@ -432,6 +443,18 @@ namespace Samm.Dialogs
 
             if (IsNew)
             {
+                // Target table could contain original columns from previous uses (loaded from csv file or added manually). Now they are not needed.
+                foreach (ComColumn targetColumn in Column.Output.Columns)
+                {
+                    PathMatch match = mapping.GetMatchForTarget(new DimPath(targetColumn));
+                    if (match != null) continue;
+                    if (targetColumn.Definition.DefinitionType != ColumnDefinitionType.FREE) continue;
+                    if (targetColumn.Definition.DefinitionType != ColumnDefinitionType.ANY) continue;
+
+                    targetColumn.Remove();
+                }
+
+                // Set parameters of the new column
                 Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
                 Column.Definition.IsAppendData = true;
