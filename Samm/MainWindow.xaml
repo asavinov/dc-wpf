@@ -265,25 +265,25 @@
                             </Menu>
                             -->
                             <Button ToolTip="New table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
-                                <Image Source="Images\table_add.png" />
+                                <Image Source="Images\table_add2.png" />
                             </Button>
                             <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
-                                <Image Source="Images\table_filter.png" />
+                                <Image Source="Images\table_filter2.png" />
                             </Button>
                             <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
-                                <Image Source="Images\table_edit.png" />
+                                <Image Source="Images\table_edit2.png" />
                             </Button>
                             <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
-                                <Image Source="Images\table_rename.png" />
+                                <Image Source="Images\table_rename2.png" />
                             </Button>
                             <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
-                                <Image Source="Images\table_delete.png" />
+                                <Image Source="Images\table_delete2.png" />
                             </Button>
                             <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
-                                <Image Source="Images\table_update.png" />
+                                <Image Source="Images\table_update2.png" />
                             </Button>
                             <Button ToolTip="View Table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
-                                <Image Source="Images\view_table.png" />
+                                <Image Source="Images\table_view2.png" />
                            </Button>
 
                             <!-- <RibbonButton LargeImageSource="Images\table_filter.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilterTableCommand}" />  -->

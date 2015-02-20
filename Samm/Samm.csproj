@@ -304,6 +304,7 @@
     <Resource Include="Images\add_sql_server.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\table_add2.png" />
     <Resource Include="Images\update_all.png" />
   </ItemGroup>
   <ItemGroup>
@@ -339,9 +340,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\product_table.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\view_table.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\close_view.png" />
@@ -385,12 +383,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\table_add.png" />
-    <Resource Include="Images\table_delete.png" />
-    <Resource Include="Images\table_edit.png" />
-    <Resource Include="Images\table_filter.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\add_free.png" />
   </ItemGroup>
   <ItemGroup>
@@ -403,13 +395,7 @@
     <Resource Include="Images\node_schema.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\table_update.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\column_rename.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\table_rename.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\column_add.png" />
@@ -417,6 +403,14 @@
     <Resource Include="Images\column_edit.png" />
     <Resource Include="Images\column_update.png" />
     <Resource Include="Images\table_extract.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\table_delete2.png" />
+    <Resource Include="Images\table_edit2.png" />
+    <Resource Include="Images\table_filter2.png" />
+    <Resource Include="Images\table_rename2.png" />
+    <Resource Include="Images\table_update2.png" />
+    <Resource Include="Images\table_view2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
