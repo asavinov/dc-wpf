@@ -21,7 +21,7 @@ namespace Samm
         public DataGrid Grid { get; set; } // It is a view where the data is visualized
 
 
-        public ComTable Set { get; set; } // It is a model which contains data to be visualized
+        public DcTable Set { get; set; } // It is a model which contains data to be visualized
 
         public List<DimPath> Paths { get; set; } // Only these paths will be displayed
 
@@ -49,7 +49,7 @@ namespace Samm
                     Or we could simply return from Current an array of string values to be shown in the grid (which has by definition an indexer).
                     -+ values are copied and transformed into string which is good if they are anyway copied, + formatting and options can be controled by the set parameters
         */
-        public SetGridView(ComTable _set) 
+        public SetGridView(DcTable _set) 
         {
             Set = _set;
 
@@ -96,7 +96,7 @@ namespace Samm
             {
                 for (int i = 0; i < Set.Columns.Count; i++)
                 {
-                    ComColumn dim = Set.Columns[i];
+                    DcColumn dim = Set.Columns[i];
                     if (dim.IsSuper) continue;
 
                     Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
@@ -241,7 +241,7 @@ namespace Samm
                 {
                     int dimCount = GridView.Set.Columns.Count;
                     if (index < 0 || index >= dimCount) return null;
-                    ComColumn dim = GridView.Set.Columns[index];
+                    DcColumn dim = GridView.Set.Columns[index];
 
                     if (dim.Data.IsNull(Offset))
                     {
@@ -266,7 +266,7 @@ namespace Samm
 
         public string Value(string dimName)
         {
-            ComColumn dim = GridView.Set.GetColumn(dimName);
+            DcColumn dim = GridView.Set.GetColumn(dimName);
             if (dim == null) return null;
             return (string)dim.Data.GetValue(Offset);
         }

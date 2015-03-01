@@ -30,12 +30,12 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        ComColumn Column { get; set; }
+        DcColumn Column { get; set; }
 
-        public ComTable SourceTable { get; set; }
+        public DcTable SourceTable { get; set; }
 
-        public List<ComTable> FactTables { get; set; }
-        public ComTable FactTable { get; set; }
+        public List<DcTable> FactTables { get; set; }
+        public DcTable FactTable { get; set; }
 
         public List<DimPath> GroupingPaths { get; set; } // Alternative paths from the fact to the source
         public DimPath GroupingPath { get; set; }
@@ -81,7 +81,7 @@ namespace Samm.Dialogs
             //aggregationFunctions.Items.Refresh();
         }
 
-        public AggregationBox(ComColumn column, ComColumn measureColumn)
+        public AggregationBox(DcColumn column, DcColumn measureColumn)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
@@ -111,7 +111,7 @@ namespace Samm.Dialogs
             if (IsNew && measureColumn != null)
             {
                 // Find at least one fact table that has a measure path to this measure column
-                foreach (ComTable table in FactTables)
+                foreach (DcTable table in FactTables)
                 {
                     var pathEnum = new PathEnumerator(
                         table,
@@ -151,7 +151,7 @@ namespace Samm.Dialogs
             //
             // Initialize grouping paths. Paths from the fact set to the source set
             //
-            var grPaths = new PathEnumerator((ComTable)factTable, SourceTable, DimensionType.IDENTITY_ENTITY);
+            var grPaths = new PathEnumerator((DcTable)factTable, SourceTable, DimensionType.IDENTITY_ENTITY);
             GroupingPaths = grPaths.ToList<DimPath>();
 
             // Select some grouping path item
@@ -172,10 +172,10 @@ namespace Samm.Dialogs
             //
             // Initialize measure paths. Paths from the fact set to numeric sets
             //
-            ComSchema schema = ((ComTable)factTable).Schema;
+            DcSchema schema = ((DcTable)factTable).Schema;
             var mePaths = new PathEnumerator(
-                new List<ComTable>(new ComTable[] { (ComTable)factTable }),
-                new List<ComTable>(new ComTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
+                new List<DcTable>(new DcTable[] { (DcTable)factTable }),
+                new List<DcTable>(new DcTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }),
                 false,
                 DimensionType.IDENTITY_ENTITY
                );
@@ -236,13 +236,13 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            ComSchema schema = Column.Input.Schema;
+            DcSchema schema = Column.Input.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;
 
             // Column type
-            ComTable targetTable = null;
+            DcTable targetTable = null;
             if (AggregationFunction == "COUNT")
             {
                 targetTable = schema.GetPrimitive("Integer"); ;

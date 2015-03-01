@@ -117,11 +117,11 @@ namespace Samm.Controls
             SubsetTree itemData = (SubsetTree)item.DataContext;
             if (itemData.IsSubsetNode)
             {
-                if (data is ComTable && itemData.Input == data) found = true;
+                if (data is DcTable && itemData.Input == data) found = true;
             }
             else if (itemData.IsDimensionNode)
             {
-                if (data is ComColumn && itemData.Dim == data) found = true;
+                if (data is DcColumn && itemData.Dim == data) found = true;
             }
             else
             {

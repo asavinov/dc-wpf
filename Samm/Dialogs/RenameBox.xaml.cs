@@ -30,9 +30,9 @@ namespace Samm.Dialogs
         public bool IsTable = false;
         public bool IsColumn = false;
 
-        protected ComSchema Schema { get { if (Element is ComSchema) return (ComSchema)Element; else if (Element is ComTable) return ((ComTable)Element).Schema; else if (Element is ComColumn) return ((ComColumn)Element).Input.Schema; else return null; } }
-        protected ComTable Table { get { if (Element is ComSchema) return (ComTable)Element; else if (Element is ComTable) return ((ComTable)Element); else if (Element is ComColumn) return ((ComColumn)Element).Input; else return null; } }
-        protected ComColumn Column { get { if (Element is ComSchema) return null; else if (Element is ComTable) return null; else if (Element is ComColumn) return (ComColumn)Element; else return null; } }
+        protected DcSchema Schema { get { if (Element is DcSchema) return (DcSchema)Element; else if (Element is DcTable) return ((DcTable)Element).Schema; else if (Element is DcColumn) return ((DcColumn)Element).Input.Schema; else return null; } }
+        protected DcTable Table { get { if (Element is DcSchema) return (DcTable)Element; else if (Element is DcTable) return ((DcTable)Element); else if (Element is DcColumn) return ((DcColumn)Element).Input; else return null; } }
+        protected DcColumn Column { get { if (Element is DcSchema) return null; else if (Element is DcTable) return null; else if (Element is DcColumn) return (DcColumn)Element; else return null; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -40,17 +40,17 @@ namespace Samm.Dialogs
         {
             Element = element;
 
-            if (element is ComSchema)
+            if (element is DcSchema)
             {
                 IsSchema = true;
                 OldName = Schema.Name;
             }
-            else if(element is ComTable) 
+            else if(element is DcTable) 
             {
                 IsTable = true;
                 OldName = Table.Name;
             }
-            else if(element is ComColumn) 
+            else if(element is DcColumn) 
             {
                 IsColumn = true;
                 OldName = Column.Name;
@@ -72,19 +72,19 @@ namespace Samm.Dialogs
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
             // Really rename the element and propagate this change through all objects where this element name is used
-            if (Element is ComSchema)
+            if (Element is DcSchema)
             {
                 Schema.RenameTable(Schema, NewName);
                 Schema.Name = NewName;
                 ((Set)Schema).NotifyPropertyChanged("");
             }
-            else if (Element is ComTable)
+            else if (Element is DcTable)
             {
                 Schema.RenameTable(Table, NewName);
                 Table.Name = NewName;
                 ((Set)Table).NotifyPropertyChanged("");
             }
-            else if (Element is ComColumn)
+            else if (Element is DcColumn)
             {
                 Schema.RenameColumn(Column, NewName);
                 Column.Name = NewName;

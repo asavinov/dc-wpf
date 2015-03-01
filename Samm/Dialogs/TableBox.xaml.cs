@@ -24,14 +24,14 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        public ComSchema Schema { get; set; }
+        public DcSchema Schema { get; set; }
 
-        public ComTable Table { get; set; }
+        public DcTable Table { get; set; }
         public string TableName { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TableBox(ComSchema schema, ComTable table)
+        public TableBox(DcSchema schema, DcTable table)
         {
             Schema = schema;
 

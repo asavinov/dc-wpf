@@ -24,8 +24,8 @@ namespace Samm.Controls
     public partial class TableListControl : UserControl
     {
         // Tables from this schema are shown (context)
-        protected ComSchema _schema;
-        public ComSchema Schema 
+        protected DcSchema _schema;
+        public DcSchema Schema 
         {
             get { return _schema; }
             set
@@ -41,7 +41,7 @@ namespace Samm.Controls
                 ((Set)_schema.Root).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
 
                 // Fill the list of items
-                foreach (ComTable table in _schema.Root.SubTables)
+                foreach (DcTable table in _schema.Root.SubTables)
                 {
                     Items.Add(table);
                 }
@@ -49,11 +49,11 @@ namespace Samm.Controls
         }
 
         // What is displayed in the list and bound to it as (ItemsSource)
-        public ObservableCollection<ComTable> Items { get; set; }
+        public ObservableCollection<DcTable> Items { get; set; }
 
         // It is what we bind to the list view (SelectedItem)
-        private ComTable _selectedItem;
-        public ComTable SelectedItem
+        private DcTable _selectedItem;
+        public DcTable SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -69,7 +69,7 @@ namespace Samm.Controls
 
         public TableListControl()
         {
-            Items = new ObservableCollection<ComTable>();
+            Items = new ObservableCollection<DcTable>();
 
             InitializeComponent();
         }
@@ -79,7 +79,7 @@ namespace Samm.Controls
         {
             if (e.Action == NotifyCollectionChangedAction.Add) // Decide if this node has to add a new child node
             {
-                ComColumn column = e.NewItems != null && e.NewItems.Count > 0 ? (ComColumn)e.NewItems[0] : null;
+                DcColumn column = e.NewItems != null && e.NewItems.Count > 0 ? (DcColumn)e.NewItems[0] : null;
                 if (column == null) return;
 
                 if (column.IsSuper && !Items.Contains(column.Input))
@@ -89,7 +89,7 @@ namespace Samm.Controls
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                ComColumn column = e.OldItems != null && e.OldItems.Count > 0 ? (ComColumn)e.OldItems[0] : null;
+                DcColumn column = e.OldItems != null && e.OldItems.Count > 0 ? (DcColumn)e.OldItems[0] : null;
                 if (column == null) return;
 
                 if (column.IsSuper && Items.Contains(column.Input))

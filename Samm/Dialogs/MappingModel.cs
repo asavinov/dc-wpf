@@ -24,8 +24,8 @@ namespace Samm.Dialogs
 
         public Mapping Mapping { get; set; } // It is the current state of the mapping. And it is what is initialized and returned. 
 
-        private ComTable _sourceSet;
-        public ComTable SourceSet 
+        private DcTable _sourceSet;
+        public DcTable SourceSet 
         {
             get { return _sourceSet; }
             set 
@@ -45,8 +45,8 @@ namespace Samm.Dialogs
             }
         }
 
-        private ComTable _targetSet;
-        public ComTable TargetSet
+        private DcTable _targetSet;
+        public DcTable TargetSet
         {
             get { return _targetSet; }
             set
@@ -196,14 +196,14 @@ namespace Samm.Dialogs
         }
 
 
-        public static List<ComTable> GetPossibleGreaterSets(ComTable table)
+        public static List<DcTable> GetPossibleGreaterSets(DcTable table)
         {
             // Possible target sets: all sets from the schema excepting: 
             // not source, not lesser, primitive?, no cycles (here we need an algorithm for detecting cycles)
 
-            List<ComTable> all = table.Schema.Root.AllSubTables;
-            List<ComTable> result = new List<ComTable>();
-            foreach (ComTable set in all)
+            List<DcTable> all = table.Schema.Root.AllSubTables;
+            List<DcTable> result = new List<DcTable>();
+            foreach (DcTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
                 if (set.IsInput(table)) continue; // We cannot point to a lesser set (cycle)
@@ -214,14 +214,14 @@ namespace Samm.Dialogs
             return result;
         }
 
-        public static List<ComTable> GetPossibleLesserSets(ComTable table) // Fact sets
+        public static List<DcTable> GetPossibleLesserSets(DcTable table) // Fact sets
         {
             // Possible target sets: all sets from the schema excepting: 
             // not source, not greater, there is lesser path
 
-            List<ComTable> all = table.Schema.Root.AllSubTables;
-            List<ComTable> result = new List<ComTable>();
-            foreach (ComTable set in all)
+            List<DcTable> all = table.Schema.Root.AllSubTables;
+            List<DcTable> result = new List<DcTable>();
+            foreach (DcTable set in all)
             {
                 if (set == table) continue; // We cannot point to itself
                 if (!set.IsInput(table)) continue;
@@ -232,14 +232,14 @@ namespace Samm.Dialogs
             return result;
         }
 
-        public MappingModel(ComColumn sourceDim, ComColumn targetDim)
+        public MappingModel(DcColumn sourceDim, DcColumn targetDim)
             : this(sourceDim.Output, targetDim.Output)
         {
             SourceTree.Children[0].Dim = sourceDim;
             TargetTree.Children[0].Dim = targetDim;
         }
 
-        public MappingModel(ComTable sourceSet, ComTable targetSet)
+        public MappingModel(DcTable sourceSet, DcTable targetSet)
         {
             mapper = new Mapper();
             mapper.MaxMappingsToBuild = 100;
@@ -392,12 +392,12 @@ namespace Samm.Dialogs
             throw new NotImplementedException();
         }
 
-        public MatchTreeNode(ComColumn dim, DimTree parent = null)
+        public MatchTreeNode(DcColumn dim, DimTree parent = null)
             : base(dim, parent)
         {
         }
 
-        public MatchTreeNode(ComTable set, DimTree parent = null)
+        public MatchTreeNode(DcTable set, DimTree parent = null)
             : base(set, parent)
         {
         }

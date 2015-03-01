@@ -26,13 +26,13 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        ComColumn Column { get; set; }
+        DcColumn Column { get; set; }
 
         public string NewColumnName { get; set; }
 
         public MappingModel MappingModel { get; set; }
 
-        public ObservableCollection<ComTable> TargetTables { get; set; }
+        public ObservableCollection<DcTable> TargetTables { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -55,7 +55,7 @@ namespace Samm.Dialogs
             targetTree.GetBindingExpression(TreeView.DataContextProperty).UpdateTarget();
         }
 
-        public PathMappingBox(ComColumn column)
+        public PathMappingBox(DcColumn column)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
@@ -65,21 +65,21 @@ namespace Samm.Dialogs
             else IsNew = true;
 
             Column = column;
-            ComTable sourceTable = column.Input;
-            ComTable targetTable = column.Output;
+            DcTable sourceTable = column.Input;
+            DcTable targetTable = column.Output;
 
             // Name
             NewColumnName = Column.Name;
 
             // Compute possible target tables
-            TargetTables = new ObservableCollection<ComTable>(MappingModel.GetPossibleGreaterSets(sourceTable));
+            TargetTables = new ObservableCollection<DcTable>(MappingModel.GetPossibleGreaterSets(sourceTable));
 
             // TODO: Suggest the best target type
             if (targetTable == null)
             {
                 // Compare the quality of gest mappings from the the source set to possible target sets
 
-                ComTable bestTargetTable = TargetTables.Count > 0 ? TargetTables[0] : null;
+                DcTable bestTargetTable = TargetTables.Count > 0 ? TargetTables[0] : null;
                 double bestSimilarity = 0.0;
                 /*
                 foreach (ComTable set in targetTables)
@@ -146,7 +146,7 @@ namespace Samm.Dialogs
 
             if (set == null) return;
 
-            MappingModel.TargetSet = (ComTable)set;
+            MappingModel.TargetSet = (DcTable)set;
 
             RefreshAll(); // Refresh
         }
@@ -168,7 +168,7 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            ComSchema schema = Column.Input.Schema;
+            DcSchema schema = Column.Input.Schema;
 
             // Column name
             Column.Name = newColumnName.Text;
@@ -176,7 +176,7 @@ namespace Samm.Dialogs
             // Column type
             if (IsNew)
             {
-                Column.Output = (ComTable)targetTables.SelectedItem;
+                Column.Output = (DcTable)targetTables.SelectedItem;
             }
 
             // Column definition

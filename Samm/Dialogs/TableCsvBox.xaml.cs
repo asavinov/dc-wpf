@@ -26,16 +26,16 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        public ComSchema Schema { get; set; }
+        public DcSchema Schema { get; set; }
 
-        public ComTable Table { get; set; }
+        public DcTable Table { get; set; }
         public string TableName { get; set; }
 
         public bool HasHeaderRecord { get; set; }
         public string Delimiter { get; set; }
         public string Decimal { get; set; }
 
-        public ObservableCollection<ComColumn> TableColumns { get; set; }
+        public ObservableCollection<DcColumn> TableColumns { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -47,7 +47,7 @@ namespace Samm.Dialogs
             sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
-        public TableCsvBox(ComSchema schema, ComTable table)
+        public TableCsvBox(DcSchema schema, DcTable table)
         {
             this.chooseSourceCommand = new DelegateCommand(this.ChooseSourceCommand_Executed, this.ChooseSourceCommand_CanExecute);
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
@@ -64,7 +64,7 @@ namespace Samm.Dialogs
             Schema = schema;
             Table = table;
 
-            TableColumns = new ObservableCollection<ComColumn>();
+            TableColumns = new ObservableCollection<DcColumn>();
 
             if (IsNew)
             {
@@ -82,7 +82,7 @@ namespace Samm.Dialogs
             Delimiter = ((SetCsv)Table).Delimiter;
             Decimal = ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator;
 
-            foreach (ComColumn column in Table.Columns)
+            foreach (DcColumn column in Table.Columns)
             {
                 TableColumns.Add(column);
             }
@@ -100,9 +100,9 @@ namespace Samm.Dialogs
                 return;
             }
 
-            List<ComColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
+            List<DcColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
 
-            foreach (ComColumn column in columns)
+            foreach (DcColumn column in columns)
             {
                 TableColumns.Add(column);
             }
@@ -232,7 +232,7 @@ namespace Samm.Dialogs
                 Table.Name = TableName;
 
                 // In fact, we have to update columns (leave used, remove unused, and add new)
-                foreach (ComColumn column in Table.Columns.ToArray())
+                foreach (DcColumn column in Table.Columns.ToArray())
                 {
                     if (column.IsSuper) continue;
                     column.Remove();

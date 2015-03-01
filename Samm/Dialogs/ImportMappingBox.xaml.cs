@@ -25,9 +25,9 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        public ComSchema SourceSchema { get; set; }
-        public ComColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
-        public ComSchema TargetSchema { get; set; }
+        public DcSchema SourceSchema { get; set; }
+        public DcColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
+        public DcSchema TargetSchema { get; set; }
 
 
         public string NewColumnName { get; set; }
@@ -52,7 +52,7 @@ namespace Samm.Dialogs
 
         }
 
-        public ImportMappingBox(ComSchema sourceSchema, ComSchema targetSchema, ComColumn column, List<ComColumn> initialColumns)
+        public ImportMappingBox(DcSchema sourceSchema, DcSchema targetSchema, DcColumn column, List<DcColumn> initialColumns)
         {
             SourceColumnEntries = new ObservableCollection<ImportMappingEntry>();
 
@@ -116,12 +116,12 @@ namespace Samm.Dialogs
 
             // Initialize a list of entries
 
-            List<ComTable> targetTypes = new List<ComTable>();
+            List<DcTable> targetTypes = new List<DcTable>();
             targetTypes.Add(TargetSchema.GetPrimitive("Integer"));
             targetTypes.Add(TargetSchema.GetPrimitive("Double"));
             targetTypes.Add(TargetSchema.GetPrimitive("String"));
 
-            foreach (ComColumn sourceColumn in mapping.SourceSet.Columns)
+            foreach (DcColumn sourceColumn in mapping.SourceSet.Columns)
             {
                 if (sourceColumn.IsSuper) continue;
                 if (!sourceColumn.IsPrimitive) continue;
@@ -253,15 +253,15 @@ namespace Samm.Dialogs
             // For each entry decide what to do with the corresponding 1. match in the mapping 2. target column, depending on the comparision with the existing 1. match, target column
             foreach (var entry in SourceColumnEntries)
             {
-                ComColumn sourceColumn = entry.Source;
+                DcColumn sourceColumn = entry.Source;
 
                 PathMatch match = mapping.GetMatchForSource(new DimPath(sourceColumn));
 
-                ComColumn targetColumn;
+                DcColumn targetColumn;
 
                 if (entry.IsMatched && match == null) // Newly added. Creation
                 {
-                    ComTable targetType = entry.TargetType;
+                    DcTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
                     targetColumn = TargetSchema.CreateColumn(targetColumnName, Column.Output, targetType, entry.IsKey);
                     targetColumn.Add();
@@ -314,17 +314,17 @@ namespace Samm.Dialogs
     /// </summary>
     public class ImportMappingEntry
     {
-        public ComColumn Source { get; set; }
+        public DcColumn Source { get; set; }
 
-        public ComColumn Target { get; set; }
+        public DcColumn Target { get; set; }
 
         public bool IsMatched { get; set; }
         public bool IsKey { get; set; }
 
-        public List<ComTable> TargetTypes { get; set; }
-        public ComTable TargetType { get; set; }
+        public List<DcTable> TargetTypes { get; set; }
+        public DcTable TargetType { get; set; }
 
-        public ImportMappingEntry(ComColumn sourceColumn)
+        public ImportMappingEntry(DcColumn sourceColumn)
         {
             Source = sourceColumn;
 

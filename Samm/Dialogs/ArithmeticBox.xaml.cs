@@ -45,9 +45,9 @@ namespace Samm.Dialogs
         bool IsWhere { get; set; } // True if we edit Where expression of a table (lesser table of the column parameter)
         bool IsNew { get; set; }
 
-        ComColumn Column { get; set; }
+        DcColumn Column { get; set; }
 
-        public ComTable SourceTable { get; set; }
+        public DcTable SourceTable { get; set; }
 
         public List<DimPath> SourcePaths { get; set; }
 
@@ -69,7 +69,7 @@ namespace Samm.Dialogs
             expressionModel.ExprTreeView.Items.Refresh();
         }
 
-        public ArithmeticBox(ComColumn column, bool whereExpression)
+        public ArithmeticBox(DcColumn column, bool whereExpression)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
@@ -79,8 +79,8 @@ namespace Samm.Dialogs
             else IsNew = true;
 
             Column = column;
-            ComTable sourceTable = column.Input;
-            ComSchema schema = sourceTable.Schema;
+            DcTable sourceTable = column.Input;
+            DcSchema schema = sourceTable.Schema;
 
             SourceTable = sourceTable;
 
@@ -131,8 +131,8 @@ namespace Samm.Dialogs
 
             // Initialize a list of possible column accesses
             var paths = new PathEnumerator(
-                new List<ComTable>(new ComTable[] { SourceTable }),
-                new List<ComTable>(new ComTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }), 
+                new List<DcTable>(new DcTable[] { SourceTable }),
+                new List<DcTable>(new DcTable[] { schema.GetPrimitive("Integer"), schema.GetPrimitive("Double") }), 
                 false, 
                 DimensionType.IDENTITY_ENTITY
                );
@@ -302,7 +302,7 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            ComSchema schema = Column.Input.Schema;
+            DcSchema schema = Column.Input.Schema;
 
             // Column name
             if (IsWhere)
@@ -342,7 +342,7 @@ namespace Samm.Dialogs
                 // Column type
                 // Derive output type of the expression and use it to set the type of the column. 
                 // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
-                expr.Resolve(schema.Workspace, new List<ComVariable>() { new Variable(SourceTable, "this") });
+                expr.Resolve(schema.Workspace, new List<DcVariable>() { new Variable(SourceTable, "this") });
                 Column.Output = expr.Result.TypeTable;
 
                 Column.Definition.FormulaExpr = expr;

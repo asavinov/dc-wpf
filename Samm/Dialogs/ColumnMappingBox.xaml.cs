@@ -61,7 +61,7 @@ namespace Samm.Dialogs
         //
         // Link column connecting an existing fixed source table with a target table
         //
-        public ComColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
+        public DcColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
         public string ColumnName { get; set; }
 
         public ObservableCollection<ColumnMappingEntry> Entries { get; set; } // Describe mapping 
@@ -69,10 +69,10 @@ namespace Samm.Dialogs
         //
         // Target table including its schema
         //
-        public ObservableCollection<ComSchema> TargetSchemas { get; set; }
-        public ComSchema SelectedTargetSchema { get; set; }
-        public ObservableCollection<ComTable> TargetTables { get; set; }
-        public ComTable SelectedTargetTable { get; set; }
+        public ObservableCollection<DcSchema> TargetSchemas { get; set; }
+        public DcSchema SelectedTargetSchema { get; set; }
+        public ObservableCollection<DcTable> TargetTables { get; set; }
+        public DcTable SelectedTargetTable { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -90,7 +90,7 @@ namespace Samm.Dialogs
             targetTableList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
         }
 
-        public ColumnMappingBox(ObservableCollection<ComSchema> targetSchemas, ComColumn column, List<ComColumn> initialColumns)
+        public ColumnMappingBox(ObservableCollection<DcSchema> targetSchemas, DcColumn column, List<DcColumn> initialColumns)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
@@ -107,7 +107,7 @@ namespace Samm.Dialogs
             // Init target schema list
             //
             TargetSchemas = targetSchemas;
-            TargetTables = new ObservableCollection<ComTable>();
+            TargetTables = new ObservableCollection<DcTable>();
 
             Entries = new ObservableCollection<ColumnMappingEntry>();
             InitEntries();
@@ -192,10 +192,10 @@ namespace Samm.Dialogs
 
             if (mapping == null) return;
 
-            ComTable sourceTable = mapping.SourceSet;
-            ComTable targetTable = mapping.TargetSet;
+            DcTable sourceTable = mapping.SourceSet;
+            DcTable targetTable = mapping.TargetSet;
 
-            foreach (ComColumn sourceColumn in sourceTable.Columns)
+            foreach (DcColumn sourceColumn in sourceTable.Columns)
             {
                 if (sourceColumn.IsSuper) continue;
                 if (!sourceColumn.IsPrimitive) continue;
@@ -235,10 +235,10 @@ namespace Samm.Dialogs
             // If some current type is not present in the new schema then deselect this entry
             // If an entry is selected then it must have some type selected (it is error if an entry does not have a selected type)
 
-            List<ComTable> targetTypes = GetSchemaTypes();
+            List<DcTable> targetTypes = GetSchemaTypes();
 
-            ComTable defaultType = null;
-            foreach (ComTable table in targetTypes)
+            DcTable defaultType = null;
+            foreach (DcTable table in targetTypes)
             {
                 if (StringSimilarity.SameTableName(table.Name, "String"))
                 {
@@ -258,8 +258,8 @@ namespace Samm.Dialogs
                 // Target type has been selected. Try to find the same type
                 if (entry.TargetType != null)
                 {
-                    ComTable targetType = null;
-                    foreach (ComTable table in targetTypes)
+                    DcTable targetType = null;
+                    foreach (DcTable table in targetTypes)
                     {
                         if (StringSimilarity.SameTableName(table.Name, entry.TargetType.Name))
                         {
@@ -277,8 +277,8 @@ namespace Samm.Dialogs
                 // Either not selected or not found. Try to select the source type
                 if (entry.Source.Output != null)
                 {
-                    ComTable targetType = null;
-                    foreach (ComTable table in targetTypes)
+                    DcTable targetType = null;
+                    foreach (DcTable table in targetTypes)
                     {
                         if (StringSimilarity.SameTableName(table.Name, entry.Source.Output.Name))
                         {
@@ -299,9 +299,9 @@ namespace Samm.Dialogs
 
         }
 
-        private List<ComTable> GetSchemaTypes() // The user chooses the desired column type from this list
+        private List<DcTable> GetSchemaTypes() // The user chooses the desired column type from this list
         {
-            var targetTypes = new List<ComTable>();
+            var targetTypes = new List<DcTable>();
             if (SelectedTargetSchema == null)
             {
                 ;
@@ -325,7 +325,7 @@ namespace Samm.Dialogs
             TargetTables.Clear();
             if (SelectedTargetSchema != null)
             {
-                List<ComTable> targetTables;
+                List<DcTable> targetTables;
                 if(SelectedTargetSchema == Column.Input.Schema) // Intra-schema link
                 {
                     targetTables = MappingModel.GetPossibleGreaterSets(Column.Input);
@@ -390,15 +390,15 @@ namespace Samm.Dialogs
             // For each entry decide what to do with the corresponding 1. match in the mapping 2. target column, depending on the comparision with the existing 1. match, target column
             foreach (var entry in Entries)
             {
-                ComColumn sourceColumn = entry.Source;
+                DcColumn sourceColumn = entry.Source;
 
                 PathMatch match = mapping.GetMatchForSource(new DimPath(sourceColumn));
 
-                ComColumn targetColumn;
+                DcColumn targetColumn;
 
                 if (entry.IsMatched && match == null) // Newly added. Creation
                 {
-                    ComTable targetType = entry.TargetType;
+                    DcTable targetType = entry.TargetType;
                     string targetColumnName = sourceColumn.Name;
 
                     // Check if a column with this name already exists
@@ -444,7 +444,7 @@ namespace Samm.Dialogs
             if (IsNew)
             {
                 // Target table could contain original columns from previous uses (loaded from csv file or added manually). Now they are not needed.
-                foreach (ComColumn targetColumn in Column.Output.Columns)
+                foreach (DcColumn targetColumn in Column.Output.Columns)
                 {
                     PathMatch match = mapping.GetMatchForTarget(new DimPath(targetColumn));
                     if (match != null) continue;
@@ -472,24 +472,24 @@ namespace Samm.Dialogs
     /// </summary>
     public class ColumnMappingEntry
     {
-        public ComColumn Source { get; set; }
+        public DcColumn Source { get; set; }
 
-        public ComColumn Target { get; set; }
+        public DcColumn Target { get; set; }
 
         public bool IsMatched { get; set; }
         public bool IsKey { get; set; }
 
-        public ObservableCollection<ComTable> TargetTypes { get; set; }
-        public ComTable TargetType { get; set; }
+        public ObservableCollection<DcTable> TargetTypes { get; set; }
+        public DcTable TargetType { get; set; }
 
-        public ColumnMappingEntry(ComColumn sourceColumn)
+        public ColumnMappingEntry(DcColumn sourceColumn)
         {
             Source = sourceColumn;
 
             IsMatched = false;
             IsKey = sourceColumn.IsKey;
 
-            TargetTypes = new ObservableCollection<ComTable>();
+            TargetTypes = new ObservableCollection<DcTable>();
         }
 
     }

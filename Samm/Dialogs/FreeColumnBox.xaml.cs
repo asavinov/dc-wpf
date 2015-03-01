@@ -25,9 +25,9 @@ namespace Samm.Dialogs
     {
         bool IsNew { get; set; }
 
-        public ComSchema Schema { get; set; }
+        public DcSchema Schema { get; set; }
 
-        public ComTable Table { get; set; }
+        public DcTable Table { get; set; }
 
         public string TableName { get; set; }
 
@@ -45,7 +45,7 @@ namespace Samm.Dialogs
             //newTableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
-        public FreeColumnBox(ComSchema schema, ComTable table)
+        public FreeColumnBox(DcSchema schema, DcTable table)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
@@ -82,7 +82,7 @@ namespace Samm.Dialogs
             // In other words, it is a more general version of adding only one column. 
             // If we want to remove a (free) column the just Delete it as an object.
 
-            foreach (ComTable gTab in Schema.Root.SubTables)
+            foreach (DcTable gTab in Schema.Root.SubTables)
             {
                 if (gTab == Table) continue; // We cannot reference this same table
                 // TODO: Also exclude tables which produce cycles
@@ -123,7 +123,7 @@ namespace Samm.Dialogs
             {
                 if (!entry.IsSelected) continue;
 
-                ComTable gSet = entry.Table;
+                DcTable gSet = entry.Table;
                 string columnName = entry.ColumnName;
                 if (string.IsNullOrWhiteSpace(columnName))
                 {
@@ -132,7 +132,7 @@ namespace Samm.Dialogs
 
                 // TODO: Check if such a column already exists (name)
 
-                ComColumn gDim = Schema.CreateColumn(columnName, Table, gSet, true);
+                DcColumn gDim = Schema.CreateColumn(columnName, Table, gSet, true);
                 gDim.Add();
             }
 
@@ -145,7 +145,7 @@ namespace Samm.Dialogs
     /// </summary>
     public class GreaterTableEntry
     {
-        public ComTable Table { get; set; }
+        public DcTable Table { get; set; }
 
         public string ColumnName { get; set; }
 
@@ -162,7 +162,7 @@ namespace Samm.Dialogs
             } 
         }
 
-        public GreaterTableEntry(ComTable table)
+        public GreaterTableEntry(DcTable table)
         {
             Table = table;
             ColumnName = table.Name;
