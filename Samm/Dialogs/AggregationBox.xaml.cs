@@ -254,7 +254,7 @@ namespace Samm.Dialogs
             Column.Output = targetTable;
 
             // Column definition
-            Column.Definition.DefinitionType = ColumnDefinitionType.AGGREGATION;
+            Column.Definition.DefinitionType = DcColumnDefinitionType.AGGREGATION;
             Column.Definition.FactTable = FactTable;
             Column.Definition.GroupPaths.Clear();
             Column.Definition.GroupPaths.Add(GroupingPath);

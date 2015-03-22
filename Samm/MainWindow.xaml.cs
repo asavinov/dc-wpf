@@ -470,7 +470,7 @@ namespace Samm
 
             string tableName = "New Table";
             DcTable targetTable = targetSchema.CreateTable(tableName);
-            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            targetTable.Definition.DefinitionType = DcTableDefinitionType.PROJECTION;
 
             string columnName = "New Column";
             DcColumn column = sourceSchema.CreateColumn(columnName, null, targetTable, false);
@@ -524,7 +524,7 @@ namespace Samm
             DcSchema schema = MashupTop;
 
             DcTable targetTable = schema.CreateTable(tableName);
-            targetTable.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+            targetTable.Definition.DefinitionType = DcTableDefinitionType.PROJECTION;
 
             // Create generating/import column
             Mapper mapper = new Mapper(); // Create mapping for an import dimension
@@ -533,7 +533,7 @@ namespace Samm
 
             DcColumn dim = schema.CreateColumn(map.SourceSet.Name, map.SourceSet, map.TargetSet, false);
             dim.Definition.Mapping = map;
-            dim.Definition.DefinitionType = ColumnDefinitionType.LINK;
+            dim.Definition.DefinitionType = DcColumnDefinitionType.LINK;
             dim.Definition.IsAppendData = true;
 
             dim.Add();
@@ -1235,7 +1235,7 @@ namespace Samm
         {
             if (SelectedColumn != null)
             {
-                if (SelectedColumn.Definition.DefinitionType == ColumnDefinitionType.FREE) e.CanExecute = false;
+                if (SelectedColumn.Definition.DefinitionType == DcColumnDefinitionType.FREE) e.CanExecute = false;
                 else e.CanExecute = true;
             }
             else e.CanExecute = false;
@@ -1261,11 +1261,11 @@ namespace Samm
 
             DcSchema schema = MashupTop;
 
-            if (column.Definition.DefinitionType == ColumnDefinitionType.FREE)
+            if (column.Definition.DefinitionType == DcColumnDefinitionType.FREE)
             {
                 return;
             }
-            else if (column.Definition.DefinitionType == ColumnDefinitionType.ARITHMETIC)
+            else if (column.Definition.DefinitionType == DcColumnDefinitionType.ARITHMETIC)
             {
                 ArithmeticBox dlg = new ArithmeticBox(column, false);
                 dlg.Owner = this;
@@ -1274,7 +1274,7 @@ namespace Samm
                 if (dlg.DialogResult == false) return; // Cancel
 
             }
-            else if (column.Definition.DefinitionType == ColumnDefinitionType.LINK)
+            else if (column.Definition.DefinitionType == DcColumnDefinitionType.LINK)
             {
                 if (!column.Definition.IsAppendData)
                 {
@@ -1296,7 +1296,7 @@ namespace Samm
                 }
 
             }
-            else if (column.Definition.DefinitionType == ColumnDefinitionType.AGGREGATION)
+            else if (column.Definition.DefinitionType == DcColumnDefinitionType.AGGREGATION)
             {
                 AggregationBox dlg = new AggregationBox(column, null);
                 dlg.Owner = this;
@@ -1383,7 +1383,7 @@ namespace Samm
                 schema.DeleteTable(gTab); // Delete (directly) generated table
                 // This column will be now deleted as a result of the deletion of the generated table
             }
-            else if (column.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
+            else if (column.Input.Definition.DefinitionType == DcTableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
             {
                 DcColumn projDim = column.Input.InputColumns.Where(d => d.Definition.IsAppendData).ToList()[0];
                 Mapping mapping = projDim.Definition.Mapping;

@@ -448,18 +448,18 @@ namespace Samm.Dialogs
                 {
                     PathMatch match = mapping.GetMatchForTarget(new DimPath(targetColumn));
                     if (match != null) continue;
-                    if (targetColumn.Definition.DefinitionType != ColumnDefinitionType.FREE) continue;
-                    if (targetColumn.Definition.DefinitionType != ColumnDefinitionType.ANY) continue;
+                    if (targetColumn.Definition.DefinitionType != DcColumnDefinitionType.FREE) continue;
+                    if (targetColumn.Definition.DefinitionType != DcColumnDefinitionType.ANY) continue;
 
                     targetColumn.Remove();
                 }
 
                 // Set parameters of the new column
-                Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
+                Column.Definition.DefinitionType = DcColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
                 Column.Definition.IsAppendData = true;
 
-                Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+                Column.Output.Definition.DefinitionType = DcTableDefinitionType.PROJECTION;
             }
 
             this.DialogResult = true;

@@ -295,12 +295,12 @@ namespace Samm.Dialogs
 
             if (IsNew)
             {
-                Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
+                Column.Definition.DefinitionType = DcColumnDefinitionType.LINK;
                 Column.Definition.Mapping = mapping;
                 Column.Definition.IsAppendData = true;
                 Column.Add();
 
-                Column.Output.Definition.DefinitionType = TableDefinitionType.PROJECTION;
+                Column.Output.Definition.DefinitionType = DcTableDefinitionType.PROJECTION;
                 TargetSchema.AddTable(Column.Output, null, null);
             }
 

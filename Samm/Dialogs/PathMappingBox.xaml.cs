@@ -180,7 +180,7 @@ namespace Samm.Dialogs
             }
 
             // Column definition
-            Column.Definition.DefinitionType = ColumnDefinitionType.LINK;
+            Column.Definition.DefinitionType = DcColumnDefinitionType.LINK;
             Column.Definition.Mapping = MappingModel.Mapping;
             Column.Definition.IsAppendData = false;
 

@@ -315,7 +315,7 @@ namespace Samm.Dialogs
             }
 
             // Column definition
-            Column.Definition.DefinitionType = ColumnDefinitionType.ARITHMETIC;
+            Column.Definition.DefinitionType = DcColumnDefinitionType.ARITHMETIC;
 
             ExprNode expr = null;
             if (ExpressionModel == null || ExpressionModel.Count == 0)
