@@ -35,7 +35,7 @@ namespace Samm
         //
         public string WorkspaceFile { get; set; } // File where the workspace is stored
 
-        public Workspace Workspace { get; set; }
+        public DcWorkspace Workspace { get; set; }
 
         public DcSchema MashupTop { 
             get { return Workspace.Mashup; } 
@@ -310,9 +310,9 @@ namespace Samm
             
             // De-serialize
             JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
-            Workspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
+            DcWorkspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
 
-            workspace.FromJson(json, workspace);
+            ((Workspace)workspace).FromJson(json, workspace);
 
             // Switch to new workspace
             Workspace = workspace;
