@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DataCommander: Integrate. Transform. Analyze.")]
-[assembly: AssemblyDescription("DataCommander is a next generation tool for self-service analytical data integration. It was created with a single mission: simplifying data integration, transformation and analysis. By making data manipulations easier for non-IT users, DataCommander dramatically shortens the total time for data integration, transformation and analysis. DataCommander is a universal \"data tamer\" which radically simplifies analytical data integration and transformations for everyone with little or no help from IT. ")]
+[assembly: AssemblyTitle("Data Commandr: Integrate. Transform. Analyze.")]
+[assembly: AssemblyDescription("Data Commandr is a next generation tool for self-service analytical data integration. It was created with a single mission: simplifying data integration, transformation and analysis. By making data manipulations easier for non-IT users, Data Commandr dramatically shortens the total time for data integration, transformation and analysis. Data Commandr is a universal \"data tamer\" which radically simplifies analytical data integration and transformations for everyone with little or no help from IT. ")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://conceptoriented.com")]
-[assembly: AssemblyProduct("DataCommander")]
-[assembly: AssemblyCopyright("Copyright © 2013-2014 Alexandr Savinov")]
+[assembly: AssemblyProduct("Data Commandr")]
+[assembly: AssemblyCopyright("Copyright © 2013-2015 Alexandr Savinov")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

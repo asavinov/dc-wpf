@@ -258,7 +258,7 @@ namespace Samm
         {
             var dlg = new Microsoft.Win32.OpenFileDialog(); // Alternative: System.Windows.Forms.OpenFileDialog
             //dlg.InitialDirectory = "C:\\Users\\savinov\\git\\samm\\Test";
-            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
+            dlg.Filter = "Data Commandr (*.mashup)|*.mashup|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.CheckFileExists = true;
             dlg.Multiselect = false;
@@ -368,7 +368,7 @@ namespace Samm
             var dlg = new Microsoft.Win32.SaveFileDialog(); //Alterantive: dialog = new System.Windows.Forms.SaveFileDialog();
             dlg.FileName = "Mashup";
             dlg.DefaultExt = ".mashup";
-            dlg.Filter = "DataCommander (*.mashup)|*.mashup|All files (*.*)|*.*";
+            dlg.Filter = "Data Commandr (*.mashup)|*.mashup|All files (*.*)|*.*";
 
             Nullable<bool> result = dlg.ShowDialog();
 
