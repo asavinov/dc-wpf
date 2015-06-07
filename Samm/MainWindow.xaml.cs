@@ -806,6 +806,7 @@ namespace Samm
 
         private void AddMashupSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            e.CanExecute = false;
         }
         private void AddMashupSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -813,15 +814,29 @@ namespace Samm
 
         private void AddCsvSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
+            e.CanExecute = true;
         }
         private void AddCsvSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            SchemaCsv csvSchema = new SchemaCsv("My Files");
+            csvSchema.Workspace = Workspace;
+            Workspace.Schemas.Add(csvSchema);
+            ConnectionCsv conn = new ConnectionCsv();
+
+            e.Handled = true;
         }
 
         private void EditSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedSchema != null) e.CanExecute = true;
-            else e.CanExecute = false;
+            if (SelectedSchema == null) e.CanExecute = false;
+            else if (SelectedSchema is SchemaCsv)
+            {
+                e.CanExecute = false;
+            }
+            else // Mashup
+            {
+                e.CanExecute = false;
+            }
         }
         private void EditSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -845,11 +860,38 @@ namespace Samm
 
         private void DeleteSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedSchema != null) e.CanExecute = true;
-            else e.CanExecute = false;
+            if (SelectedSchema == null) e.CanExecute = false;
+            else if (SelectedSchema is SchemaCsv)
+            {
+                e.CanExecute = true;
+            }
+            else // Mashup
+            {
+                e.CanExecute = false;
+            }
         }
         private void DeleteSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            //
+            // Ask for confirmation
+            //
+            string msg = Application.Current.FindResource("DeleteSchemaMsg").ToString();
+            var result = MessageBox.Show(this, msg, "Delete data source...", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (result == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            if (SelectedSchema == null) return;
+            else if (SelectedSchema is SchemaCsv)
+            {
+                Workspace.Schemas.Remove(SelectedSchema);
+            }
+            else // Mashup
+            {
+            }
+
+            e.Handled = true;
         }
 
         private void UpdateSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -859,8 +901,6 @@ namespace Samm
         }
         private void UpdateSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException("Update Schema not implemented.");
-            e.Handled = true;
         }
 
         #endregion
@@ -1001,7 +1041,9 @@ namespace Samm
 
             DcSchema schema = set.Schema;
 
+            //
             // Ask for confirmation
+            //
             string msg = Application.Current.FindResource("DeleteTableMsg").ToString();
             var result = MessageBox.Show(this, msg, "Delete table...", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
             if (result == MessageBoxResult.No)
