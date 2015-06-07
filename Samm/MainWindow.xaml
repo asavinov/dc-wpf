@@ -51,17 +51,21 @@
         <RoutedUICommand x:Key="ExportTextCommand" Text="Text Table" />
         -->
 
-        <RoutedUICommand x:Key="RenameSchemaCommand" Text="Rename Schema" />
-        <RoutedUICommand x:Key="UpdateSchemaCommand" Text="Update Schema" />
+        <RoutedUICommand x:Key="AddMashupSchemaCommand" Text="Add mashup" />
+        <RoutedUICommand x:Key="AddCsvSchemaCommand" Text="Add CSV data source" />
+        <RoutedUICommand x:Key="EditSchemaCommand" Text="Edit data source" />
+        <RoutedUICommand x:Key="RenameSchemaCommand" Text="Rename data source" />
+        <RoutedUICommand x:Key="DeleteSchemaCommand" Text="Delete data source" />
+        <RoutedUICommand x:Key="UpdateSchemaCommand" Text="Update data source" />
 
-        <RoutedUICommand x:Key="AddTableCommand" Text="Add Table" />
-        <RoutedUICommand x:Key="FilterTableCommand" Text="Filter Table" />
+        <RoutedUICommand x:Key="AddTableCommand" Text="Add table" />
+        <RoutedUICommand x:Key="FilterTableCommand" Text="Filter table" />
         <RoutedUICommand x:Key="EditTableCommand" Text="Edit table" />
-        <RoutedUICommand x:Key="RenameTableCommand" Text="Rename Table" />
-        <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete Table" />
-        <RoutedUICommand x:Key="UpdateTableCommand" Text="Update Table" />
+        <RoutedUICommand x:Key="RenameTableCommand" Text="Rename table" />
+        <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete table" />
+        <RoutedUICommand x:Key="UpdateTableCommand" Text="Update table" />
 
-        <RoutedUICommand x:Key="AddFreeCommand" Text="Add free column" />
+        <RoutedUICommand x:Key="AddFreeCommand" Text="Add free columns" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add calculated column" />
         <RoutedUICommand x:Key="AddPathLinkCommand" Text="Add link column" />
         <RoutedUICommand x:Key="AddColumnLinkCommand" Text="Add generation column" />
@@ -71,8 +75,8 @@
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete column" />
         <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update column" />
 
-        <RoutedUICommand x:Key="OpenTableCommand" Text="Open Table" />
-        <RoutedUICommand x:Key="CloseViewCommand" Text="Close View" />
+        <RoutedUICommand x:Key="OpenTableCommand" Text="Open table" />
+        <RoutedUICommand x:Key="CloseViewCommand" Text="Close view" />
 
     </Window.Resources>
 
@@ -85,7 +89,11 @@
         <CommandBinding Command="{StaticResource ExitCommand}" Executed="ExitCommand_Executed" />
         <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
 
+        <CommandBinding Command="{StaticResource AddMashupSchemaCommand}" CanExecute="AddMashupSchemaCommand_CanExecute" Executed="AddMashupSchemaCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddCsvSchemaCommand}" CanExecute="AddCsvSchemaCommand_CanExecute" Executed="AddCsvSchemaCommand_Executed" />
+        <CommandBinding Command="{StaticResource EditSchemaCommand}" CanExecute="EditSchemaCommand_CanExecute" Executed="EditSchemaCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameSchemaCommand}" CanExecute="RenameSchemaCommand_CanExecute" Executed="RenameSchemaCommand_Executed" />
+        <CommandBinding Command="{StaticResource DeleteSchemaCommand}" CanExecute="DeleteSchemaCommand_CanExecute" Executed="DeleteSchemaCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateSchemaCommand}" Executed="UpdateSchemaCommand_Executed" />
 
         <!--
@@ -183,13 +191,13 @@
         <Grid>
             <!-- Define the rows and columns -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="5*"/>
             </Grid.ColumnDefinitions>
 
             <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
@@ -209,11 +217,37 @@
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                            <Menu ToolBar.OverflowMode="Never" >
+                                <MenuItem ToolTip="Add data source" >
+                                    <MenuItem.Icon>
+                                        <Image Source="Images\schema_add.png" />
+                                    </MenuItem.Icon>
+
+                                    <MenuItem ToolTip="Mashup" ToolBar.OverflowMode="Never" Command="{StaticResource AddMashupSchemaCommand}" >
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\schema_add_mashup.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem ToolTip="CSV file data source" ToolBar.OverflowMode="Never" Command="{StaticResource AddCsvSchemaCommand}">
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\schema_add_csv.png" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+
+                                </MenuItem>
+                            </Menu>
+
+                            <Button ToolTip="Edit data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditSchemaCommand}">
+                                <Image Source="Images\schema_edit.png" />
+                            </Button>
                             <Button ToolTip="Rename data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameSchemaCommand}">
-                                <Image Source="Images\rename.png" />
+                                <Image Source="Images\schema_rename.png" />
+                            </Button>
+                            <Button ToolTip="Delete data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteSchemaCommand}" >
+                                <Image Source="Images\schema_delete.png" />
                             </Button>
                             <Button ToolTip="Update data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateSchemaCommand}">
-                                <Image Source="Images\update_all.png" />
+                                <Image Source="Images\schema_update.png" />
                             </Button>
 
                         </ToolBar>
@@ -258,16 +292,16 @@
                                     </MenuItem>
                                     <MenuItem Header="Extract" Command="{StaticResource ExtractTableCommand}" >
                                         <MenuItem.Icon>
-                                            <Image Source="Images\table_extract.png" />
+                                            <Image Source="Images\table_add_extract.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 </MenuItem>
                             </Menu>
                             -->
-                            <Button ToolTip="New table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
+                            <Button ToolTip="Add table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
                                 <Image Source="Images\table_add2.png" />
                             </Button>
-                            <Button ToolTip="Edit Filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
+                            <Button ToolTip="Edit filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
                                 <Image Source="Images\table_filter2.png" />
                             </Button>
                             <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
@@ -282,7 +316,7 @@
                             <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
                                 <Image Source="Images\table_update2.png" />
                             </Button>
-                            <Button ToolTip="View Table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
+                            <Button ToolTip="View table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
                                 <Image Source="Images\table_view2.png" />
                            </Button>
 
@@ -320,27 +354,27 @@
 
                                     <MenuItem ToolTip="Free columns" ToolBar.OverflowMode="Never" Command="{StaticResource AddFreeCommand}" >
                                         <MenuItem.Icon>
-                                            <Image Source="Images\add_free.png" />
+                                            <Image Source="Images\column_add_free.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem ToolTip="Arithmetic column" ToolBar.OverflowMode="Never" Command="{StaticResource AddCalculationCommand}">
                                         <MenuItem.Icon>
-                                            <Image Source="Images\add_calculation.png" />
+                                            <Image Source="Images\column_add_calculation.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem ToolTip="Link column" ToolBar.OverflowMode="Never" Command="{StaticResource AddPathLinkCommand}">
                                         <MenuItem.Icon>
-                                            <Image Source="Images\add_link.png" />
+                                            <Image Source="Images\column_add_link.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem ToolTip="Generation column" ToolBar.OverflowMode="Never" Command="{StaticResource AddColumnLinkCommand}">
                                         <MenuItem.Icon>
-                                            <Image Source="Images\add_projection.png" />
+                                            <Image Source="Images\column_add_projection.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem ToolTip="Aggregated column" ToolBar.OverflowMode="Never" Command="{StaticResource AddAggregationCommand}">
                                         <MenuItem.Icon>
-                                            <Image Source="Images\add_aggregation.png" />
+                                            <Image Source="Images\column_add_aggregation.png" />
                                         </MenuItem.Icon>
                                     </MenuItem>
 

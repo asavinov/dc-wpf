@@ -804,6 +804,29 @@ namespace Samm
 
         # region Schema operations
 
+        private void AddMashupSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+        }
+        private void AddMashupSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void AddCsvSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+        }
+        private void AddCsvSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
+        private void EditSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedSchema != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void EditSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
         private void RenameSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedSchema != null) e.CanExecute = true;
@@ -820,6 +843,15 @@ namespace Samm
             if (dlg.DialogResult == false) return; // Cancel
         }
 
+        private void DeleteSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedSchema != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void DeleteSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+        }
+
         private void UpdateSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedSchema != null) e.CanExecute = true;
@@ -828,7 +860,6 @@ namespace Samm
         private void UpdateSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             throw new NotImplementedException("Update Schema not implemented.");
-
             e.Handled = true;
         }
 

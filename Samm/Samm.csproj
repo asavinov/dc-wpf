@@ -279,42 +279,24 @@
     <Resource Include="Images\paste.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\help.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\default.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\co.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_aggregation.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_access.png" />
+    <Resource Include="Images\column_add_aggregation.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\default.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\import_table.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_odata.png" />
-    <Resource Include="Images\add_sql_server.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Images\schema_add.png" />
     <Resource Include="Images\table_add2.png" />
     <Resource Include="Images\update_all.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\remove_connection.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_calculation.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_csv.png" />
+    <Resource Include="Images\column_add_calculation.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\node_csv.png" />
@@ -339,13 +321,7 @@
     <Resource Include="Images\node_column_string.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\product_table.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\close_view.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_salesforce.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\rename.png" />
@@ -355,12 +331,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\dc-32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_cloud.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\add_database.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\file_close.png" />
@@ -383,13 +353,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_free.png" />
+    <Resource Include="Images\column_add_free.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_link.png" />
+    <Resource Include="Images\column_add_link.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\add_projection.png" />
+    <Resource Include="Images\column_add_projection.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\node_schema.png" />
@@ -402,7 +372,6 @@
     <Resource Include="Images\column_delete.png" />
     <Resource Include="Images\column_edit.png" />
     <Resource Include="Images\column_update.png" />
-    <Resource Include="Images\table_extract.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\table_delete2.png" />
@@ -411,6 +380,25 @@
     <Resource Include="Images\table_rename2.png" />
     <Resource Include="Images\table_update2.png" />
     <Resource Include="Images\table_view2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\schema_delete.png" />
+    <Resource Include="Images\schema_edit.png" />
+    <Resource Include="Images\schema_rename.png" />
+    <Resource Include="Images\schema_update.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\schema_add_csv.png" />
+    <Resource Include="Images\schema_add_mashup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\file_help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\table_add_product.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\table_add_extract.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
