@@ -65,6 +65,7 @@
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete table" />
         <RoutedUICommand x:Key="UpdateTableCommand" Text="Update table" />
 
+        <RoutedUICommand x:Key="AddColumnCommand" Text="Add column" />
         <RoutedUICommand x:Key="AddFreeCommand" Text="Add free columns" />
         <RoutedUICommand x:Key="AddCalculationCommand" Text="Add calculated column" />
         <RoutedUICommand x:Key="AddPathLinkCommand" Text="Add link column" />
@@ -112,6 +113,7 @@
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
 
+        <CommandBinding Command="{StaticResource AddColumnCommand}" CanExecute="AddColumnCommand_CanExecute" Executed="AddColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource AddFreeCommand}" CanExecute="AddFreeCommand_CanExecute" Executed="AddFreeCommand_Executed" />
         <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
         <CommandBinding Command="{StaticResource AddPathLinkCommand}" CanExecute="AddPathLinkCommand_CanExecute" Executed="AddPathLinkCommand_Executed" />
@@ -346,6 +348,7 @@
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
                         <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                            <!--
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem ToolTip="Add column" >
                                     <MenuItem.Icon>
@@ -380,18 +383,23 @@
 
                                 </MenuItem>
                             </Menu>
+                            -->
+
+                            <Button ToolTip="Add column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddColumnCommand}" >
+                                <Image Source="Images\column_add2.png" />
+                            </Button>
 
                             <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
-                                <Image Source="Images\column_edit.png" />
+                                <Image Source="Images\column_edit2.png" />
                             </Button>
                             <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
-                                <Image Source="Images\column_rename.png" />
+                                <Image Source="Images\column_rename2.png" />
                             </Button>
                             <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
-                                <Image Source="Images\column_delete.png" />
+                                <Image Source="Images\column_delete2.png" />
                             </Button>
                             <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateColumnCommand}">
-                                <Image Source="Images\column_update.png" />
+                                <Image Source="Images\column_update2.png" />
                             </Button>
 
                             <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->

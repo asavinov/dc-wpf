@@ -129,6 +129,9 @@
     <Compile Include="Dialogs\ArithmeticBox.xaml.cs">
       <DependentUpon>ArithmeticBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ColumnBox.xaml.cs">
+      <DependentUpon>ColumnBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\ColumnMappingBox.xaml.cs">
       <DependentUpon>ColumnMappingBox.xaml</DependentUpon>
     </Compile>
@@ -188,6 +191,10 @@
     <Page Include="Dialogs\ArithmeticBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\ColumnBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ColumnMappingBox.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -399,6 +406,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\table_add_extract.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\column_add2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\column_delete2.png" />
+    <Resource Include="Images\column_edit2.png" />
+    <Resource Include="Images\column_rename2.png" />
+    <Resource Include="Images\column_update2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1091,6 +1091,52 @@ namespace Samm
 
         # region Column operations
 
+        private void AddColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedTable != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void AddColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedTable == null) return;
+
+            try
+            {
+                Wizard_AddColumn(SelectedTable);
+            }
+            catch (System.Exception ex)
+            {
+                GenericError(ex);
+            }
+
+            e.Handled = true;
+        }
+        public void Wizard_AddColumn(DcTable table)
+        {
+            DcSchema schema = MashupTop;
+
+            // Create a new (mapped, generating) dimension to the new set
+            DcColumn column = schema.CreateColumn("New Column", table, null, false);
+
+            //
+            // Show parameters for set extraction
+            //
+            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column);
+            dlg.Owner = this;
+            dlg.RefreshAll();
+
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            column.Add();
+
+            // Populate the set and the dimension 
+            column.Output.Definition.Populate();
+
+            SelectedColumn = column;
+        }
+
         private void AddFreeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
