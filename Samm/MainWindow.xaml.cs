@@ -1354,8 +1354,7 @@ namespace Samm
         {
             if (SelectedColumn != null)
             {
-                if (SelectedColumn.Definition.DefinitionType == DcColumnDefinitionType.FREE) e.CanExecute = false;
-                else e.CanExecute = true;
+                e.CanExecute = true;
             }
             else e.CanExecute = false;
         }
@@ -1375,6 +1374,23 @@ namespace Samm
             e.Handled = true;
         }
         public void Wizard_EditColumn(DcColumn column)
+        {
+            if (column == null) return;
+
+            DcSchema schema = MashupTop;
+
+            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column);
+            dlg.Owner = this;
+            dlg.ShowDialog(); // Open the dialog box modally 
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
+            column.Definition.Evaluate();
+
+            SelectedColumn = column;
+        }
+        public void Wizard_EditColumnByType(DcColumn column)
         {
             if (column == null) return;
 

@@ -64,6 +64,8 @@ namespace Samm.Dialogs
         public DcColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
         public string ColumnName { get; set; }
 
+        public bool IsKey { get; set; }
+
         public string ColumnFormula { get; set; }
 
         //
