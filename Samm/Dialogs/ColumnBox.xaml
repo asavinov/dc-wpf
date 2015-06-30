@@ -26,7 +26,7 @@
         </Grid.RowDefinitions>
 
         <Label  Grid.Column="0" Grid.Row="0" Content="Source Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Column.Input.Name}" IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Table.Name}" IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="columnName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=ColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />

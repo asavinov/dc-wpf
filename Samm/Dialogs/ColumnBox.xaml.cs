@@ -35,8 +35,7 @@ namespace Samm.Dialogs
         {
             get
             {
-                if (Column == null || Column.Input == null) return false;
-                if (Column.Input.Schema.GetType() == typeof(Schema)) return false;
+                if (Table.Schema.GetType() == typeof(Schema)) return false;
                 return true;
             }
         }
@@ -44,28 +43,19 @@ namespace Samm.Dialogs
         {
             get
             {
-                if (SelectedTargetSchema != null)
-                {
-                    if (SelectedTargetSchema.GetType() == typeof(Schema)) return false;
-                    else return true;
-                }
-                else
-                {
-                    if (Column == null || Column.Output == null) return false;
-                    if (Column.Output.Schema.GetType() == typeof(Schema)) return false;
-                    return true;
-                }
+                if (Table.Schema.GetType() != typeof(Schema)) return false;
+                if (SelectedTargetSchema == null) return false; // We do not know
+                return true;
             }
         }
 
         //
         // Link column connecting an existing fixed source table with a target table
         //
-        public DcColumn Column { get; set; } // Generating projection column with the mapping to be crated/edited
+        public DcTable Table { get; set; }
+
         public string ColumnName { get; set; }
-
         public bool IsKey { get; set; }
-
         public string ColumnFormula { get; set; }
 
         //
@@ -83,24 +73,22 @@ namespace Samm.Dialogs
             this.GetBindingExpression(ColumnBox.DataContextProperty).UpdateTarget();
 
             sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            //sourceColumn.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            columnName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            isKey.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+            columnFormula.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+
+            targetSchemaList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            targetTableList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
 
             targetSchemaList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
             targetTableList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
         }
 
-        public ColumnBox(ObservableCollection<DcSchema> targetSchemas, DcColumn column)
+        public ColumnBox(ObservableCollection<DcSchema> targetSchemas, DcTable table, DcColumn column)
         {
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
-            //
-            // Options and regime of the dialog
-            //
-            if (column.Input.Columns.Contains(column)) IsNew = false;
-            else IsNew = true;
-
-            Column = column;
-            ColumnName = column.Name;
+            InitializeComponent();
 
             //
             // Init target schema list
@@ -108,15 +96,17 @@ namespace Samm.Dialogs
             TargetSchemas = targetSchemas;
             TargetTables = new ObservableCollection<DcTable>();
 
-            InitializeComponent();
+            Table = table;
 
-            if (IsNew)
+            if (column == null)
             {
-                if (Column.Output != null)
-                {
-                    SelectedTargetSchema = column.Output.Schema;
-                }
-                if (SelectedTargetSchema == null)
+                IsNew = true;
+
+                ColumnName = "New Column";
+                IsKey = false;
+                ColumnFormula = "";
+
+                if (targetSchemas != null && targetSchemas.Count > 0)
                 {
                     SelectedTargetSchema = targetSchemas[0];
                 }
@@ -126,11 +116,17 @@ namespace Samm.Dialogs
             }
             else
             {
-                targetSchemaList.IsEnabled = false;
-                targetTableList.IsEnabled = false;
+                IsNew = false;
+
+                ColumnName = column.Name;
+                IsKey = column.IsKey;
+                ColumnFormula = column.Definition.Formula;
 
                 SelectedTargetSchema = column.Output.Schema;
                 SelectedTargetTable = column.Output;
+
+                targetSchemaList.IsEnabled = false;
+                targetTableList.IsEnabled = false;
             }
 
             RefreshAll();
@@ -142,9 +138,9 @@ namespace Samm.Dialogs
             if (SelectedTargetSchema != null)
             {
                 List<DcTable> targetTables;
-                if (SelectedTargetSchema == Column.Input.Schema) // Intra-schema link
+                if (SelectedTargetSchema == Table.Schema) // Intra-schema link
                 {
-                    targetTables = MappingModel.GetPossibleGreaterSets(Column.Input);
+                    targetTables = MappingModel.GetPossibleGreaterSets(Table);
                 }
                 else // Import-export link
                 {
@@ -158,7 +154,7 @@ namespace Samm.Dialogs
 
         private void TargetTableList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Column.Output = SelectedTargetTable;
+            ;
         }
 
         private readonly ICommand okCommand;
@@ -177,40 +173,6 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            Mapping mapping;
-            if (IsNew)
-            {
-                mapping = new Mapping(Column.Input, Column.Output);
-            }
-            else
-            {
-                mapping = Column.Definition.Mapping;
-            }
-
-            Column.Name = ColumnName;
-            //Column.Output.Name = SelectedTargetTable.Name;
-
-            if (IsNew)
-            {
-                // Target table could contain original columns from previous uses (loaded from csv file or added manually). Now they are not needed.
-                foreach (DcColumn targetColumn in Column.Output.Columns)
-                {
-                    PathMatch match = mapping.GetMatchForTarget(new DimPath(targetColumn));
-                    if (match != null) continue;
-                    if (targetColumn.Definition.DefinitionType != DcColumnDefinitionType.FREE) continue;
-                    if (targetColumn.Definition.DefinitionType != DcColumnDefinitionType.ANY) continue;
-
-                    targetColumn.Remove();
-                }
-
-                // Set parameters of the new column
-                Column.Definition.DefinitionType = DcColumnDefinitionType.LINK;
-                Column.Definition.Mapping = mapping;
-                Column.Definition.IsAppendData = true;
-
-                Column.Output.Definition.DefinitionType = DcTableDefinitionType.PROJECTION;
-            }
-
             this.DialogResult = true;
         }
 

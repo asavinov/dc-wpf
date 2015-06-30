@@ -84,6 +84,8 @@ namespace Samm
                 if (SchemaListView != null)
                 {
                     SchemaListView.SelectedItem = value;
+
+                    ((Set)value).NotifyPropertyChanged("");
                 }
             }
         }
@@ -95,6 +97,8 @@ namespace Samm
             {
                 if (TableListView == null || TableListView.TablesList == null) return;
                 TableListView.TablesList.SelectedItem = value;
+
+                ((Set)value).NotifyPropertyChanged("");
             } 
         }
 
@@ -105,6 +109,8 @@ namespace Samm
             {
                 if (ColumnListView == null || ColumnListView.ColumnList == null) return;
                 ColumnListView.ColumnList.SelectedItem = value;
+
+                ((Dim)value).NotifyPropertyChanged("");
             }
         }
 
@@ -1115,13 +1121,10 @@ namespace Samm
         {
             DcSchema schema = MashupTop;
 
-            // Create a new (mapped, generating) dimension to the new set
-            DcColumn column = schema.CreateColumn("New Column", table, null, false);
-
             //
             // Show parameters for set extraction
             //
-            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column);
+            ColumnBox dlg = new ColumnBox(Workspace.Schemas, table, null);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -1129,10 +1132,12 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
 
+            //
+            // Create a new column using parameters in the dialog
+            //
+            DcColumn column = schema.CreateColumn(dlg.ColumnName, table, dlg.SelectedTargetTable, dlg.IsKey);
+            column.Definition.Formula = dlg.ColumnFormula;
             column.Add();
-
-            // Populate the set and the dimension 
-            column.Output.Definition.Populate();
 
             SelectedColumn = column;
         }
@@ -1379,14 +1384,19 @@ namespace Samm
 
             DcSchema schema = MashupTop;
 
-            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column);
+            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column.Input, column);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
             if (dlg.DialogResult == false) return; // Cancel
 
-            // In fact, we have to determine if the column has been really changed and what kind of changes (name change does not require reevaluation)
-            column.Definition.Evaluate();
+            //
+            // Update the column using parameters in the dialog
+            //
+            column.Name = dlg.ColumnName;
+            column.Output = dlg.SelectedTargetTable;
+            column.IsKey = dlg.IsKey;
+            column.Definition.Formula = dlg.ColumnFormula;
 
             SelectedColumn = column;
         }
