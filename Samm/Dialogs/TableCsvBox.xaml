@@ -25,7 +25,7 @@
         <Label  Grid.Column="0" Grid.Row="1" Content="Source File:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <DockPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5">
             <Button DockPanel.Dock="Right" Content=" ... " Visibility="Visible" Command="{Binding ChooseSourceCommand}" />
-            <TextBox Name="sourceTable" Text="{Binding Path=Table.FilePath}"  IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+            <TextBox Name="filePath" Text="{Binding Path=FilePath}"  IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
         </DockPanel>
 
         <Label  Grid.Column="0" Grid.Row="2" Content="Parameters:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
@@ -36,7 +36,7 @@
                 <ComboBoxItem Name="delimiter_semi" Content=";" />
             </ComboBox>
             <Label Content="Decimal:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Left" Margin="5"/>
-            <ComboBox Name="decimal" Text="Decimal:" SelectedValue="{Binding Path=Decimal}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" SelectionChanged="Decimal_SelectionChanged">
+            <ComboBox Name="decimalSeparator" Text="Decimal:" SelectedValue="{Binding Path=Decimal}" SelectedValuePath="Content" IsEditable="False" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Height="25" SelectionChanged="Decimal_SelectionChanged">
                 <ComboBoxItem Name="decimal_dot" Content="." IsSelected="True" />
                 <ComboBoxItem Name="decimal_comma" Content="," />
             </ComboBox>

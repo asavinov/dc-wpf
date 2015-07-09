@@ -29,31 +29,31 @@ namespace Samm.Dialogs
         public DcTable Table { get; set; }
         public string TableName { get; set; }
 
+        public string TableFormula { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public TableBox(DcSchema schema, DcTable table)
         {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
             Schema = schema;
+            Table = table;
 
             if (table == null)
             {
                 IsNew = true;
+                TableName = "New Table";
+                TableFormula = "";
             }
             else
             {
                 IsNew = false;
+                TableName = table.Name;
+                TableFormula = table.Definition.WhereFormula;
             }
 
             Table = table;
-
-            if (Table == null)
-            {
-                TableName = "New Table";
-            }
-            else
-            {
-                TableName = Table.Name;
-            }
 
             InitializeComponent();
         }
@@ -62,13 +62,6 @@ namespace Samm.Dialogs
         {
             if (IsNew)
             {
-                if (Table == null)
-                {
-                    Table = Schema.CreateTable(TableName);
-                }
-
-                Table.Name = TableName;
-                Schema.AddTable(Table, null, null);
             }
             else
             {
@@ -76,6 +69,22 @@ namespace Samm.Dialogs
                 Schema.AddTable(Table, null, null);
             }
 
+            this.DialogResult = true;
+        }
+
+        private readonly ICommand okCommand;
+        public ICommand OkCommand
+        {
+            get { return this.okCommand; }
+        }
+        private bool OkCommand_CanExecute(object state)
+        {
+            if (string.IsNullOrWhiteSpace(TableName)) return false;
+
+            return true;
+        }
+        private void OkCommand_Executed(object state)
+        {
             this.DialogResult = true;
         }
 

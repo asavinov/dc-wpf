@@ -930,6 +930,21 @@ namespace Samm
                 dlg.ShowDialog();
 
                 if (dlg.DialogResult == false) return; // Cancel
+
+                SetCsv table = (SetCsv)SelectedSchema.CreateTable(dlg.TableName);
+
+                table.FilePath = dlg.FilePath;
+
+                table.HasHeaderRecord = dlg.HasHeaderRecord;
+                table.Delimiter = dlg.Delimiter;
+                table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
+
+                SelectedSchema.AddTable(table, null, null);
+
+                var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
+                columns.ForEach(x => x.Add());
+
+                SelectedTable = table;
             }
             else // Mashup
             {
@@ -938,6 +953,12 @@ namespace Samm
                 dlg.ShowDialog();
 
                 if (dlg.DialogResult == false) return; // Cancel
+
+                DcTable table = SelectedSchema.CreateTable(dlg.TableName);
+                table.Definition.WhereFormula = dlg.TableFormula;
+                SelectedSchema.AddTable(table, null, null);
+
+                SelectedTable = table;
             }
 
             e.Handled = true;
@@ -980,10 +1001,7 @@ namespace Samm
         {
             if (SelectedTable != null)
             {
-                if (IsInMashups(SelectedTable))
-                    e.CanExecute = false;
-                else
-                    e.CanExecute = true;
+                e.CanExecute = true;
             }
             else
             {
@@ -1002,15 +1020,33 @@ namespace Samm
                 dlg.ShowDialog();
 
                 if (dlg.DialogResult == false) return; // Cancel
+
+                SetCsv table = (SetCsv)SelectedTable;
+
+                table.FilePath = dlg.FilePath;
+
+                table.HasHeaderRecord = dlg.HasHeaderRecord;
+                table.Delimiter = dlg.Delimiter;
+                table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
+
+
+                foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) col.Remove();
+                var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
+                columns.ForEach(x => x.Add());
             }
             else // Mashup
             {
-                RenameBox dlg = new RenameBox(SelectedTable, null);
+                TableBox dlg = new TableBox(SelectedSchema, SelectedTable);
                 dlg.Owner = this;
                 dlg.ShowDialog();
 
                 if (dlg.DialogResult == false) return; // Cancel
+
+                SelectedTable.Name = dlg.TableName;
+                SelectedTable.Definition.WhereFormula = dlg.TableFormula;
             }
+
+            SelectedTable = SelectedTable;
 
             e.Handled = true;
         }
@@ -1394,9 +1430,9 @@ namespace Samm
             // Update the column using parameters in the dialog
             //
             column.Name = dlg.ColumnName;
-            column.Output = dlg.SelectedTargetTable;
             column.IsKey = dlg.IsKey;
             column.Definition.Formula = dlg.ColumnFormula;
+            column.Output = dlg.SelectedTargetTable;
 
             SelectedColumn = column;
         }

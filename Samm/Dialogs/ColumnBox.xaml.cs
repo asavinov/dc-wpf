@@ -93,6 +93,10 @@ namespace Samm.Dialogs
             //
             // Init target schema list
             //
+
+            // Rule/constraints for possible schemas: 
+            // - If input schema is remote, then output schema is only Mashup
+
             TargetSchemas = targetSchemas;
             TargetTables = new ObservableCollection<DcTable>();
 
@@ -111,8 +115,8 @@ namespace Samm.Dialogs
                     SelectedTargetSchema = targetSchemas[0];
                 }
 
-                targetSchemaList.IsEnabled = true;
-                targetTableList.IsEnabled = true;
+                //targetSchemaList.IsEnabled = true;
+                //targetTableList.IsEnabled = true;
             }
             else
             {
@@ -125,8 +129,8 @@ namespace Samm.Dialogs
                 SelectedTargetSchema = column.Output.Schema;
                 SelectedTargetTable = column.Output;
 
-                targetSchemaList.IsEnabled = false;
-                targetTableList.IsEnabled = false;
+                //targetSchemaList.IsEnabled = false;
+                //targetTableList.IsEnabled = false;
             }
 
             RefreshAll();
@@ -137,12 +141,23 @@ namespace Samm.Dialogs
             TargetTables.Clear();
             if (SelectedTargetSchema != null)
             {
+                // Rules/constraints:
+                // - Generating columns cannot target a primitive type
+                //   - Import/export is always generating column so cannot target a primitive type
+                // - Can we have generating column cycles?
+                //   - Can we have import/export cycles?
+
+                // Add primitive tables
+                var primitiveTables = SelectedTargetSchema.SubTables.Where(x => x != SelectedTargetSchema.Root).ToList();
+                primitiveTables.ForEach(x => TargetTables.Add(x));
+
+                // Add non-primitive tables (only possible/meainingful)
                 List<DcTable> targetTables;
                 if (SelectedTargetSchema == Table.Schema) // Intra-schema link
                 {
                     targetTables = MappingModel.GetPossibleGreaterSets(Table);
                 }
-                else // Import-export link
+                else // Import-export link - all tables
                 {
                     targetTables = SelectedTargetSchema.Root.SubTables;
                 }
@@ -167,7 +182,7 @@ namespace Samm.Dialogs
             if (SelectedTargetSchema == null) return false;
             if (SelectedTargetTable == null) return false;
 
-            if (string.IsNullOrWhiteSpace(columnName.Text)) return false;
+            if (string.IsNullOrWhiteSpace(ColumnName)) return false;
 
             return true;
         }

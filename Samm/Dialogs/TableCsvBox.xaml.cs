@@ -27,10 +27,14 @@ namespace Samm.Dialogs
         bool IsNew { get; set; }
 
         public DcSchema Schema { get; set; }
-
         public DcTable Table { get; set; }
-        public string TableName { get; set; }
 
+        public string TableName { get; set; }
+        public string TableFormula { get; set; }
+
+        public string FilePath { get; set; }
+
+        
         public bool HasHeaderRecord { get; set; }
         public string Delimiter { get; set; }
         public string Decimal { get; set; }
@@ -44,7 +48,14 @@ namespace Samm.Dialogs
             this.GetBindingExpression(ImportMappingBox.DataContextProperty).UpdateTarget();
 
             tableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            filePath.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+
+            delimiter.GetBindingExpression(ComboBox.SelectedValueProperty).UpdateTarget();
+            decimalSeparator.GetBindingExpression(ComboBox.SelectedValueProperty).UpdateTarget();
+
+            hasHeaderRecord.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+
+            tableColumns.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
         }
 
         public TableCsvBox(DcSchema schema, DcTable table)
@@ -52,42 +63,40 @@ namespace Samm.Dialogs
             this.chooseSourceCommand = new DelegateCommand(this.ChooseSourceCommand_Executed, this.ChooseSourceCommand_CanExecute);
             this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
 
-            if (table == null)
-            {
-                IsNew = true;
-            }
-            else
-            {
-                IsNew = false;
-            }
-
             Schema = schema;
             Table = table;
 
             TableColumns = new ObservableCollection<DcColumn>();
 
-            if (IsNew)
+            InitializeComponent(); // Setting selected values needs comboboxes to be filled 
+
+            if (table == null)
             {
+                IsNew = true;
                 TableName = "";
-                Table = Schema.CreateTable(TableName);
+                FilePath = "";
+
+                HasHeaderRecord = false;
+                Delimiter = ",";
+                Decimal = ".";
             }
-
-            //
-            // Initialize
-            //
-
-            TableName = Table.Name;
-
-            HasHeaderRecord = ((SetCsv)Table).HasHeaderRecord;
-            Delimiter = ((SetCsv)Table).Delimiter;
-            Decimal = ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator;
-
-            foreach (DcColumn column in Table.Columns)
+            else
             {
-                TableColumns.Add(column);
+                IsNew = false;
+                TableName = table.Name;
+                FilePath = ((SetCsv)table).FilePath;
+
+                HasHeaderRecord = ((SetCsv)table).HasHeaderRecord;
+                Delimiter = ((SetCsv)table).Delimiter;
+                Decimal = ((SetCsv)table).CultureInfo.NumberFormat.NumberDecimalSeparator;
+
+                foreach (DcColumn column in table.Columns)
+                {
+                    TableColumns.Add(column);
+                }
             }
 
-            InitializeComponent();
+            RefreshAll();
         }
 
         private void UpdateColumnList() // Read table structure from file and show (table itself is not changed)
@@ -95,11 +104,14 @@ namespace Samm.Dialogs
             // Display new schema and maybe sample data
             TableColumns.Clear();
 
-            if (!File.Exists(((SetCsv)Table).FilePath))
+            if (!File.Exists(FilePath))
             {
                 return;
             }
 
+            if(Table == null) return;
+
+            // TODO: Here we need to load structure given a file path with parameters (we do not create a new file in advance)
             List<DcColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
 
             foreach (DcColumn column in columns)
@@ -110,11 +122,9 @@ namespace Samm.Dialogs
 
         private void Delimiter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Table == null)
-            {
-                return;
-            }
+            if (Table == null) return;
 
+            /*
             ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
             ((SetCsv)Table).Delimiter = Delimiter;
             ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
@@ -122,31 +132,14 @@ namespace Samm.Dialogs
             UpdateColumnList();
 
             RefreshAll();
+            */
         }
 
         private void Decimal_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Table == null)
-            {
-                return;
-            }
+            if (Table == null) return;
 
-            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
-            ((SetCsv)Table).Delimiter = Delimiter;
-            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
-
-            //UpdateColumnList();
-
-            RefreshAll();
-        }
-
-        private void Header_Changed(object sender, RoutedEventArgs e)
-        {
-            if (Table == null)
-            {
-                return;
-            }
-
+            /*
             ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
             ((SetCsv)Table).Delimiter = Delimiter;
             ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
@@ -154,6 +147,22 @@ namespace Samm.Dialogs
             UpdateColumnList();
 
             RefreshAll();
+            */
+        }
+
+        private void Header_Changed(object sender, RoutedEventArgs e)
+        {
+            if (Table == null) return;
+
+            /*
+            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
+            ((SetCsv)Table).Delimiter = Delimiter;
+            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+
+            UpdateColumnList();
+
+            RefreshAll();
+            */
         }
 
         private readonly ICommand chooseSourceCommand;
@@ -191,11 +200,7 @@ namespace Samm.Dialogs
                 Table = Schema.CreateTable(tableName);
             }
             TableName = tableName;
-            ((SetCsv)Table).FilePath = filePath;
-
-            ((SetCsv)Table).HasHeaderRecord = (bool)HasHeaderRecord;
-            ((SetCsv)Table).Delimiter = Delimiter;
-            ((SetCsv)Table).CultureInfo.NumberFormat.NumberDecimalSeparator = (string)Decimal;
+            FilePath = filePath;
 
             UpdateColumnList(); // Read table structure from file and show
             
@@ -213,35 +218,6 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            if (IsNew)
-            {
-                if (Table == null)
-                {
-                    Table = Schema.CreateTable(TableName);
-                }
-
-                Table.Name = TableName;
-
-                var columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
-                columns.ForEach(x => x.Add());
-                
-                Schema.AddTable(Table, null, null);
-            }
-            else
-            {
-                Table.Name = TableName;
-
-                // In fact, we have to update columns (leave used, remove unused, and add new)
-                foreach (DcColumn column in Table.Columns.ToArray())
-                {
-                    if (column.IsSuper) continue;
-                    column.Remove();
-                }
-
-                var columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
-                columns.ForEach(x => x.Add());
-            }
-
             this.DialogResult = true;
         }
 
