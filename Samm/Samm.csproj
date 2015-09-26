@@ -119,6 +119,7 @@
     <Compile Include="Controls\TableListControl.xaml.cs">
       <DependentUpon>TableListControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ViewModelBase.cs" />
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="Dialogs\AboutBox.xaml.cs">
       <DependentUpon>AboutBox.xaml</DependentUpon>
@@ -257,7 +258,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Samm_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

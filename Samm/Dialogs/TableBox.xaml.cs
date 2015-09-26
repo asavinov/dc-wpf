@@ -58,20 +58,6 @@ namespace Samm.Dialogs
             InitializeComponent();
         }
 
-        private void okButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (IsNew)
-            {
-            }
-            else
-            {
-                Table.Name = TableName;
-                Schema.AddTable(Table, null, null);
-            }
-
-            this.DialogResult = true;
-        }
-
         private readonly ICommand okCommand;
         public ICommand OkCommand
         {
