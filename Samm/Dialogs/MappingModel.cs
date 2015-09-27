@@ -8,7 +8,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-using Com.Model;
+using Com.Utils;
+using Com.Schema;
 
 namespace Samm.Dialogs
 {

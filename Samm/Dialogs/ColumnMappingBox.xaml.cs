@@ -14,7 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using Com.Model;
+using Com.Utils;
+using Com.Schema;
+using Com.Schema.Csv;
 
 namespace Samm.Dialogs
 {

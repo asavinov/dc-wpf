@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:samm="clr-namespace:Samm"
+             xmlns:utils="clr-namespace:Com.Utils;assembly=Com"
              xmlns:controls="clr-namespace:Samm.Controls"
-             xmlns:com="clr-namespace:Com.Model;assembly=Com"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -13,7 +13,7 @@
         <samm:CompositeCollectionConverter x:Name="SubConv" x:Key="SubConv" />
 
         <!-- This is how tree root will be displayed (no matter where they appear in this window) -->
-        <HierarchicalDataTemplate x:Key="rootItemTemplate" DataType="{x:Type com:SubsetTree}">
+        <HierarchicalDataTemplate x:Key="rootItemTemplate" DataType="{x:Type utils:SubsetTree}">
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!--
@@ -42,7 +42,7 @@
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a subset will be displayed (no matter where they appear in this window) -->
-        <HierarchicalDataTemplate x:Key="setItemTemplate" DataType="{x:Type com:SubsetTree}">
+        <HierarchicalDataTemplate x:Key="setItemTemplate" DataType="{x:Type utils:SubsetTree}">
             <HierarchicalDataTemplate.ItemsSource>
                 <Binding Path="."/>
 <!-- 
@@ -65,7 +65,7 @@
         </HierarchicalDataTemplate>
 
         <!-- This is how tree items representing a greater dimension will be displayed (no matter where they appear in this window) -->
-        <DataTemplate x:Key="dimensionItemTemplate" DataType="{x:Type com:SubsetTree}">
+        <DataTemplate x:Key="dimensionItemTemplate" DataType="{x:Type utils:SubsetTree}">
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="node_icon" Source="../Images/node_column.png" VerticalAlignment="Center" HorizontalAlignment="Left" />
                 <TextBlock Text="{Binding Path=Dim.Name}" FontWeight="SemiBold" Foreground="Blue"/>

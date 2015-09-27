@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -11,9 +12,11 @@ using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Com.Model;
+using Com.Utils;
+using Com.Schema;
+using Com.Schema.Csv;
+using Com.Schema.Rel;
 using Samm.Dialogs;
-using System.Globalization;
 
 namespace Samm
 {

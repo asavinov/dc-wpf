@@ -14,7 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using Com.Model;
+using Com.Schema;
+using Com.Utils;
 
 namespace Samm.Controls
 {

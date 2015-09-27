@@ -8,7 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-using Com.Model;
+using Com.Schema;
+using Com.Utils;
 
 namespace Samm
 {

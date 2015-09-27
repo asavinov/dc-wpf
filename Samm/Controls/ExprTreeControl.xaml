@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:com="clr-namespace:Com.Model;assembly=Com"
+             xmlns:eval="clr-namespace:Com.Data.Eval;assembly=Com"
              xmlns:samm="clr-namespace:Samm"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
@@ -26,7 +26,7 @@
         - Possible actions (add, delete etc.) depend on the operation/expression type
           - Primitive expressions (primitive dim & ToSet) cannot be expanded (we cannot add new child tuple/values) - only a primitive value
         -->
-        <HierarchicalDataTemplate DataType="{x:Type com:ExprNode}">
+        <HierarchicalDataTemplate DataType="{x:Type eval:ExprNode}">
             <HierarchicalDataTemplate.ItemsSource>
                 <MultiBinding  Converter="{StaticResource SubConv}">
                     <Binding Path="Children"/>
