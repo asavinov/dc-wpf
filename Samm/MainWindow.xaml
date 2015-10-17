@@ -107,22 +107,24 @@
         -->
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />
         <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
+        <!--<CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />-->
 
         <CommandBinding Command="{StaticResource AddColumnCommand}" CanExecute="AddColumnCommand_CanExecute" Executed="AddColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource AddFreeCommand}" CanExecute="AddFreeCommand_CanExecute" Executed="AddFreeCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddPathLinkCommand}" CanExecute="AddPathLinkCommand_CanExecute" Executed="AddPathLinkCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddColumnLinkCommand}" CanExecute="AddColumnLinkCommand_CanExecute" Executed="AddColumnLinkCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateColumnCommand}" CanExecute="UpdateColumnCommand_CanExecute" Executed="UpdateColumnCommand_Executed" />
+        <!--
+        <CommandBinding Command="{StaticResource AddCalculationCommand}" CanExecute="AddArithmeticCommand_CanExecute" Executed="AddArithmeticCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddPathLinkCommand}" CanExecute="AddPathLinkCommand_CanExecute" Executed="AddPathLinkCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddColumnLinkCommand}" CanExecute="AddColumnLinkCommand_CanExecute" Executed="AddColumnLinkCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddAggregationCommand}" CanExecute="AddAggregationCommand_CanExecute" Executed="AddAggregationCommand_Executed" />
+        -->
 
         <CommandBinding Command="{StaticResource OpenTableCommand}" CanExecute="OpenTableCommand_CanExecute" Executed="OpenTableCommand_Executed" />
         <CommandBinding Command="{StaticResource CloseViewCommand}" CanExecute="CloseViewCommand_CanExecute" Executed="CloseViewCommand_Executed" />

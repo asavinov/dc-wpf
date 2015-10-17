@@ -46,7 +46,7 @@ namespace Samm.Dialogs
 
         public void RefreshAll()
         {
-            this.GetBindingExpression(ImportMappingBox.DataContextProperty).UpdateTarget();
+            this.GetBindingExpression(TableCsvBox.DataContextProperty).UpdateTarget();
 
             tableName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             filePath.GetBindingExpression(TextBox.TextProperty).UpdateTarget();

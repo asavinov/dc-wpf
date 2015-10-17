@@ -317,9 +317,6 @@ namespace Samm.Dialogs
                 Column.Name = newColumnName.Text;
             }
 
-            // Column definition
-            Column.Definition.DefinitionType = DcColumnDefinitionType.ARITHMETIC;
-
             ExprNode expr = null;
             if (ExpressionModel == null || ExpressionModel.Count == 0)
             {
@@ -334,8 +331,8 @@ namespace Samm.Dialogs
             {
                 if (expr != null)
                 {
-                    expr.Result.TypeName = "Boolean";
-                    expr.Result.TypeTable = schema.GetPrimitive("Boolean");
+                    expr.OutputVariable.TypeName = "Boolean";
+                    expr.OutputVariable.TypeTable = schema.GetPrimitive("Boolean");
                 }
 
                 SourceTable.Definition.WhereExpr = expr;
@@ -346,7 +343,7 @@ namespace Samm.Dialogs
                 // Derive output type of the expression and use it to set the type of the column. 
                 // Alternatively, the type could be chosen by the user precisely as it is done for link columns.
                 expr.Resolve(schema.Workspace, new List<DcVariable>() { new Variable(SourceTable, "this") });
-                Column.Output = expr.Result.TypeTable;
+                Column.Output = expr.OutputVariable.TypeTable;
 
                 Column.Definition.FormulaExpr = expr;
             }
