@@ -110,8 +110,6 @@ namespace Samm.Dialogs
 
             Table.Name = TableName;
 
-            Table.Definition.DefinitionType = DcTableDefinitionType.PRODUCT;
-
             // Save table
             if (IsNew)
             {

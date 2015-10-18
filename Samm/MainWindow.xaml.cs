@@ -16,6 +16,7 @@ using Com.Utils;
 using Com.Schema;
 using Com.Schema.Csv;
 using Com.Schema.Rel;
+using Com.Data;
 using Samm.Dialogs;
 
 namespace Samm
@@ -153,8 +154,13 @@ namespace Samm
             d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), false);
             d2.Add();
 
-            departments.Data.Append(new DcColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
-            departments.Data.Append(new DcColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
+            DcTableWriter writer;
+
+            writer = departments.GetTableWriter();
+            writer.Open();
+            writer.Append(new DcColumn[] { d1, d2 }, new object[] { "SALES", "Dresden" });
+            writer.Append(new DcColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
+            writer.Close();
 
             DcTable employees = ds.CreateTable("Employees");
             ds.AddTable(employees, null, null);
@@ -941,7 +947,7 @@ namespace Samm
                 schema.DeleteTable(gTab); // Delete (directly) generated table
                 // This column will be now deleted as a result of the deletion of the generated table
             }
-            else if (column.Input.Definition.DefinitionType == DcTableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
+            else if (column.Input.Definition.DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
             {
                 //DcColumn projDim = column.Input.InputColumns.Where(d => d.Definition.IsAppendData).ToList()[0];
                 //Mapping mapping = projDim.Definition.Mapping;
