@@ -183,9 +183,9 @@ namespace Samm
 
         public bool MoveNext()
         {
-            if (Offset < GridView.Set.Data.Length) Offset++; // Increement if possible
+            if (Offset < GridView.Set.GetData().Length) Offset++; // Increement if possible
 
-            if (Offset >= GridView.Set.Data.Length) return false; // Cannot move
+            if (Offset >= GridView.Set.GetData().Length) return false; // Cannot move
 
             return true;
         }
@@ -227,14 +227,14 @@ namespace Samm
                     {
                         ofs = (int)cell; // Use output as an input for the next iteration
 
-                        if (path.Segments[i].Data.IsNull(ofs))
+                        if (path.Segments[i].GetData().IsNull(ofs))
                         {
                             cell = null;
                             break; // Cannot continue with next segments
                         }
                         else
                         {
-                            cell = path.Segments[i].Data.GetValue(ofs);
+                            cell = path.Segments[i].GetData().GetValue(ofs);
                         }
                     }
                 }
@@ -244,13 +244,13 @@ namespace Samm
                     if (index < 0 || index >= dimCount) return null;
                     DcColumn dim = GridView.Set.Columns[index];
 
-                    if (dim.Data.IsNull(Offset))
+                    if (dim.GetData().IsNull(Offset))
                     {
                         cell = null;
                     }
                     else
                     {
-                        cell = dim.Data.GetValue(Offset);
+                        cell = dim.GetData().GetValue(Offset);
                     }
                 }
 
@@ -269,7 +269,7 @@ namespace Samm
         {
             DcColumn dim = GridView.Set.GetColumn(dimName);
             if (dim == null) return null;
-            return (string)dim.Data.GetValue(Offset);
+            return (string)dim.GetData().GetValue(Offset);
         }
     }
 

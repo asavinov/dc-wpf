@@ -50,7 +50,7 @@ namespace Samm.Dialogs
             {
                 IsNew = false;
                 TableName = table.Name;
-                TableFormula = table.Definition.WhereFormula;
+                TableFormula = table.GetData().GetDefinition().WhereFormula;
             }
 
             Table = table;
