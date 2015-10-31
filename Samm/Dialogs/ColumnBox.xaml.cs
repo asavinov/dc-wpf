@@ -124,7 +124,7 @@ namespace Samm.Dialogs
 
                 ColumnName = column.Name;
                 IsKey = column.IsKey;
-                ColumnFormula = column.GetData().GetDefinition().Formula;
+                ColumnFormula = column.GetData().Formula;
 
                 SelectedTargetSchema = column.Output.Schema;
                 SelectedTargetTable = column.Output;
