@@ -795,6 +795,7 @@ namespace Samm
             //
             DcColumn column = schema.CreateColumn(dlg.ColumnName, table, dlg.SelectedTargetTable, dlg.IsKey);
             column.GetData().Formula = dlg.ColumnFormula;
+            column.GetData().IsAppendData = true;
             column.Add();
 
             SelectedColumn = column;
@@ -874,7 +875,6 @@ namespace Samm
             // Update the column using parameters in the dialog
             //
             column.Name = dlg.ColumnName;
-            column.IsKey = dlg.IsKey;
             column.GetData().Formula = dlg.ColumnFormula;
             column.Output = dlg.SelectedTargetTable;
 
