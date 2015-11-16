@@ -24,7 +24,7 @@ namespace Samm
 
         public DcTable Set { get; set; } // It is a model which contains data to be visualized
 
-        public List<DimPath> Paths { get; set; } // Only these paths will be displayed
+        public List<ColumnPath> Paths { get; set; } // Only these paths will be displayed
 
         public bool ShowPaths = true;
 
@@ -59,8 +59,8 @@ namespace Samm
             Grid.AutoGenerateColumns = false;
 
             // Initialize paths we want to visualize
-            var pathEnum = new PathEnumerator(Set, DimensionType.IDENTITY_ENTITY);
-            Paths = new List<DimPath>();
+            var pathEnum = new PathEnumerator(Set, ColumnType.IDENTITY_ENTITY);
+            Paths = new List<ColumnPath>();
             foreach(var path in pathEnum) 
             {
                 if (path.Segments.Count == 0) continue; // ERROR
@@ -82,7 +82,7 @@ namespace Samm
             {
                 for (int i = 0; i < Paths.Count; i++)
                 {
-                    DimPath path = Paths[i];
+                    ColumnPath path = Paths[i];
 
                     Binding binding = new Binding(string.Format("[{0}]", i)); // Bind to an indexer
 
@@ -221,7 +221,7 @@ namespace Samm
 
                 if (GridView.ShowPaths) // Use stored paths
                 {
-                    DimPath path = GridView.Paths[index];
+                    ColumnPath path = GridView.Paths[index];
                     int ofs;
                     for (int i = 0; i < path.Segments.Count; i++)
                     {

@@ -25,50 +25,50 @@ namespace Samm.Dialogs
 
         public Mapping Mapping { get; set; } // It is the current state of the mapping. And it is what is initialized and returned. 
 
-        private DcTable _sourceSet;
-        public DcTable SourceSet 
+        private DcTable _sourceTab;
+        public DcTable SourceTab 
         {
-            get { return _sourceSet; }
+            get { return _sourceTab; }
             set 
             {
                 Debug.Assert(value != null, "Wrong use: a set in mapping cannot be null (use root instead).");
-                if (_sourceSet == value) return;
-                _sourceSet = value;
+                if (_sourceTab == value) return;
+                _sourceTab = value;
 
-                Mapping.SourceSet = SourceSet; // Update mapper
+                Mapping.SourceTab = SourceTab; // Update mapper
 
                 // Update tree
                 SourceTree.Clear();
-                MatchTreeNode node = new MatchTreeNode(SourceSet);
+                MatchTreeNode node = new MatchTreeNode(SourceTab);
                 SourceTree.AddChild(node);
                 node.ExpandTree();
                 node.AddSourcePaths(Mapping);
             }
         }
 
-        private DcTable _targetSet;
-        public DcTable TargetSet
+        private DcTable _targetTab;
+        public DcTable TargetTab
         {
-            get { return _targetSet; }
+            get { return _targetTab; }
             set
             {
                 Debug.Assert(value != null, "Wrong use: a set in mapping cannot be null (use root instead).");
-                if (_targetSet == value) return;
-                _targetSet = value;
+                if (_targetTab == value) return;
+                _targetTab = value;
 
-                Mapping.TargetSet = TargetSet; // Update mapper
+                Mapping.TargetTab = TargetTab; // Update mapper
 
                 //
                 // Initialize mapping by recommending best mapping
                 //
                 mapper.Mappings.Clear();
-                //mapper.MapDim(new DimPath(OldDim), new DimPath(NewDim));
+                //mapper.MapDim(new ColumnPath(OldDim), new ColumnPath(NewDim));
                 //MappingModel.Mapping = mapper.Mappings[0];
-                Mapping = new Mapping(SourceSet, TargetSet);
+                Mapping = new Mapping(SourceTab, TargetTab);
 
                 // Update tree
                 TargetTree.Clear();
-                MatchTreeNode node = new MatchTreeNode(TargetSet);
+                MatchTreeNode node = new MatchTreeNode(TargetTab);
                 node.ExpandTree();
                 node.AddTargetPaths(Mapping);
                 TargetTree.AddChild(node);
@@ -85,7 +85,7 @@ namespace Samm.Dialogs
             if (SourceTree.SelectedPath == null) return false;
             return IsMatchedSource(SourceTree.SelectedPath);
         }
-        public bool IsMatchedSource(DimPath path)
+        public bool IsMatchedSource(ColumnPath path)
         {
             PathMatch match = Mapping.GetMatchForSource(path);
 
@@ -112,7 +112,7 @@ namespace Samm.Dialogs
             if (TargetTree.SelectedPath == null) return false;
             return IsMatchedTarget(TargetTree.SelectedPath);
         }
-        public bool IsMatchedTarget(DimPath path)
+        public bool IsMatchedTarget(ColumnPath path)
         {
             PathMatch match = Mapping.GetMatchForTarget(path);
 
@@ -134,7 +134,7 @@ namespace Samm.Dialogs
         /// Secondary: given a primary currently selected node, compute if a match with this secondary node does not contradict to existing matches (so it can be added). Alternatively, if relevances are precomputed then we find if relevance is higher than 0.
         /// Primary: always true (if there is at least one possible secondary match). 
         /// </summary>
-        public bool CanMatchTarget(DimPath path)
+        public bool CanMatchTarget(ColumnPath path)
         {
             if (TargetTree.IsPrimary)
             {
@@ -142,7 +142,7 @@ namespace Samm.Dialogs
             }
             else
             {
-                DimPath priPath = SourceTree.SelectedPath;
+                ColumnPath priPath = SourceTree.SelectedPath;
                 if (priPath == null) return false; // Primary node is not selected
 
                 if (!priPath.IsPrimitive || !path.IsPrimitive) return false; // Only primitive paths can be matchd
@@ -151,7 +151,7 @@ namespace Samm.Dialogs
             }
         }
 
-        public bool CanMatchSource(DimPath path)
+        public bool CanMatchSource(ColumnPath path)
         {
             // TODO: Copy-paste when ready
             return true;
@@ -162,12 +162,12 @@ namespace Samm.Dialogs
         /// </summary>
         public void SelectBestTarget()
         {
-            DimPath sourcePath = SourceTree.SelectedPath;
+            ColumnPath sourcePath = SourceTree.SelectedPath;
             if (sourcePath == null) return; // Primary node is not selected
 
             if (!sourcePath.IsPrimitive) return; // Only primitive paths can be matchd
 
-            DimPath pargetPath = mapper.MapDim(sourcePath, TargetSet); // Find best path starting from the target set and corresponding to the source path
+            ColumnPath pargetPath = mapper.MapCol(sourcePath, TargetTab); // Find best path starting from the target set and corresponding to the source path
 
             TargetTree.SelectedPath = pargetPath;
         }
@@ -204,56 +204,56 @@ namespace Samm.Dialogs
 
             List<DcTable> all = table.Schema.Root.AllSubTables;
             List<DcTable> result = new List<DcTable>();
-            foreach (DcTable set in all)
+            foreach (DcTable tab in all)
             {
-                if (set == table) continue; // We cannot point to itself
-                if (set.IsInput(table)) continue; // We cannot point to a lesser set (cycle)
+                if (tab == table) continue; // We cannot point to itself
+                if (tab.IsInput(table)) continue; // We cannot point to a lesser set (cycle)
 
-                result.Add(set);
+                result.Add(tab);
             }
 
             return result;
         }
 
-        public static List<DcTable> GetPossibleLesserSets(DcTable table) // Fact sets
+        public static List<DcTable> GetPossibleLesserTables(DcTable table) // Fact sets
         {
             // Possible target sets: all sets from the schema excepting: 
             // not source, not greater, there is lesser path
 
             List<DcTable> all = table.Schema.Root.AllSubTables;
             List<DcTable> result = new List<DcTable>();
-            foreach (DcTable set in all)
+            foreach (DcTable tab in all)
             {
-                if (set == table) continue; // We cannot point to itself
-                if (!set.IsInput(table)) continue;
+                if (tab == table) continue; // We cannot point to itself
+                if (!tab.IsInput(table)) continue;
 
-                result.Add(set);
+                result.Add(tab);
             }
 
             return result;
         }
 
-        public MappingModel(DcColumn sourceDim, DcColumn targetDim)
-            : this(sourceDim.Output, targetDim.Output)
+        public MappingModel(DcColumn sourceCol, DcColumn targetCol)
+            : this(sourceCol.Output, targetCol.Output)
         {
-            SourceTree.Children[0].Dim = sourceDim;
-            TargetTree.Children[0].Dim = targetDim;
+            SourceTree.Children[0].Column = sourceCol;
+            TargetTree.Children[0].Column = targetCol;
         }
 
-        public MappingModel(DcTable sourceSet, DcTable targetSet)
+        public MappingModel(DcTable sourceTab, DcTable targetTab)
         {
             mapper = new Mapper();
             mapper.MaxMappingsToBuild = 100;
 
-            Mapping = new Mapping(sourceSet, targetSet);
+            Mapping = new Mapping(sourceTab, targetTab);
 
             SourceTree = new MatchTree(this);
             SourceTree.IsPrimary = true;
             TargetTree = new MatchTree(this);
             TargetTree.IsPrimary = false;
 
-            SourceSet = sourceSet; // Here also the tree will be constructed
-            TargetSet = targetSet;
+            SourceTab = sourceTab; // Here also the tree will be constructed
+            TargetTab = targetTab;
         }
 
         public MappingModel(Mapping mapping)
@@ -268,8 +268,8 @@ namespace Samm.Dialogs
             TargetTree = new MatchTree(this);
             TargetTree.IsPrimary = false;
 
-            SourceSet = mapping.SourceSet; // Here also the tree will be constructed
-            TargetSet = mapping.TargetSet;
+            SourceTab = mapping.SourceTab; // Here also the tree will be constructed
+            TargetTab = mapping.TargetTab;
         }
     }
 
@@ -288,18 +288,18 @@ namespace Samm.Dialogs
 
         // This is important for generation of the current status: disabled/enabled, relevance etc.
         public MatchTreeNode SelectedNode { get; set; } // Selected in this tree. Bind tree view selected item to this field.
-        public DimPath SelectedPath // Transform selected node into valid selected path
+        public ColumnPath SelectedPath // Transform selected node into valid selected path
         {
             get
             {
                 if (SelectedNode == null) return null;
-                DimPath selectedPath = SelectedNode.DimPath;
+                ColumnPath selectedPath = SelectedNode.ColPath;
 
                 // Trimm to source or target set of the mapping in the root
                 if(IsSource)
-                    selectedPath.RemoveFirst(MappingModel.SourceSet);
+                    selectedPath.RemoveFirst(MappingModel.SourceTab);
                 else
-                    selectedPath.RemoveFirst(MappingModel.TargetSet);
+                    selectedPath.RemoveFirst(MappingModel.TargetTab);
 
                 return selectedPath;
             }
@@ -307,8 +307,8 @@ namespace Samm.Dialogs
             set
             {
                 // Find node corresponding to the specified path
-                DimTree root = Children[0];
-                DimTree node = root.FindPath(value);
+                ColumnTree root = Children[0];
+                ColumnTree node = root.FindPath(value);
                 SelectedNode = (MatchTreeNode)node;
             }
         }
@@ -326,18 +326,18 @@ namespace Samm.Dialogs
     /// It provides methods and propoerties for a node which depend on the current mappings and role of the tree. 
     /// The class assumes that the root of the tree is a special node storing mappings, tree roles and other necessary data. 
     /// </summary>
-    public class MatchTreeNode : DimTree
+    public class MatchTreeNode : ColumnTree
     {
-        public DimPath MappingPath // Trimmed to source or target set of the mapping in the root
+        public ColumnPath MappingPath // Trimmed to source or target set of the mapping in the root
         {
             get
             {
                 MatchTree root = (MatchTree)Root;
-                DimPath path = DimPath;
+                ColumnPath path = ColPath;
                 if (root.IsSource)
-                    path.RemoveFirst(root.MappingModel.SourceSet);
+                    path.RemoveFirst(root.MappingModel.SourceTab);
                 else
-                    path.RemoveFirst(root.MappingModel.TargetSet);
+                    path.RemoveFirst(root.MappingModel.TargetTab);
                 return path;
             }
         }
@@ -393,12 +393,12 @@ namespace Samm.Dialogs
             throw new NotImplementedException();
         }
 
-        public MatchTreeNode(DcColumn dim, DimTree parent = null)
+        public MatchTreeNode(DcColumn dim, ColumnTree parent = null)
             : base(dim, parent)
         {
         }
 
-        public MatchTreeNode(DcTable set, DimTree parent = null)
+        public MatchTreeNode(DcTable set, ColumnTree parent = null)
             : base(set, parent)
         {
         }

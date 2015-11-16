@@ -7,7 +7,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -33,12 +32,12 @@ namespace Samm.Controls
                 if (_table == value) return;
                 if (_table != null)
                 {
-                    ((Set)_table).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
+                    ((Table)_table).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
                 }
                 Items.Clear();
                 _table = value;
                 if (_table == null) return;
-                ((Set)_table).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
+                ((Table)_table).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
 
                 // Fill the list of items
                 foreach (DcColumn column in _table.Columns)

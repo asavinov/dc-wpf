@@ -259,7 +259,7 @@
 
                     <ListBox 
                         Name="SchemaListView" 
-                        ItemsSource="{Binding Path=Workspace.Schemas}" 
+                        ItemsSource="{Binding Path=Space.Schemas}" 
                         SelectedItem="{Binding Path=SelectedSchema_Bound}" 
                         ItemTemplate="{StaticResource SchemaListItemTemplate}" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
@@ -430,7 +430,7 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
-                <Label Name="lblWorkspace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
+                <Label Name="lblSpace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
 
                 <DockPanel Grid.Row="1" >
                     <ToolBarTray DockPanel.Dock="Top" >

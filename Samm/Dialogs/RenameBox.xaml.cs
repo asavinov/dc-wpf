@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -76,19 +75,19 @@ namespace Samm.Dialogs
             {
                 Schema.RenameTable(Schema, NewName);
                 Schema.Name = NewName;
-                ((Set)Schema).NotifyPropertyChanged("");
+                ((Table)Schema).NotifyPropertyChanged("");
             }
             else if (Element is DcTable)
             {
                 Schema.RenameTable(Table, NewName);
                 Table.Name = NewName;
-                ((Set)Table).NotifyPropertyChanged("");
+                ((Table)Table).NotifyPropertyChanged("");
             }
             else if (Element is DcColumn)
             {
                 Schema.RenameColumn(Column, NewName);
                 Column.Name = NewName;
-                ((Dim)Column).NotifyPropertyChanged("");
+                ((Column)Column).NotifyPropertyChanged("");
             }
 
             this.DialogResult = true;

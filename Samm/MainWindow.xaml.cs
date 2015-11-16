@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 using Newtonsoft.Json;
@@ -35,23 +34,23 @@ namespace Samm
         CultureInfo defaultCultureInfo = new System.Globalization.CultureInfo("en-US");
 
         //
-        // Workspace
+        // Space
         //
-        public string WorkspaceFile { get; set; } // File where the workspace is stored
+        public string SpaceFile { get; set; } // File where the space is stored
 
-        public DcWorkspace Workspace { get; set; }
+        public DcSpace Space { get; set; }
 
         public DcSchema MashupTop { 
-            get { return Workspace.Mashup; } 
-            set { if (value == Workspace.Mashup) return; Workspace.Schemas.Remove(Workspace.Mashup); Workspace.Schemas.Add(value); } 
+            get { return Space.Mashup; } 
+            set { if (value == Space.Mashup) return; Space.Schemas.Remove(Space.Mashup); Space.Schemas.Add(value); } 
         }
         public DcTable MashupRoot { get { return MashupTop != null ? MashupTop.Root : null; } }
 
 
-        public bool IsInMashups(DcTable set) // Determine if the specified set belongs to some mashup
+        public bool IsInMashups(DcTable tab) // Determine if the specified set belongs to some mashup
         {
-            if (set == null || MashupTop == null) return false;
-            if (set.Schema == MashupTop) return true;
+            if (tab == null || MashupTop == null) return false;
+            if (tab.Schema == MashupTop) return true;
             return false;
         }
         public bool IsInMashups(DcColumn dim) // Determine if the specified dimension belongs to some mashup
@@ -89,7 +88,7 @@ namespace Samm
                 {
                     SchemaListView.SelectedItem = value;
 
-                    ((Set)value).NotifyPropertyChanged("");
+                    ((Table)value).NotifyPropertyChanged("");
                 }
             }
         }
@@ -102,7 +101,7 @@ namespace Samm
                 if (TableListView == null || TableListView.TablesList == null) return;
                 TableListView.TablesList.SelectedItem = value;
 
-                ((Set)value).NotifyPropertyChanged("");
+                ((Table)value).NotifyPropertyChanged("");
             } 
         }
 
@@ -114,7 +113,7 @@ namespace Samm
                 if (ColumnListView == null || ColumnListView.ColumnList == null) return;
                 ColumnListView.ColumnList.SelectedItem = value;
 
-                ((Dim)value).NotifyPropertyChanged("");
+                ((Column)value).NotifyPropertyChanged("");
             }
         }
 
@@ -130,7 +129,7 @@ namespace Samm
 
             Utils.cultureInfo = defaultCultureInfo;
 
-            Workspace = new Workspace();
+            Space = new Space();
 
             DragDropHelper = new DragDropHelper();
 
@@ -138,7 +137,7 @@ namespace Samm
             InitializeComponent();
 
             // Create new empty mashup
-            Operation_NewWorkspace();
+            Operation_NewSpace();
         }
 
         public DcSchema CreateSampleSchema()
@@ -224,30 +223,30 @@ namespace Samm
                 return false;
             }
 
-            Operation_NewWorkspace();
+            Operation_NewSpace();
 
             return true;
         }
-        protected void Operation_NewWorkspace()
+        protected void Operation_NewSpace()
         {
-            if (Workspace == null) Workspace = new Workspace();
-            else Workspace.Schemas.Clear();
+            if (Space == null) Space = new Space();
+            else Space.Schemas.Clear();
 
             //
             // Initialize mashup schema
             //
             DcSchema mashupTop = new Schema("New Mashup");
             mashupTop = CreateSampleSchema();
-            mashupTop.Workspace = Workspace;
-            Workspace.Schemas.Add(mashupTop);
-            Workspace.Mashup = mashupTop;
+            mashupTop.Space = Space;
+            Space.Schemas.Add(mashupTop);
+            Space.Mashup = mashupTop;
 
             //
             // Initialize predefined schemas
             //
             SchemaCsv csvSchema = new SchemaCsv("My Files");
-            csvSchema.Workspace = Workspace;
-            Workspace.Schemas.Add(csvSchema);
+            csvSchema.Space = Space;
+            Space.Schemas.Add(csvSchema);
             ConnectionCsv conn = new ConnectionCsv();
 
             //
@@ -304,12 +303,12 @@ namespace Samm
             }
 
             // Read from the file and de-serialize workspace
-            Operation_ReadWorkspace(filePath);
-            WorkspaceFile = filePath;
+            Operation_ReadSpace(filePath);
+            SpaceFile = filePath;
 
             return true;
         }
-        protected void Operation_ReadWorkspace(string filePath)
+        protected void Operation_ReadSpace(string filePath)
         {
             byte[] jsonBytes = System.IO.File.ReadAllBytes(filePath);
 
@@ -325,12 +324,12 @@ namespace Samm
             
             // De-serialize
             JObject json = (JObject)JsonConvert.DeserializeObject(jsonString, new JsonSerializerSettings { });
-            DcWorkspace workspace = (Workspace)Utils.CreateObjectFromJson(json);
+            DcSpace space = (Space)Utils.CreateObjectFromJson(json);
 
-            ((Workspace)workspace).FromJson(json, workspace);
+            ((Space)space).FromJson(json, space);
 
             // Switch to new workspace
-            Workspace = workspace;
+            Space = space;
 
             //
             // Update the model that is shown in the visual component
@@ -353,14 +352,14 @@ namespace Samm
         }
         private bool SaveFileWizard()
         {
-            if (string.IsNullOrEmpty(WorkspaceFile))
+            if (string.IsNullOrEmpty(SpaceFile))
             {
                 bool isSaved = SaveAsFileWizard(); // Choose a file to save to. It will call this method again.
                 return isSaved;
             }
             else
             {
-                Operation_WriteWorkspace(WorkspaceFile); // Simply write to file
+                Operation_WriteSpace(SpaceFile); // Simply write to file
                 return true;
             }
         }
@@ -394,16 +393,16 @@ namespace Samm
             string fileDir = System.IO.Path.GetDirectoryName(filePath);
             string tableName = System.IO.Path.GetFileNameWithoutExtension(filePath);
 
-            WorkspaceFile = filePath;
-            Operation_WriteWorkspace(WorkspaceFile); // Really save
+            SpaceFile = filePath;
+            Operation_WriteSpace(SpaceFile); // Really save
 
             return true; // Saved
         }
-        protected void Operation_WriteWorkspace(string filePath)
+        protected void Operation_WriteSpace(string filePath)
         {
             // Serialize
-            JObject json = Utils.CreateJsonFromObject(Workspace);
-            Workspace.ToJson(json);
+            JObject json = Utils.CreateJsonFromObject(Space);
+            Space.ToJson(json);
             string jsonString = JsonConvert.SerializeObject(json, Newtonsoft.Json.Formatting.Indented, new Newtonsoft.Json.JsonSerializerSettings { });
 
             byte[] jsonBytes;
@@ -480,8 +479,8 @@ namespace Samm
         private void AddCsvSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             SchemaCsv csvSchema = new SchemaCsv("My Files");
-            csvSchema.Workspace = Workspace;
-            Workspace.Schemas.Add(csvSchema);
+            csvSchema.Space = Space;
+            Space.Schemas.Add(csvSchema);
             ConnectionCsv conn = new ConnectionCsv();
 
             e.Handled = true;
@@ -546,7 +545,7 @@ namespace Samm
             if (SelectedSchema == null) return;
             else if (SelectedSchema is SchemaCsv)
             {
-                Workspace.Schemas.Remove(SelectedSchema);
+                Space.Schemas.Remove(SelectedSchema);
             }
             else // Mashup
             {
@@ -586,7 +585,7 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
 
-                SetCsv table = (SetCsv)SelectedSchema.CreateTable(dlg.TableName);
+                TableCsv table = (TableCsv)SelectedSchema.CreateTable(dlg.TableName);
 
                 table.FilePath = dlg.FilePath;
 
@@ -643,7 +642,7 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
 
-                SetCsv table = (SetCsv)SelectedTable;
+                TableCsv table = (TableCsv)SelectedTable;
 
                 table.FilePath = dlg.FilePath;
 
@@ -696,14 +695,14 @@ namespace Samm
         }
         private void DeleteTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            DcTable set = null;
+            DcTable tab = null;
             if (SelectedTable != null)
-                set = SelectedTable;
+                tab = SelectedTable;
             else if (SelectedColumn != null && SelectedColumn.Input != null)
-                set = SelectedColumn.Input;
+                tab = SelectedColumn.Input;
             else return;
 
-            DcSchema schema = set.Schema;
+            DcSchema schema = tab.Schema;
 
             //
             // Ask for confirmation
@@ -718,7 +717,7 @@ namespace Samm
             // 
             // Delete tables *generated* from this table (alternatively, leave them but with empty definition)
             //
-            var paths = new PathEnumerator(new List<DcTable>(new DcTable[] { set }), new List<DcTable>(), false, DimensionType.GENERATING);
+            var paths = new PathEnumerator(new List<DcTable>(new DcTable[] { tab }), new List<DcTable>(), false, ColumnType.GENERATING);
             foreach (var path in paths)
             {
                 for (int i = path.Segments.Count - 1; i >= 0; i--)
@@ -728,7 +727,7 @@ namespace Samm
             }
 
             // Remove all connections of this set with the schema by deleting all its dimensions
-            schema.DeleteTable(set);
+            schema.DeleteTable(tab);
 
             e.Handled = true;
         }
@@ -782,7 +781,7 @@ namespace Samm
             //
             // Show parameters for set extraction
             //
-            ColumnBox dlg = new ColumnBox(Workspace.Schemas, table, null);
+            ColumnBox dlg = new ColumnBox(Space.Schemas, table, null);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -865,7 +864,7 @@ namespace Samm
 
             DcSchema schema = MashupTop;
 
-            ColumnBox dlg = new ColumnBox(Workspace.Schemas, column.Input, column);
+            ColumnBox dlg = new ColumnBox(Space.Schemas, column.Input, column);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
@@ -936,7 +935,7 @@ namespace Samm
             if (column.GetData().IsAppendData) // Delete all tables that are directly or indirectly generated by this column
             {
                 DcTable gTab = column.Output;
-                var paths = new PathEnumerator(new List<DcTable>(new DcTable[] { gTab }), new List<DcTable>(), false, DimensionType.GENERATING);
+                var paths = new PathEnumerator(new List<DcTable>(new DcTable[] { gTab }), new List<DcTable>(), false, ColumnType.GENERATING);
                 foreach (var path in paths)
                 {
                     for (int i = path.Segments.Count - 1; i >= 0; i--)
@@ -1019,7 +1018,7 @@ namespace Samm
         }
         private void CloseViewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            lblWorkspace.Content = "DATA";
+            lblSpace.Content = "DATA";
 
             GridPanel.Content = null;
 
@@ -1034,9 +1033,9 @@ namespace Samm
     {
         public bool CanDrag(object data)
         {
-            if (data is Set) return true;
-            else if (data is Dim) return true;
-            else if (data is SubsetTree) return true;
+            if (data is Table) return true;
+            else if (data is Column) return true;
+            else if (data is SubtableTree) return true;
             return false;
         }
 
@@ -1050,36 +1049,36 @@ namespace Samm
         {
             if (dropSource == null || dropTarget == null) return;
 
-            // Transform to one format (Set or Dim) from several possible classes: Set, Dim, SubsetTree
-            if (dropSource is SubsetTree)
+            // Transform to one format (Set or Dim) from several possible classes: Table, Column, SubtableTree
+            if (dropSource is SubtableTree)
             {
-                if (((SubsetTree)dropSource).IsSubsetNode) dropSource = ((SubsetTree)dropSource).Input;
-                else if (((SubsetTree)dropSource).IsDimensionNode) dropSource = ((SubsetTree)dropSource).Dim;
+                if (((SubtableTree)dropSource).IsSubsetNode) dropSource = ((SubtableTree)dropSource).Input;
+                else if (((SubtableTree)dropSource).IsColumnNode) dropSource = ((SubtableTree)dropSource).Column;
             }
-            if (dropTarget is SubsetTree)
+            if (dropTarget is SubtableTree)
             {
-                if (((SubsetTree)dropTarget).IsSubsetNode) dropTarget = ((SubsetTree)dropTarget).Input;
-                else if (((SubsetTree)dropTarget).IsDimensionNode) dropTarget = ((SubsetTree)dropTarget).Dim;
+                if (((SubtableTree)dropTarget).IsSubsetNode) dropTarget = ((SubtableTree)dropTarget).Input;
+                else if (((SubtableTree)dropTarget).IsColumnNode) dropTarget = ((SubtableTree)dropTarget).Column;
             }
 
             //
             // Conditions for new aggregated column: dimension is dropped on a set
             //
-            if (dropSource is Dim && ((MainWindow)App.Current.MainWindow).IsInMashups((Dim)dropSource))
+            if (dropSource is Column && ((MainWindow)App.Current.MainWindow).IsInMashups((Column)dropSource))
             {
-                if (dropTarget is Set && !(((Set)dropTarget).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
+                if (dropTarget is Table && !(((Table)dropTarget).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Table)dropTarget))
                 {
                     // Note that here source and target in terms of DnD have opposite interpretations to the aggregation method
-                    //((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Set)dropTarget, (Dim)dropSource);
+                    //((MainWindow)App.Current.MainWindow).Wizard_AddAggregation((Table)dropTarget, (Dim)dropSource);
                 }
             }
 
             //
             // TODO: Conditions for link column: a set is dropped on another set
             //
-            if (dropSource is Set && !(((Set)dropSource).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropSource))
+            if (dropSource is Table && !(((Table)dropSource).Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups((Table)dropSource))
             {
-                if (dropTarget is Set && ((MainWindow)App.Current.MainWindow).IsInMashups((Set)dropTarget))
+                if (dropTarget is Table && ((MainWindow)App.Current.MainWindow).IsInMashups((Table)dropTarget))
                 {
                     //((MainWindow)App.Current.MainWindow).Wizard_AddPathLink((DcTable)dropTarget, (DcTable)dropSource);
                 }
@@ -1094,13 +1093,13 @@ namespace Samm
             //
             // Conditions for opening a table view
             //
-            if (data is SubsetTree && ((SubsetTree)data).IsSubsetNode) 
+            if (data is SubtableTree && ((SubtableTree)data).IsSubsetNode) 
             {
-                DcTable set = ((SubsetTree)data).Input;
-                if(!(set.Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups(set)) 
+                DcTable tab = ((SubtableTree)data).Input;
+                if(!(tab.Name == "Root") && ((MainWindow)App.Current.MainWindow).IsInMashups(tab)) 
                 {
                     // Call a direct operation method for opening a table with the necessary parameters (rather than a command)
-                    ((MainWindow)App.Current.MainWindow).Operation_OpenTable(set);
+                    ((MainWindow)App.Current.MainWindow).Operation_OpenTable(tab);
                 }
             }
         }

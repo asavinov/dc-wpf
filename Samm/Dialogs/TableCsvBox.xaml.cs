@@ -85,11 +85,11 @@ namespace Samm.Dialogs
             {
                 IsNew = false;
                 TableName = table.Name;
-                FilePath = ((SetCsv)table).FilePath;
+                FilePath = ((TableCsv)table).FilePath;
 
-                HasHeaderRecord = ((SetCsv)table).HasHeaderRecord;
-                Delimiter = ((SetCsv)table).Delimiter;
-                Decimal = ((SetCsv)table).CultureInfo.NumberFormat.NumberDecimalSeparator;
+                HasHeaderRecord = ((TableCsv)table).HasHeaderRecord;
+                Delimiter = ((TableCsv)table).Delimiter;
+                Decimal = ((TableCsv)table).CultureInfo.NumberFormat.NumberDecimalSeparator;
 
                 foreach (DcColumn column in table.Columns)
                 {
@@ -113,7 +113,7 @@ namespace Samm.Dialogs
             if(Table == null) return;
 
             // TODO: Here we need to load structure given a file path with parameters (we do not create a new file in advance)
-            List<DcColumn> columns = ((SchemaCsv)Schema).LoadSchema((SetCsv)Table);
+            List<DcColumn> columns = ((SchemaCsv)Schema).LoadSchema((TableCsv)Table);
 
             foreach (DcColumn column in columns)
             {
