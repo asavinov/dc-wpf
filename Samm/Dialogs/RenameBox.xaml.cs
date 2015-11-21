@@ -73,19 +73,16 @@ namespace Samm.Dialogs
             // Really rename the element and propagate this change through all objects where this element name is used
             if (Element is DcSchema)
             {
-                Schema.RenameTable(Schema, NewName);
                 Schema.Name = NewName;
                 ((Table)Schema).NotifyPropertyChanged("");
             }
             else if (Element is DcTable)
             {
-                Schema.RenameTable(Table, NewName);
                 Table.Name = NewName;
                 ((Table)Table).NotifyPropertyChanged("");
             }
             else if (Element is DcColumn)
             {
-                Schema.RenameColumn(Column, NewName);
                 Column.Name = NewName;
                 ((Column)Column).NotifyPropertyChanged("");
             }

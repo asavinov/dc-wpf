@@ -41,8 +41,7 @@ namespace Samm
         public DcSpace Space { get; set; }
 
         public DcSchema MashupTop { 
-            get { return Space.Mashup; } 
-            set { if (value == Space.Mashup) return; Space.Schemas.Remove(Space.Mashup); Space.Schemas.Add(value); } 
+            get { return Space.GetSchemas().FirstOrDefault(x => x.GetSchemaKind() == DcSchemaKind.Dc); } 
         }
         public DcTable MashupRoot { get { return MashupTop != null ? MashupTop.Root : null; } }
 
@@ -140,18 +139,16 @@ namespace Samm
             Operation_NewSpace();
         }
 
-        public DcSchema CreateSampleSchema()
+        public void CreateSampleSchema(DcSchema schema)
         {
-            DcSchema ds = new Schema("Sample Mashup");
+            DcSpace space = schema.Space;
+
             DcColumn d1, d2, d3, d4;
 
-            DcTable departments = ds.CreateTable("Departments");
-            ds.AddTable(departments, null, null);
+            DcTable departments = space.CreateTable("Departments", schema.Root);
 
-            d1 = ds.CreateColumn("name", departments, ds.GetPrimitive("String"), true);
-            d1.Add();
-            d2 = ds.CreateColumn("location", departments, ds.GetPrimitive("String"), false);
-            d2.Add();
+            d1 = space.CreateColumn("name", departments, schema.GetPrimitive("String"), true);
+            d2 = space.CreateColumn("location", departments, schema.GetPrimitive("String"), false);
 
             DcTableWriter writer;
 
@@ -161,27 +158,17 @@ namespace Samm
             writer.Append(new DcColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
             writer.Close();
 
-            DcTable employees = ds.CreateTable("Employees");
-            ds.AddTable(employees, null, null);
+            DcTable employees = space.CreateTable("Employees", schema.Root);
 
-            d1 = ds.CreateColumn("name", employees, ds.GetPrimitive("String"), true);
-            d1.Add();
-            d2 = ds.CreateColumn("age", employees, ds.GetPrimitive("Double"), false);
-            d2.Add();
-            d3 = ds.CreateColumn("salary", employees, ds.GetPrimitive("Double"), false);
-            d3.Add();
-            d4 = ds.CreateColumn("dept", employees, departments, false);
-            d4.Add();
+            d1 = space.CreateColumn("name", employees, schema.GetPrimitive("String"), true);
+            d2 = space.CreateColumn("age", employees, schema.GetPrimitive("Double"), false);
+            d3 = space.CreateColumn("salary", employees, schema.GetPrimitive("Double"), false);
+            d4 = space.CreateColumn("dept", employees, departments, false);
 
-            DcTable managers = ds.CreateTable("Managers");
-            ds.AddTable(managers, employees, null);
+            DcTable managers = space.CreateTable("Managers", employees);
 
-            d1 = ds.CreateColumn("title", managers, ds.GetPrimitive("String"), false);
-            d1.Add();
-            d2 = ds.CreateColumn("is project manager", managers, ds.GetPrimitive("Boolean"), false);
-            d2.Add();
-
-            return ds;
+            d1 = space.CreateColumn("title", managers, schema.GetPrimitive("String"), false);
+            d2 = space.CreateColumn("is project manager", managers, schema.GetPrimitive("Boolean"), false);
         }
 
         protected void GenericError(System.Exception e)
@@ -229,25 +216,29 @@ namespace Samm
         }
         protected void Operation_NewSpace()
         {
-            if (Space == null) Space = new Space();
-            else Space.Schemas.Clear();
+            if (Space == null)
+            {
+                Space = new Space();
+            }
+            else
+            {
+                List<DcSchema> schemas = Space.GetSchemas();
+                foreach(DcSchema sch in schemas)
+                {
+                    Space.DeleteSchema(sch);
+                }
+            }
 
             //
             // Initialize mashup schema
             //
-            DcSchema mashupTop = new Schema("New Mashup");
-            mashupTop = CreateSampleSchema();
-            mashupTop.Space = Space;
-            Space.Schemas.Add(mashupTop);
-            Space.Mashup = mashupTop;
+            DcSchema mashupTop = Space.CreateSchema("New Mashup", DcSchemaKind.Dc);
+            CreateSampleSchema(mashupTop);
 
             //
             // Initialize predefined schemas
             //
-            SchemaCsv csvSchema = new SchemaCsv("My Files");
-            csvSchema.Space = Space;
-            Space.Schemas.Add(csvSchema);
-            ConnectionCsv conn = new ConnectionCsv();
+            SchemaCsv csvSchema = (SchemaCsv)Space.CreateSchema("My Files", DcSchemaKind.Csv);
 
             //
             // Update the model that is shown in the visual component
@@ -478,10 +469,7 @@ namespace Samm
         }
         private void AddCsvSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            SchemaCsv csvSchema = new SchemaCsv("My Files");
-            csvSchema.Space = Space;
-            Space.Schemas.Add(csvSchema);
-            ConnectionCsv conn = new ConnectionCsv();
+            SchemaCsv csvSchema = (SchemaCsv)Space.CreateSchema("My Files", DcSchemaKind.Csv);
 
             e.Handled = true;
         }
@@ -545,7 +533,7 @@ namespace Samm
             if (SelectedSchema == null) return;
             else if (SelectedSchema is SchemaCsv)
             {
-                Space.Schemas.Remove(SelectedSchema);
+                Space.DeleteSchema(SelectedSchema);
             }
             else // Mashup
             {
@@ -585,7 +573,7 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
 
-                TableCsv table = (TableCsv)SelectedSchema.CreateTable(dlg.TableName);
+                TableCsv table = (TableCsv)Space.CreateTable(dlg.TableName, SelectedSchema.Root);
 
                 table.FilePath = dlg.FilePath;
 
@@ -593,10 +581,7 @@ namespace Samm
                 table.Delimiter = dlg.Delimiter;
                 table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
 
-                SelectedSchema.AddTable(table, null, null);
-
                 var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
-                columns.ForEach(x => x.Add());
 
                 SelectedTable = table;
             }
@@ -608,9 +593,8 @@ namespace Samm
 
                 if (dlg.DialogResult == false) return; // Cancel
 
-                DcTable table = SelectedSchema.CreateTable(dlg.TableName);
+                DcTable table = Space.CreateTable(dlg.TableName, SelectedSchema.Root);
                 table.GetData().WhereFormula = dlg.TableFormula;
-                SelectedSchema.AddTable(table, null, null);
 
                 SelectedTable = table;
             }
@@ -651,9 +635,8 @@ namespace Samm
                 table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
 
 
-                foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) col.Remove();
+                foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) Space.DeleteColumn(col);
                 var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
-                columns.ForEach(x => x.Add());
             }
             else // Mashup
             {
@@ -722,12 +705,12 @@ namespace Samm
             {
                 for (int i = path.Segments.Count - 1; i >= 0; i--)
                 {
-                    schema.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
+                    Space.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
                 }
             }
 
             // Remove all connections of this set with the schema by deleting all its dimensions
-            schema.DeleteTable(tab);
+            Space.DeleteTable(tab);
 
             e.Handled = true;
         }
@@ -781,7 +764,7 @@ namespace Samm
             //
             // Show parameters for set extraction
             //
-            ColumnBox dlg = new ColumnBox(Space.Schemas, table, null);
+            ColumnBox dlg = new ColumnBox(new ObservableCollection<DcSchema>(Space.GetSchemas()), table, null);
             dlg.Owner = this;
             dlg.RefreshAll();
 
@@ -792,10 +775,9 @@ namespace Samm
             //
             // Create a new column using parameters in the dialog
             //
-            DcColumn column = schema.CreateColumn(dlg.ColumnName, table, dlg.SelectedTargetTable, dlg.IsKey);
+            DcColumn column = Space.CreateColumn(dlg.ColumnName, table, dlg.SelectedTargetTable, dlg.IsKey);
             column.GetData().Formula = dlg.ColumnFormula;
             column.GetData().IsAppendData = true;
-            column.Add();
 
             SelectedColumn = column;
         }
@@ -864,7 +846,7 @@ namespace Samm
 
             DcSchema schema = MashupTop;
 
-            ColumnBox dlg = new ColumnBox(Space.Schemas, column.Input, column);
+            ColumnBox dlg = new ColumnBox(new ObservableCollection<DcSchema>(Space.GetSchemas()), column.Input, column);
             dlg.Owner = this;
             dlg.ShowDialog(); // Open the dialog box modally 
 
@@ -940,10 +922,10 @@ namespace Samm
                 {
                     for (int i = path.Segments.Count - 1; i >= 0; i--)
                     {
-                        schema.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
+                        Space.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
                     }
                 }
-                schema.DeleteTable(gTab); // Delete (directly) generated table
+                Space.DeleteTable(gTab); // Delete (directly) generated table
                 // This column will be now deleted as a result of the deletion of the generated table
             }
             else if (column.Input.GetData().DefinitionType == TableDefinitionType.PROJECTION) // It is a extracted table and this column is produced by the mapping (depends onfunction output tuple)
@@ -953,11 +935,11 @@ namespace Samm
                 //PathMatch match = mapping.GetMatchForTarget(new DimPath(column));
                 //mapping.RemoveMatch(match.SourcePath, match.TargetPath);
 
-                schema.DeleteColumn(column);
+                Space.DeleteColumn(column);
             }
             else // Just delete this column
             {
-                schema.DeleteColumn(column);
+                Space.DeleteColumn(column);
             }
         }
 

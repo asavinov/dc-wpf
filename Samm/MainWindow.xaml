@@ -259,7 +259,7 @@
 
                     <ListBox 
                         Name="SchemaListView" 
-                        ItemsSource="{Binding Path=Space.Schemas}" 
+                        ItemsSource="{Binding Path=Space.GetSchemas()}" 
                         SelectedItem="{Binding Path=SelectedSchema_Bound}" 
                         ItemTemplate="{StaticResource SchemaListItemTemplate}" 
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 

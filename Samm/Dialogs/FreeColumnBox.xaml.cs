@@ -113,7 +113,7 @@ namespace Samm.Dialogs
             // Save table
             if (IsNew)
             {
-                Schema.AddTable(Table, null, null);
+                //Schema.AddTable(Table, null, null);
             }
 
             // Create free columns for the selected entries
@@ -130,8 +130,7 @@ namespace Samm.Dialogs
 
                 // TODO: Check if such a column already exists (name)
 
-                DcColumn gDim = Schema.CreateColumn(columnName, Table, gSet, true);
-                gDim.Add();
+                DcColumn gDim = Schema.Space.CreateColumn(columnName, Table, gSet, true);
             }
 
             this.DialogResult = true;

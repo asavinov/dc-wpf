@@ -198,7 +198,7 @@ namespace Samm.Dialogs
             //
             if (Table == null)
             {
-                Table = Schema.CreateTable(tableName);
+                Table = Schema.Space.CreateTable(tableName, Schema.Root);
             }
             TableName = tableName;
             FilePath = filePath;
