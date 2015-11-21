@@ -62,33 +62,15 @@ namespace Samm
         //
         // Selection state
         //
-        protected DcSchema _selectedSchema;
-        public DcSchema SelectedSchema_Bound
-        {
-            get { return _selectedSchema; }
-            set
-            {
-                _selectedSchema = value;
-                
-                // Notify TableList
-                if (TableListView != null)
-                {
-                    TableListView.Schema = value;
-                }
-            }
-        }
         public DcSchema SelectedSchema
         {
-            get { return SelectedSchema_Bound; }
+            get { return SchemaListView != null ? SchemaListView.SelectedItem : null; }
             set
             {
-                // Change selected item directly in the control -> it will triger notifications
-                if (SchemaListView != null)
-                {
-                    SchemaListView.SelectedItem = value;
+                if (SchemaListView == null || SchemaListView.SchemasList == null) return;
+                SchemaListView.SchemasList.SelectedItem = value;
 
-                    ((Table)value).NotifyPropertyChanged("");
-                }
+                ((Schema)value).NotifyPropertyChanged("");
             }
         }
 
@@ -244,6 +226,7 @@ namespace Samm
             // Update the model that is shown in the visual component
             //
             SelectedSchema = MashupTop;
+            SchemaListView.Space = Space;
         }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)

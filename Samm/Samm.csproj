@@ -111,6 +111,9 @@
     <Compile Include="Controls\ColumnListControl.xaml.cs">
       <DependentUpon>ColumnListControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SchemaListControl.xaml.cs">
+      <DependentUpon>SchemaListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TableListControl.xaml.cs">
       <DependentUpon>TableListControl.xaml</DependentUpon>
     </Compile>
@@ -143,6 +146,10 @@
     <Page Include="Controls\ColumnListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SchemaListControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\TableListControl.xaml">
       <SubType>Designer</SubType>

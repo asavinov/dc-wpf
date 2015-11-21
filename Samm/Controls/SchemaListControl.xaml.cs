@@ -18,31 +18,31 @@ using Com.Schema;
 namespace Samm.Controls
 {
     /// <summary>
-    /// Interaction logic for TableListControl.xaml
+    /// Interaction logic for SchemaListControl.xaml
     /// </summary>
-    public partial class TableListControl : UserControl
+    public partial class SchemaListControl : UserControl
     {
-        // Tables from this schema are shown (context)
-        protected DcSchema _schema;
-        public DcSchema Schema 
+        // Schemas from this space are shown (context)
+        protected DcSpace _space;
+        public DcSpace Space 
         {
-            get { return _schema; }
+            get { return _space; }
             set
             {
-                if (_schema == value) return;
-                if (_schema != null)
+                if (_space == value) return;
+                if (_space != null)
                 {
-                    ((Space)_schema.Space).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
+                    ((Space)_space).CollectionChanged -= this.CollectionChanged; // Unregister from the old space
                 }
                 Items.Clear();
-                _schema = value;
-                if (_schema == null) return;
-                ((Space)_schema.Space).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
+                _space = value;
+                if (_space == null) return;
+                ((Space)_space).CollectionChanged += this.CollectionChanged; // Unregister from the old space
 
                 // Fill the list of items
-                foreach (DcTable table in _schema.Root.SubTables)
+                foreach (DcTable schema in _space.GetSchemas())
                 {
-                    Items.Add(table);
+                    Items.Add(schema);
                 }
             }
         }
@@ -51,8 +51,8 @@ namespace Samm.Controls
         public ObservableCollection<DcTable> Items { get; set; }
 
         // It is what we bind to the list view (SelectedItem)
-        private DcTable _selectedItem;
-        public DcTable SelectedItem
+        private DcSchema _selectedItem;
+        public DcSchema SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -61,36 +61,36 @@ namespace Samm.Controls
                 _selectedItem = value;
                 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
-                main.ColumnListView.Table = _selectedItem;
+                main.TableListView.Schema = _selectedItem;
             }
         }
 
 
-        public TableListControl()
+        public SchemaListControl()
         {
             Items = new ObservableCollection<DcTable>();
 
             InitializeComponent();
         }
 
-        // Process events from the schema about adding/removing tables
+        // Process events from the space about adding/removing schemas
         protected void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add) // Decide if this node has to add a new child node
             {
-                DcTable tab = e.NewItems != null && e.NewItems.Count > 0 && e.NewItems[0] is DcTable ? (DcTable)e.NewItems[0] : null;
-                if (tab == null) return;
-                if (Items.Contains(tab)) return;
+                DcSchema sch = e.NewItems != null && e.NewItems.Count > 0 && e.NewItems[0] is DcSchema ? (DcSchema)e.NewItems[0] : null;
+                if (sch == null) return;
+                if (Items.Contains(sch)) return;
 
-                Items.Add(tab);
+                Items.Add(sch);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                DcTable tab = e.OldItems != null && e.OldItems.Count > 0 && e.OldItems[0] is DcTable ? (DcTable)e.OldItems[0] : null;
-                if (tab == null) return;
-                if (!Items.Contains(tab)) return;
+                DcSchema sch = e.OldItems != null && e.OldItems.Count > 0 && e.OldItems[0] is DcSchema ? (DcSchema)e.OldItems[0] : null;
+                if (sch == null) return;
+                if (!Items.Contains(sch)) return;
 
-                Items.Remove(tab);
+                Items.Remove(sch);
             }
         }
 

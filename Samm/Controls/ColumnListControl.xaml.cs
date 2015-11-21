@@ -32,12 +32,12 @@ namespace Samm.Controls
                 if (_table == value) return;
                 if (_table != null)
                 {
-                    ((Table)_table).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
+                    ((Space)_table.Space).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
                 }
                 Items.Clear();
                 _table = value;
                 if (_table == null) return;
-                ((Table)_table).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
+                ((Space)_table.Space).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
 
                 // Fill the list of items
                 foreach (DcColumn column in _table.Columns)
@@ -75,23 +75,19 @@ namespace Samm.Controls
         {
             if (e.Action == NotifyCollectionChangedAction.Add) // Decide if this node has to add a new child node
             {
-                DcColumn column = e.NewItems != null && e.NewItems.Count > 0 ? (DcColumn)e.NewItems[0] : null;
+                DcColumn column = e.NewItems != null && e.NewItems.Count > 0 && e.NewItems[0] is DcColumn ? (DcColumn)e.NewItems[0] : null;
                 if (column == null) return;
+                if (Items.Contains(column)) return;
 
-                if (!Items.Contains(column))
-                {
-                    Items.Add(column);
-                }
+                Items.Add(column);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                DcColumn column = e.OldItems != null && e.OldItems.Count > 0 ? (DcColumn)e.OldItems[0] : null;
+                DcColumn column = e.OldItems != null && e.OldItems.Count > 0 && e.OldItems[0] is DcColumn ? (DcColumn)e.OldItems[0] : null;
                 if (column == null) return;
+                if (!Items.Contains(column)) return;
 
-                if (Items.Contains(column))
-                {
-                    Items.Remove(column);
-                }
+                Items.Remove(column);
             }
         }
     }
