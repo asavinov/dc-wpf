@@ -77,6 +77,7 @@ namespace Samm.Controls
             {
                 DcColumn column = e.NewItems != null && e.NewItems.Count > 0 && e.NewItems[0] is DcColumn ? (DcColumn)e.NewItems[0] : null;
                 if (column == null) return;
+                if (column.Input != Table) return;
                 if (Items.Contains(column)) return;
 
                 Items.Add(column);
@@ -85,6 +86,7 @@ namespace Samm.Controls
             {
                 DcColumn column = e.OldItems != null && e.OldItems.Count > 0 && e.OldItems[0] is DcColumn ? (DcColumn)e.OldItems[0] : null;
                 if (column == null) return;
+                if (column.Input != Table) return;
                 if (!Items.Contains(column)) return;
 
                 Items.Remove(column);

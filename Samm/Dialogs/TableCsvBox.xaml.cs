@@ -77,7 +77,7 @@ namespace Samm.Dialogs
                 TableName = "";
                 FilePath = "";
 
-                HasHeaderRecord = false;
+                HasHeaderRecord = true;
                 Delimiter = ",";
                 Decimal = ".";
             }
@@ -198,7 +198,7 @@ namespace Samm.Dialogs
             //
             if (Table == null)
             {
-                Table = Schema.Space.CreateTable(tableName, Schema.Root);
+                //Table = Schema.Space.CreateTable(tableName, Schema.Root);
             }
             TableName = tableName;
             FilePath = filePath;
