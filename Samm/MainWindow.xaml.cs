@@ -129,8 +129,8 @@ namespace Samm
 
             DcTable departments = space.CreateTable("Departments", schema.Root);
 
-            d1 = space.CreateColumn("name", departments, schema.GetPrimitive("String"), true);
-            d2 = space.CreateColumn("location", departments, schema.GetPrimitive("String"), false);
+            d1 = space.CreateColumn("name", departments, schema.GetPrimitiveType("String"), true);
+            d2 = space.CreateColumn("location", departments, schema.GetPrimitiveType("String"), false);
 
             DcTableWriter writer;
 
@@ -142,15 +142,15 @@ namespace Samm
 
             DcTable employees = space.CreateTable("Employees", schema.Root);
 
-            d1 = space.CreateColumn("name", employees, schema.GetPrimitive("String"), true);
-            d2 = space.CreateColumn("age", employees, schema.GetPrimitive("Double"), false);
-            d3 = space.CreateColumn("salary", employees, schema.GetPrimitive("Double"), false);
+            d1 = space.CreateColumn("name", employees, schema.GetPrimitiveType("String"), true);
+            d2 = space.CreateColumn("age", employees, schema.GetPrimitiveType("Double"), false);
+            d3 = space.CreateColumn("salary", employees, schema.GetPrimitiveType("Double"), false);
             d4 = space.CreateColumn("dept", employees, departments, false);
 
             DcTable managers = space.CreateTable("Managers", employees);
 
-            d1 = space.CreateColumn("title", managers, schema.GetPrimitive("String"), false);
-            d2 = space.CreateColumn("is project manager", managers, schema.GetPrimitive("Boolean"), false);
+            d1 = space.CreateColumn("title", managers, schema.GetPrimitiveType("String"), false);
+            d2 = space.CreateColumn("is project manager", managers, schema.GetPrimitiveType("Boolean"), false);
         }
 
         protected void GenericError(System.Exception e)
