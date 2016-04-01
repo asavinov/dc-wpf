@@ -193,91 +193,98 @@
         </StatusBar>
 
         <Grid>
-            <!-- Define the rows and columns -->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="5*"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="3*"/>
+            </Grid.RowDefinitions>
 
-            <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-            <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-            <GridSplitter Grid.Column ="5" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+            <GridSplitter Grid.Row ="1" Height="5" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background ="AliceBlue" />
 
-            <!-- Database panel -->
-            <Grid Grid.Column="0" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <Grid Grid.Row="0" >
 
-                <Border Grid.Row="0" Background="Lavender" />
-                <Label Name="lblDatabasePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA SOURCES</Label>
+                <!-- Define the rows and columns -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
 
-                <DockPanel Grid.Row="1" >
-                    <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
-                            <Menu ToolBar.OverflowMode="Never" >
-                                <MenuItem ToolTip="Add data source" >
-                                    <MenuItem.Icon>
-                                        <Image Source="Images\schema_add.png" />
-                                    </MenuItem.Icon>
+                <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
+                <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
-                                    <MenuItem ToolTip="Mashup" ToolBar.OverflowMode="Never" Command="{StaticResource AddMashupSchemaCommand}" >
+                <!-- Database panel -->
+                <Grid Grid.Column="0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="Lavender" />
+                    <Label Name="lblDatabasePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA SOURCES</Label>
+
+                    <DockPanel Grid.Row="1" >
+                        <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                            <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                                <Menu ToolBar.OverflowMode="Never" >
+                                    <MenuItem ToolTip="Add data source" >
                                         <MenuItem.Icon>
-                                            <Image Source="Images\schema_add_mashup.png" />
+                                            <Image Source="Images\schema_add.png" />
                                         </MenuItem.Icon>
+
+                                        <MenuItem ToolTip="Mashup" ToolBar.OverflowMode="Never" Command="{StaticResource AddMashupSchemaCommand}" >
+                                            <MenuItem.Icon>
+                                                <Image Source="Images\schema_add_mashup.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem ToolTip="CSV file data source" ToolBar.OverflowMode="Never" Command="{StaticResource AddCsvSchemaCommand}">
+                                            <MenuItem.Icon>
+                                                <Image Source="Images\schema_add_csv.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
                                     </MenuItem>
-                                    <MenuItem ToolTip="CSV file data source" ToolBar.OverflowMode="Never" Command="{StaticResource AddCsvSchemaCommand}">
-                                        <MenuItem.Icon>
-                                            <Image Source="Images\schema_add_csv.png" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
+                                </Menu>
 
-                                </MenuItem>
-                            </Menu>
+                                <Button ToolTip="Edit data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditSchemaCommand}">
+                                    <Image Source="Images\schema_edit.png" />
+                                </Button>
+                                <Button ToolTip="Rename data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameSchemaCommand}">
+                                    <Image Source="Images\schema_rename.png" />
+                                </Button>
+                                <Button ToolTip="Delete data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteSchemaCommand}" >
+                                    <Image Source="Images\schema_delete.png" />
+                                </Button>
+                                <Button ToolTip="Update data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateSchemaCommand}">
+                                    <Image Source="Images\schema_update.png" />
+                                </Button>
 
-                            <Button ToolTip="Edit data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditSchemaCommand}">
-                                <Image Source="Images\schema_edit.png" />
-                            </Button>
-                            <Button ToolTip="Rename data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameSchemaCommand}">
-                                <Image Source="Images\schema_rename.png" />
-                            </Button>
-                            <Button ToolTip="Delete data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteSchemaCommand}" >
-                                <Image Source="Images\schema_delete.png" />
-                            </Button>
-                            <Button ToolTip="Update data source" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateSchemaCommand}">
-                                <Image Source="Images\schema_update.png" />
-                            </Button>
+                            </ToolBar>
+                        </ToolBarTray>
 
-                        </ToolBar>
-                    </ToolBarTray>
-
-                    <controls:SchemaListControl 
+                        <controls:SchemaListControl 
                         x:Name="SchemaListView" 
                     />
 
-                </DockPanel>
-            </Grid>
+                    </DockPanel>
+                </Grid>
 
-            <!-- Table panel -->
-            <Grid Grid.Column="2" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <!-- Table panel -->
+                <Grid Grid.Column="2" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="Lavender" />
-                <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
+                    <Border Grid.Row="0" Background="Lavender" />
+                    <Label Name="lblTablePanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">TABLES</Label>
 
-                <DockPanel Grid.Row="2" >
-                    <ToolBarTray DockPanel.Dock="Top" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
-                            <!--
+                    <DockPanel Grid.Row="2" >
+                        <ToolBarTray DockPanel.Dock="Top" >
+                            <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                                <!--
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem Header="" >
                                     <MenuItem.Icon>
@@ -296,55 +303,57 @@
                                 </MenuItem>
                             </Menu>
                             -->
-                            <Button ToolTip="Add table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
-                                <Image Source="Images\table_add2.png" />
-                            </Button>
-                            <Button ToolTip="Edit filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
-                                <Image Source="Images\table_filter2.png" />
-                            </Button>
-                            <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
-                                <Image Source="Images\table_edit2.png" />
-                            </Button>
-                            <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
-                                <Image Source="Images\table_rename2.png" />
-                            </Button>
-                            <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
-                                <Image Source="Images\table_delete2.png" />
-                            </Button>
-                            <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
-                                <Image Source="Images\table_update2.png" />
-                            </Button>
-                            <Button ToolTip="View table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
-                                <Image Source="Images\table_view2.png" />
-                           </Button>
+                                <Button ToolTip="Add table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
+                                    <Image Source="Images\table_add2.png" />
+                                </Button>
+                                <Button ToolTip="Edit filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
+                                    <Image Source="Images\table_filter2.png" />
+                                </Button>
+                                <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
+                                    <Image Source="Images\table_edit2.png" />
+                                </Button>
+                                <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
+                                    <Image Source="Images\table_rename2.png" />
+                                </Button>
+                                <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
+                                    <Image Source="Images\table_delete2.png" />
+                                </Button>
+                                <Button ToolTip="Update table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateTableCommand}" >
+                                    <Image Source="Images\table_update2.png" />
+                                </Button>
+                                <Button ToolTip="View table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource OpenTableCommand}" >
+                                    <Image Source="Images\table_view2.png" />
+                                </Button>
 
-                            <!-- <RibbonButton LargeImageSource="Images\table_filter.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilterTableCommand}" />  -->
-                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> --> <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
-                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> --> <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
-                        </ToolBar>
-                    </ToolBarTray>
+                                <!-- <RibbonButton LargeImageSource="Images\table_filter.png" Label="Filter" KeyTip="F" ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Label}" Command="{StaticResource FilterTableCommand}" />  -->
+                                <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Split: Extract Subtables" KeyTip="S" /> -->
+                                <!-- Create several lesser sub tables (extensions by-reference or by-value). One subtable for each unique value of the selected column. -->
+                                <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Table" KeyTip="M" /> -->
+                                <!-- Convert all pairs of lesser-greater dimension in one segment and remove this table. It is opposite to extract table operation. -->
+                            </ToolBar>
+                        </ToolBarTray>
 
-                    <controls:TableListControl 
+                        <controls:TableListControl 
                         x:Name="TableListView" 
                     />
 
-                </DockPanel>
-            </Grid>
+                    </DockPanel>
+                </Grid>
 
-            <!-- Column panel -->
-            <Grid Grid.Column="4" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <!-- Column panel -->
+                <Grid Grid.Column="4" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="Lavender" />
-                <Label Name="lblColumnPanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">COLUMNS</Label>
+                    <Border Grid.Row="0" Background="Lavender" />
+                    <Label Name="lblColumnPanel" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">COLUMNS</Label>
 
-                <DockPanel Grid.Row="1" >
-                    <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
-                            <!--
+                    <DockPanel Grid.Row="1" >
+                        <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                            <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                                <!--
                             <Menu ToolBar.OverflowMode="Never" >
                                 <MenuItem ToolTip="Add column" >
                                     <MenuItem.Icon>
@@ -381,72 +390,81 @@
                             </Menu>
                             -->
 
-                            <Button ToolTip="Add column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddColumnCommand}" >
-                                <Image Source="Images\column_add2.png" />
-                            </Button>
+                                <Button ToolTip="Add column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddColumnCommand}" >
+                                    <Image Source="Images\column_add2.png" />
+                                </Button>
 
-                            <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
-                                <Image Source="Images\column_edit2.png" />
-                            </Button>
-                            <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
-                                <Image Source="Images\column_rename2.png" />
-                            </Button>
-                            <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
-                                <Image Source="Images\column_delete2.png" />
-                            </Button>
-                            <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateColumnCommand}">
-                                <Image Source="Images\column_update2.png" />
-                            </Button>
+                                <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
+                                    <Image Source="Images\column_edit2.png" />
+                                </Button>
+                                <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
+                                    <Image Source="Images\column_rename2.png" />
+                                </Button>
+                                <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
+                                    <Image Source="Images\column_delete2.png" />
+                                </Button>
+                                <Button ToolTip="Update column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource UpdateColumnCommand}">
+                                    <Image Source="Images\column_update2.png" />
+                                </Button>
 
-                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->
-                            <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
+                                <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Partition" KeyTip="P" />  -->
+                                <!-- <RibbonButton LargeImageSource="Images\default.ico" Label="Merge Column Path" KeyTip="M" /> Convert two or segments into one segment. It is one operation in merge table operation all pairs are merged -->
 
-                            <!--
+                                <!--
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
                             -->
-                        </ToolBar>
-                    </ToolBarTray>
+                            </ToolBar>
+                        </ToolBarTray>
 
-                    <controls:ColumnListControl 
+                        <controls:ColumnListControl 
                         x:Name="ColumnListView" 
                     />
 
-                </DockPanel>
+                    </DockPanel>
+                </Grid>
+
             </Grid>
 
-            <!-- Data panel -->
-            <Grid Grid.Column="6" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <Grid Grid.Row="2" >
 
-                <Border Grid.Row="0" Grid.Column="0" Background="Lavender" />
-                <Label Name="lblSpace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="0">DATA</Label>
+                <!-- Data panel -->
+                <Grid Grid.Column="0" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="23*"/>
+                        <ColumnDefinition Width="15*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <DockPanel Grid.Row="1" >
-                    <ToolBarTray DockPanel.Dock="Top" >
-                        <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
-                            <Button ToolTip="Close" Style="{StaticResource ButtonEnabled}" Command="{StaticResource CloseViewCommand}">
-                                <Image Source="Images\close_view.png" />
-                            </Button>
-                            <!--
+                    <Border Grid.Row="0" Grid.Column="0" Background="Lavender" Grid.ColumnSpan="2" />
+                    <Label Name="lblSpace" Grid.Row="0" HorizontalAlignment="Center" Foreground="DarkBlue" FontSize="20" Margin="350,0,50,0">DATA</Label>
+
+                    <DockPanel Grid.Row="1" Grid.ColumnSpan="2" >
+                        <ToolBarTray DockPanel.Dock="Top" >
+                            <ToolBar ToolBarTray.IsLocked="True" IsOverflowOpen="False" Focusable="False" >
+                                <Button ToolTip="Close" Style="{StaticResource ButtonEnabled}" Command="{StaticResource CloseViewCommand}">
+                                    <Image Source="Images\close_view.png" />
+                                </Button>
+                                <!--
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate All" KeyTip="A"  />
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate From Table" KeyTip="F" />
                             <RibbonButton LargeImageSource="Images\default.ico" Label="Propagate To Table" KeyTip="T" />
                             -->
-                        </ToolBar>
-                    </ToolBarTray>
+                            </ToolBar>
+                        </ToolBarTray>
 
-                    <ContentControl Name="GridPanel" Grid.Row="1">
-                    </ContentControl>
+                        <ContentControl Name="GridPanel" Grid.Row="1">
+                        </ContentControl>
 
-                </DockPanel>
+                    </DockPanel>
+
+                </Grid>
 
             </Grid>
-
         </Grid>
 
     </DockPanel>

@@ -13,8 +13,8 @@
 
             <!-- Use in XAML: Text="{StaticResource localizedMessage}" -->
             <!-- Use in C#: string localizedMessage = (string)Application.Current.FindResource("localizedMessage"); -->
-            <clr:String x:Key="AppName">Data Commandr</clr:String>
-            <clr:String x:Key="MainWindowTitle">Data Commandr: Integrate. Transform. Analiyze.</clr:String>
+            <clr:String x:Key="AppName">DataCommandr</clr:String>
+            <clr:String x:Key="MainWindowTitle">DataCommandr: Integrate. Transform. Analiyze.</clr:String>
             <clr:String x:Key="GenericErrorMsg" xml:space="preserve">We are sorry for the error. &#x0a;It is a prototype so please do not expect high reliability at this stage of development. Contact us for any questions or help.</clr:String>
             <clr:String x:Key="DeleteSchemaMsg" xml:space="preserve">Do you really want to delete this data source along with all its tables and columns (including import/export columns)?</clr:String>
             <clr:String x:Key="DeleteTableMsg" xml:space="preserve">Do you really want to delete this table along with all its columns and tables generated from it?</clr:String>

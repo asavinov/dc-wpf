@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://conceptoriented.com")]
 [assembly: AssemblyProduct("DataCommandr")]
-[assembly: AssemblyCopyright("Copyright © 2013-2015 Alexandr Savinov")]
+[assembly: AssemblyCopyright("Copyright © 2013-2016 Alexandr Savinov")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
