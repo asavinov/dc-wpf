@@ -194,14 +194,31 @@
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="5"/>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="3*"/>
             </Grid.RowDefinitions>
 
-            <GridSplitter Grid.Row ="1" Height="5" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background ="AliceBlue" />
+            <!-- Separator -->
+            <Rectangle Fill="AliceBlue" />
 
+            <GridSplitter Grid.Row ="3" Height="5" ResizeDirection="Rows" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background ="AliceBlue" />
+
+            <!-- Formula bar -->
             <Grid Grid.Row="0" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label  Grid.Column="0" Content="Formula (example):" HorizontalContentAlignment="Right" FontSize="12" FontWeight="Normal" Margin="5"/>
+                <TextBox Name="formula" Grid.Column="1" Text="Double [My Column] = [column 1] + [column 2]" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
+
+            </Grid>
+
+            <Grid Grid.Row="2" >
 
                 <!-- Define the rows and columns -->
                 <Grid.ColumnDefinitions>
@@ -427,7 +444,7 @@
 
             </Grid>
 
-            <Grid Grid.Row="2" >
+            <Grid Grid.Row="4" >
 
                 <!-- Data panel -->
                 <Grid Grid.Column="0" >
