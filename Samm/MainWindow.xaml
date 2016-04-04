@@ -209,13 +209,23 @@
             <!-- Formula bar -->
             <Grid Grid.Row="0" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="40*" />
                 </Grid.ColumnDefinitions>
 
-                <Label  Grid.Column="0" Content="Formula (example):" HorizontalContentAlignment="Right" FontSize="12" FontWeight="Normal" Margin="5"/>
-                <TextBox Name="formula" Grid.Column="1" Text="Double [My Column] = [column 1] + [column 2]" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
-
+                <StackPanel Grid.Column="0" HorizontalAlignment="Stretch" Orientation="Vertical">
+                    <Label  Content="Type:" HorizontalContentAlignment="Left" FontSize="12" FontWeight="Normal" Margin="5"/>
+                    <TextBox Name="FormulaBarType" Text="Example Type" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" Orientation="Vertical">
+                    <Label  Content="Name:" HorizontalContentAlignment="Left" FontSize="12" FontWeight="Normal" Margin="5"/>
+                    <TextBox Name="FormulaBarName" Text="Example Name" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Orientation="Vertical">
+                    <Label  Content="Formula (example):" HorizontalContentAlignment="Left" FontSize="12" FontWeight="Normal" Margin="5"/>
+                    <TextBox Name="FormulaBarFormula" Text="Double [My Column] = [column 1] + [column 2]" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
+                </StackPanel>
             </Grid>
 
             <Grid Grid.Row="2" >

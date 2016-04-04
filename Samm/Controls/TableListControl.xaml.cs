@@ -62,6 +62,10 @@ namespace Samm.Controls
                 
                 MainWindow main = (MainWindow)Application.Current.MainWindow;
                 main.ColumnListView.Table = _selectedItem;
+
+                main.FormulaBarType.Text = "";
+                main.FormulaBarName.Text = "";
+                main.FormulaBarFormula.Text = "";
             }
         }
 

@@ -60,6 +60,12 @@ namespace Samm.Controls
             {
                 if (_selectedItem == value) return;
                 _selectedItem = value;
+
+                MainWindow main = (MainWindow)Application.Current.MainWindow;
+
+                main.FormulaBarType.Text = _selectedItem == null ? "" : _selectedItem.Output.Name;
+                main.FormulaBarName.Text = _selectedItem == null ? "" : _selectedItem.Name;
+                main.FormulaBarFormula.Text = _selectedItem == null || _selectedItem.GetData() == null ? "" : _selectedItem.GetData().Formula;
             }
         }
         
