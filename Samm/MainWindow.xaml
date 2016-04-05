@@ -291,9 +291,7 @@
                             </ToolBar>
                         </ToolBarTray>
 
-                        <controls:SchemaListControl 
-                        x:Name="SchemaListView" 
-                    />
+                        <controls:SchemaListControl x:Name="SchemaListView" Application="{x:Static samm:App.Current}" />
 
                     </DockPanel>
                 </Grid>
@@ -360,9 +358,7 @@
                             </ToolBar>
                         </ToolBarTray>
 
-                        <controls:TableListControl 
-                        x:Name="TableListView" 
-                    />
+                        <controls:TableListControl x:Name="TableListView" Application="{x:Static samm:App.Current}" />
 
                     </DockPanel>
                 </Grid>
@@ -445,9 +441,7 @@
                             </ToolBar>
                         </ToolBarTray>
 
-                        <controls:ColumnListControl 
-                        x:Name="ColumnListView" 
-                    />
+                        <controls:ColumnListControl x:Name="ColumnListView" Application="{x:Static samm:App.Current}" />
 
                     </DockPanel>
                 </Grid>

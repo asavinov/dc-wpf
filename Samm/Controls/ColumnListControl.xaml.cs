@@ -22,6 +22,8 @@ namespace Samm.Controls
     /// </summary>
     public partial class ColumnListControl : UserControl
     {
+        public Application Application { get; set; }
+
         // Columns from this table are shown (context)
         protected DcTable _table;
         public DcTable Table
@@ -61,8 +63,8 @@ namespace Samm.Controls
                 if (_selectedItem == value) return;
                 _selectedItem = value;
 
-                MainWindow main = (MainWindow)Application.Current.MainWindow;
-
+                MainWindow main = (MainWindow)Application.MainWindow;
+                
                 main.FormulaBarType.Text = _selectedItem == null ? "" : _selectedItem.Output.Name;
                 main.FormulaBarName.Text = _selectedItem == null ? "" : _selectedItem.Name;
                 main.FormulaBarFormula.Text = _selectedItem == null || _selectedItem.GetData() == null ? "" : _selectedItem.GetData().Formula;

@@ -22,6 +22,8 @@ namespace Samm.Controls
     /// </summary>
     public partial class TableListControl : UserControl
     {
+        public Application Application { get; set; }
+
         // Tables from this schema are shown (context)
         protected DcSchema _schema;
         public DcSchema Schema 
@@ -59,8 +61,8 @@ namespace Samm.Controls
             {
                 if (_selectedItem == value) return;
                 _selectedItem = value;
-                
-                MainWindow main = (MainWindow)Application.Current.MainWindow;
+
+                MainWindow main = (MainWindow)Application.MainWindow;
                 main.ColumnListView.Table = _selectedItem;
 
                 main.FormulaBarType.Text = "";

@@ -22,6 +22,8 @@ namespace Samm.Controls
     /// </summary>
     public partial class SchemaListControl : UserControl
     {
+        public Application Application { get; set; }
+
         // Schemas from this space are shown (context)
         protected DcSpace _space;
         public DcSpace Space 
@@ -59,8 +61,8 @@ namespace Samm.Controls
             {
                 if (_selectedItem == value) return;
                 _selectedItem = value;
-                
-                MainWindow main = (MainWindow)Application.Current.MainWindow;
+
+                MainWindow main = (MainWindow)Application.MainWindow;
                 main.TableListView.Schema = _selectedItem;
 
                 main.FormulaBarType.Text = "";
