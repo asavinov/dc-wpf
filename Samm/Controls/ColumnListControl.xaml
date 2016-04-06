@@ -7,8 +7,8 @@
              xmlns:com="clr-namespace:Com.Schema;assembly=Com"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
              >
+    <!-- DataContext="{Binding RelativeSource={RelativeSource Self}}" -->
 
     <UserControl.Resources>
 
@@ -41,8 +41,8 @@
         <ListView 
             Name="ColumnList" 
             Grid.Column="0" Grid.Row="0" 
-            ItemsSource="{Binding Path=Items}" 
-            SelectedItem="{Binding Path=SelectedItem}"
+            ItemsSource="{Binding Path=ColumnList}" 
+            SelectedItem="{Binding Path=SelectedColumn}"
             ItemTemplate="{StaticResource ColumnListCellTemplate}"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch" 

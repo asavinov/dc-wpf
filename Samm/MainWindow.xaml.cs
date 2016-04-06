@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -38,7 +39,21 @@ namespace Samm
         //
         public string SpaceFile { get; set; } // File where the space is stored
 
-        public DcSpace Space { get; set; }
+        private DcSpace _space;
+        public DcSpace Space {
+            get { return _space; }
+            set
+            {
+                if (_space == value) return;
+
+                if(_space != null) ((Space)_space).CollectionChanged -= this.CollectionChanged;
+                _space = value;
+                if (_space != null) ((Space)_space).CollectionChanged += this.CollectionChanged;
+
+                // Update list of schemas (or notify)
+                UpdateSchemaList();
+            }
+        }
 
         public DcSchema MashupTop { 
             get { return Space.GetSchemas().FirstOrDefault(x => x.GetSchemaKind() == DcSchemaKind.Dc); } 
@@ -60,41 +75,187 @@ namespace Samm
         }
 
         //
-        // Selection state
+        // Schema List View Model
         //
-        public DcSchema SelectedSchema
-        {
-            get { return SchemaListView != null ? SchemaListView.SelectedItem : null; }
-            set
-            {
-                if (SchemaListView == null || SchemaListView.SchemasList == null) return;
-                SchemaListView.SchemasList.SelectedItem = value;
 
-                ((Schema)value).NotifyPropertyChanged("");
+        // What is displayed in the list and bound to it as (ItemsSource)
+        public ObservableCollection<DcTable> SchemaList { get; set; }
+        public void UpdateSchemaList()
+        {
+            SchemaList.Clear();
+            if (Space == null) return;
+
+            // Fill the list of items
+            foreach (DcTable schema in Space.GetSchemas())
+            {
+                SchemaList.Add(schema);
             }
         }
 
-        public DcTable SelectedTable 
+        // It is what we bind to the list view (SelectedItem)
+        private DcSchema _selectedSchema;
+        public DcSchema SelectedSchema
         {
-            get { return TableListView != null ? TableListView.SelectedItem : null; }
-            set 
-            {
-                if (TableListView == null || TableListView.TablesList == null) return;
-                TableListView.TablesList.SelectedItem = value;
-
-                ((Table)value).NotifyPropertyChanged("");
-            } 
-        }
-
-        public DcColumn SelectedColumn
-        {
-            get { return ColumnListView != null ? ColumnListView.SelectedItem : null; }
+            get { return _selectedSchema; }
             set
             {
-                if (ColumnListView == null || ColumnListView.ColumnList == null) return;
-                ColumnListView.ColumnList.SelectedItem = value;
+                if (_selectedSchema == value) return;
+                _selectedSchema = value;
 
-                ((Column)value).NotifyPropertyChanged("");
+                // Update list of columns (or notify)
+                UpdateTableList();
+
+                // Update Formula
+                MainWindow main = this;
+                main.FormulaBarType.Text = "";
+                main.FormulaBarName.Text = "";
+                main.FormulaBarFormula.Text = "";
+            }
+        }
+
+        //
+        // Table List View Model
+        //
+
+        // What is displayed in the list and bound to it as (ItemsSource)
+        public ObservableCollection<DcTable> TableList { get; set; }
+        public void UpdateTableList()
+        {
+            TableList.Clear();
+            if (SelectedSchema == null) return;
+
+            // Fill the list of items
+            foreach (DcTable table in SelectedSchema.Root.SubTables)
+            {
+                TableList.Add(table);
+            }
+        }
+
+        // It is what we bind to the list view (SelectedItem)
+        private DcTable _selectedTable;
+        public DcTable SelectedTable
+        {
+            get { return _selectedTable; }
+            set
+            {
+                if (_selectedTable == value) return;
+                _selectedTable = value;
+
+                // Update list of columns (or notify)
+                UpdateColumnList();
+
+                // Update Formula
+                MainWindow main = this;
+                main.FormulaBarType.Text = "";
+                main.FormulaBarName.Text = "";
+                main.FormulaBarFormula.Text = "";
+            }
+        }
+
+        //
+        // Column List View Model
+        //
+
+        // What is displayed in the list and bound to it as (ItemsSource)
+        public ObservableCollection<DcColumn> ColumnList { get; set; }
+        public void UpdateColumnList()
+        {
+            ColumnList.Clear();
+            if (SelectedTable == null) return;
+
+            // Fill the list of items
+            foreach (DcColumn column in SelectedTable.Columns)
+            {
+                if (column.IsSuper) continue;
+                ColumnList.Add(column);
+            }
+        }
+
+        // It is what we bind to the list view (SelectedItem)
+        private DcColumn _selectedColumn;
+        public DcColumn SelectedColumn
+        {
+            get { return _selectedColumn; }
+            set
+            {
+                if (_selectedColumn == value) return;
+                _selectedColumn = value;
+
+                MainWindow main = this;
+
+                main.FormulaBarType.Text = _selectedColumn == null ? "" : _selectedColumn.Output.Name;
+                main.FormulaBarName.Text = _selectedColumn == null ? "" : _selectedColumn.Name;
+                main.FormulaBarFormula.Text = _selectedColumn == null || _selectedColumn.GetData() == null ? "" : _selectedColumn.GetData().Formula;
+            }
+        }
+
+
+        //
+        // Listeners from the model object
+        //
+        public void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            MainWindow vm = this;
+
+            if (e.Action == NotifyCollectionChangedAction.Add) 
+            {
+                if (e.NewItems == null || e.NewItems.Count == 0) return;
+
+                if (e.NewItems[0] is DcSchema)
+                {
+                    DcSchema sch = (DcSchema)e.NewItems[0];
+                    if (sch == null) return;
+                    if (vm.SchemaList.Contains(sch)) return;
+
+                    vm.SchemaList.Add(sch);
+                }
+                else if (e.NewItems[0] is DcTable)
+                {
+                    DcTable tab = (DcTable)e.NewItems[0];
+                    if (tab == null) return;
+                    if (vm.TableList.Contains(tab)) return;
+
+                    vm.TableList.Add(tab);
+                }
+                else if (e.NewItems[0] is DcColumn)
+                {
+                    DcColumn column = (DcColumn)e.NewItems[0];
+                    if (column == null) return;
+                    if (column.Input != vm.SelectedTable) return;
+                    if (vm.ColumnList.Contains(column)) return;
+
+                    vm.ColumnList.Add(column);
+                }
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                if (e.OldItems == null || e.OldItems.Count == 0) return;
+
+                if (e.OldItems[0] is DcSchema)
+                {
+                    DcSchema sch = (DcSchema)e.OldItems[0];
+                    if (sch == null) return;
+                    if (!vm.SchemaList.Contains(sch)) return;
+
+                    vm.SchemaList.Remove(sch);
+                }
+                else if (e.OldItems[0] is DcTable)
+                {
+                    DcTable tab = (DcTable)e.OldItems[0];
+                    if (tab == null) return;
+                    if (!vm.TableList.Contains(tab)) return;
+
+                    vm.TableList.Remove(tab);
+                }
+                else if (e.OldItems[0] is DcColumn)
+                {
+                    DcColumn column = (DcColumn)e.OldItems[0];
+                    if (column == null) return;
+                    if (column.Input != vm.SelectedTable) return;
+                    if (!vm.ColumnList.Contains(column)) return;
+
+                    vm.ColumnList.Remove(column);
+                }
             }
         }
 
@@ -110,7 +271,9 @@ namespace Samm
 
             Utils.cultureInfo = defaultCultureInfo;
 
-            Space = new Space();
+            SchemaList = new ObservableCollection<DcTable>();
+            TableList = new ObservableCollection<DcTable>();
+            ColumnList = new ObservableCollection<DcColumn>();
 
             DragDropHelper = new DragDropHelper();
 
@@ -118,6 +281,7 @@ namespace Samm
             InitializeComponent();
 
             // Create new empty mashup
+            Space = new Space();
             Operation_NewSpace();
         }
 
@@ -198,35 +362,25 @@ namespace Samm
         }
         protected void Operation_NewSpace()
         {
-            if (Space == null)
-            {
-                Space = new Space();
-            }
-            else
-            {
-                List<DcSchema> schemas = Space.GetSchemas();
-                foreach(DcSchema sch in schemas)
-                {
-                    Space.DeleteSchema(sch);
-                }
-            }
+            DcSpace space = new Space();
 
             //
             // Initialize mashup schema
             //
-            DcSchema mashupTop = Space.CreateSchema("New Mashup", DcSchemaKind.Dc);
+            DcSchema mashupTop = space.CreateSchema("New Mashup", DcSchemaKind.Dc);
             CreateSampleSchema(mashupTop);
 
             //
             // Initialize predefined schemas
             //
-            SchemaCsv csvSchema = (SchemaCsv)Space.CreateSchema("My Files", DcSchemaKind.Csv);
+            SchemaCsv csvSchema = (SchemaCsv)space.CreateSchema("My Files", DcSchemaKind.Csv);
+
 
             //
             // Update the model that is shown in the visual component
             //
+            Space = space;
             SelectedSchema = MashupTop;
-            SchemaListView.Space = Space;
         }
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)

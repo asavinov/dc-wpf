@@ -22,82 +22,40 @@ namespace Samm.Controls
     /// </summary>
     public partial class ColumnListControl : UserControl
     {
-        public Application Application { get; set; }
-
-        // Columns from this table are shown (context)
-        protected DcTable _table;
-        public DcTable Table
-        {
-            get { return _table; }
-            set
-            {
-                if (_table == value) return;
-                if (_table != null)
-                {
-                    ((Space)_table.Space).CollectionChanged -= this.CollectionChanged; // Unregister from the old schema
-                }
-                Items.Clear();
-                _table = value;
-                if (_table == null) return;
-                ((Space)_table.Space).CollectionChanged += this.CollectionChanged; // Unregister from the old schema
-
-                // Fill the list of items
-                foreach (DcColumn column in _table.Columns)
-                {
-                    if (column.IsSuper) continue;
-                    Items.Add(column);
-                }
-            }
-        }
-
-        // What is displayed in the list and bound to it as (ItemsSource)
-        public ObservableCollection<DcColumn> Items { get; set; }
-
-        // It is what we bind to the list view (SelectedItem)
-        private DcColumn _selectedItem;
-        public DcColumn SelectedItem
-        {
-            get { return _selectedItem; }
-            set
-            {
-                if (_selectedItem == value) return;
-                _selectedItem = value;
-
-                MainWindow main = (MainWindow)Application.MainWindow;
-                
-                main.FormulaBarType.Text = _selectedItem == null ? "" : _selectedItem.Output.Name;
-                main.FormulaBarName.Text = _selectedItem == null ? "" : _selectedItem.Name;
-                main.FormulaBarFormula.Text = _selectedItem == null || _selectedItem.GetData() == null ? "" : _selectedItem.GetData().Formula;
-            }
-        }
-        
         public ColumnListControl()
         {
-            Items = new ObservableCollection<DcColumn>();
-
             InitializeComponent();
+
+            MainWindow vm = ((MainWindow)DataContext);
+            if (vm != null)
+            {
+                ((Space)vm.Space).CollectionChanged += this.CollectionChanged;
+            }
         }
 
         // Process events from the table about adding/removing tables
-        protected void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        [Obsolete("We listen for space events directly in the view model (MainWindow).")]
+        public void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            MainWindow vm = ((MainWindow)DataContext);
+
             if (e.Action == NotifyCollectionChangedAction.Add) // Decide if this node has to add a new child node
             {
                 DcColumn column = e.NewItems != null && e.NewItems.Count > 0 && e.NewItems[0] is DcColumn ? (DcColumn)e.NewItems[0] : null;
                 if (column == null) return;
-                if (column.Input != Table) return;
-                if (Items.Contains(column)) return;
+                if (column.Input != vm.SelectedTable) return;
+                if (vm.ColumnList.Contains(column)) return;
 
-                Items.Add(column);
+                vm.ColumnList.Add(column);
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 DcColumn column = e.OldItems != null && e.OldItems.Count > 0 && e.OldItems[0] is DcColumn ? (DcColumn)e.OldItems[0] : null;
                 if (column == null) return;
-                if (column.Input != Table) return;
-                if (!Items.Contains(column)) return;
+                if (column.Input != vm.SelectedTable) return;
+                if (!vm.ColumnList.Contains(column)) return;
 
-                Items.Remove(column);
+                vm.ColumnList.Remove(column);
             }
         }
     }
