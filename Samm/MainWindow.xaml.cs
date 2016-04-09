@@ -834,19 +834,7 @@ namespace Samm
                 return;
             }
 
-            // 
-            // Delete tables *generated* from this table (alternatively, leave them but with empty definition)
-            //
-            var paths = new PathEnumerator(new List<DcTable>(new DcTable[] { tab }), new List<DcTable>(), false, ColumnType.GENERATING);
-            foreach (var path in paths)
-            {
-                for (int i = path.Segments.Count - 1; i >= 0; i--)
-                {
-                    Space.DeleteTable(path.Segments[i].Output); // Delete (indirectly) generated table
-                }
-            }
-
-            // Remove all connections of this set with the schema by deleting all its dimensions
+            // Delete table along with all its input/output columns
             Space.DeleteTable(tab);
 
             e.Handled = true;
