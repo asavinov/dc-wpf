@@ -191,6 +191,11 @@ namespace Samm
 
 
         //
+        // Dialog boxes and controls
+        //
+        public ColumnBox columnBox;
+        
+        //
         // Listeners from the model object
         //
         public void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -271,17 +276,22 @@ namespace Samm
 
             Utils.cultureInfo = defaultCultureInfo;
 
+            // View models: for controls, dialog boxes and the main window model
             SchemaList = new ObservableCollection<DcTable>();
             TableList = new ObservableCollection<DcTable>();
             ColumnList = new ObservableCollection<DcColumn>();
 
+            // Model: business object being shown/edited
+            Space = new Space();
+
             DragDropHelper = new DragDropHelper();
 
-            //this.DataContext = this;
             InitializeComponent();
 
+            // Views: dialog boxes, controls and other visual elements
+            columnBox = new ColumnBox(this);
+
             // Create new empty mashup
-            Space = new Space();
             Operation_NewSpace();
         }
 
@@ -557,30 +567,6 @@ namespace Samm
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             this.Close();
-        }
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            var response = MessageBox.Show(this, "Do you want to save your changes?", "Exiting...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
-            if (response == MessageBoxResult.Yes)
-            {
-                bool isSaved = SaveFileWizard();
-                if (isSaved) // Was really saved
-                {
-                    Application.Current.Shutdown();
-                }
-                else
-                {
-                    e.Cancel = true;
-                }
-            }
-            else if (response == MessageBoxResult.No) 
-            {
-                Application.Current.Shutdown();
-            }
-            else
-            {
-                e.Cancel = true;
-            }
         }
 
         private void HelpCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -889,22 +875,15 @@ namespace Samm
             //
             // Show parameters for set extraction
             //
-            ColumnBox dlg = new ColumnBox(new ObservableCollection<DcSchema>(Space.GetSchemas()), table, null);
-            dlg.Owner = this;
-            dlg.RefreshAll();
+            columnBox = new ColumnBox(this);
+            columnBox.Owner = this;
+            columnBox.Table = table;
+            Nullable<bool> dlgResult = columnBox.ShowDialog(); // Open the dialog box modally
 
-            dlg.ShowDialog(); // Open the dialog box modally 
+            //if (columnBox.DialogResult == false) return; // Cancel
+            if (!(columnBox.DialogResult.HasValue && columnBox.DialogResult.Value)) return; // Cancel
 
-            if (dlg.DialogResult == false) return; // Cancel
-
-            //
-            // Create a new column using parameters in the dialog
-            //
-            DcColumn column = Space.CreateColumn(dlg.ColumnName, table, dlg.SelectedTargetTable, dlg.IsKey);
-            column.GetData().Formula = dlg.ColumnFormula;
-            column.GetData().IsAppendData = true;
-
-            SelectedColumn = column;
+            SelectedColumn = columnBox.Column;
         }
 
         private void AddFreeCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -969,20 +948,13 @@ namespace Samm
         {
             if (column == null) return;
 
-            DcSchema schema = MashupTop;
+            columnBox = new ColumnBox(this);
+            columnBox.Owner = this;
+            columnBox.Column = column;
+            Nullable<bool> dlgResult = columnBox.ShowDialog(); // Open the dialog box modally
 
-            ColumnBox dlg = new ColumnBox(new ObservableCollection<DcSchema>(Space.GetSchemas()), column.Input, column);
-            dlg.Owner = this;
-            dlg.ShowDialog(); // Open the dialog box modally 
-
-            if (dlg.DialogResult == false) return; // Cancel
-
-            //
-            // Update the column using parameters in the dialog
-            //
-            column.Name = dlg.ColumnName;
-            column.GetData().Formula = dlg.ColumnFormula;
-            column.Output = dlg.SelectedTargetTable;
+            //if (columnBox.DialogResult == false) return; // Cancel
+            if (!(columnBox.DialogResult.HasValue && columnBox.DialogResult.Value)) return; // Cancel
 
             SelectedColumn = column;
         }
@@ -1105,7 +1077,47 @@ namespace Samm
 
         #endregion
 
+        //
+        // Window operations
+        //
+        #region Window operations
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            var response = MessageBox.Show(this, "Do you want to save your changes?", "Exiting...", MessageBoxButton.YesNoCancel, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (response == MessageBoxResult.Yes)
+            {
+                bool isSaved = SaveFileWizard();
+                if (isSaved) // Was really saved
+                {
+                    Application.Current.Shutdown();
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+            }
+            else if (response == MessageBoxResult.No)
+            {
+                Application.Current.Shutdown();
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Onwer of a dialog can be set only of the main (this) window has been already shown
+            columnBox.Owner = this;
+        }
+
+        #endregion
+
     }
+
+
 
     public class DragDropHelper
     {
@@ -1181,6 +1193,7 @@ namespace Samm
                 }
             }
         }
+
     }
 
 }

@@ -27,10 +27,40 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class ColumnBox : Window, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void FirePropertyNotifyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        [Obsolete("Property change notifications are used instead.")]
+        public void RefreshAll()
+        {
+            this.GetBindingExpression(ColumnBox.DataContextProperty).UpdateTarget();
+
+            sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            columnName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+            isKey.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+            columnFormula.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+
+            outputSchemaList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+            outputTableList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
+
+            outputSchemaList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+            outputTableList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
+        }
+
         //
         // Options defining the regime of the dialog
         //
-        bool IsNew { get; set; } // Set in constructor
+        bool IsNew
+        {
+            get { return Column == null; }
+        }
+
         bool IsImport // If source is not mashup (changes for each schema selection)
         {
             get
@@ -44,132 +74,155 @@ namespace Samm.Dialogs
             get
             {
                 if (Table.Schema.GetType() != typeof(Schema)) return false;
-                if (SelectedTargetSchema == null) return false; // We do not know
+                if (SelectedOutputSchema == null) return false; // We do not know
                 return true;
             }
         }
 
         //
-        // Link column connecting an existing fixed source table with a target table
+        // Context/parameters
         //
-        public DcTable Table { get; set; }
+        private MainWindow mainVM; // Access to the main view model including Space
+
+        private DcColumn _column;
+        public DcColumn Column
+        {
+            get { return _column; }
+            set
+            {
+                _column = value;
+                if(_column != null) _table = Column.Input;
+
+                initViewModel();
+            }
+        }
+
+        private DcTable _table;
+        public DcTable Table
+        {
+            get { return Column == null ? _table : Column.Input; }
+            set
+            {
+                _table = value;
+
+                // Explicityl setting (input) table means that the dialog is intended to add a new column
+                Column = null;
+            }
+        }
+
+        //
+        // View model
+        //
 
         public string ColumnName { get; set; }
         public bool IsKey { get; set; }
         public string ColumnFormula { get; set; }
 
-        //
-        // Target table including its schema
-        //
-        public ObservableCollection<DcSchema> TargetSchemas { get; set; }
-        public DcSchema SelectedTargetSchema { get; set; }
-        public ObservableCollection<DcTable> TargetTables { get; set; }
-        public DcTable SelectedTargetTable { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void RefreshAll()
+        public ObservableCollection<DcSchema> OutputSchemas { get; set; }
+        public DcSchema SelectedOutputSchema { get; set; }
+        private void OutputSchemaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.GetBindingExpression(ColumnBox.DataContextProperty).UpdateTarget();
-
-            sourceTable.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            columnName.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-            isKey.GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
-            columnFormula.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
-
-            targetSchemaList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
-            targetTableList.GetBindingExpression(ComboBox.ItemsSourceProperty).UpdateTarget();
-
-            targetSchemaList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
-            targetTableList.GetBindingExpression(ComboBox.SelectedItemProperty).UpdateTarget();
-        }
-
-        public ColumnBox(ObservableCollection<DcSchema> targetSchemas, DcTable table, DcColumn column)
-        {
-            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
-
-            InitializeComponent();
-
-            //
-            // Init target schema list
-            //
-
-            // Rule/constraints for possible schemas: 
-            // - If input schema is remote, then output schema is only Mashup
-
-            TargetSchemas = targetSchemas;
-            TargetTables = new ObservableCollection<DcTable>();
-
-            Table = table;
-
-            if (column == null)
-            {
-                IsNew = true;
-
-                ColumnName = "New Column";
-                IsKey = false;
-                ColumnFormula = "";
-
-                if (targetSchemas != null && targetSchemas.Count > 0)
-                {
-                    SelectedTargetSchema = targetSchemas[0];
-                }
-
-                //targetSchemaList.IsEnabled = true;
-                //targetTableList.IsEnabled = true;
-            }
-            else
-            {
-                IsNew = false;
-
-                ColumnName = column.Name;
-                IsKey = column.IsKey;
-                ColumnFormula = column.GetData().Formula;
-
-                SelectedTargetSchema = column.Output.Schema;
-                SelectedTargetTable = column.Output;
-
-                //targetSchemaList.IsEnabled = false;
-                //targetTableList.IsEnabled = false;
-            }
-
-            RefreshAll();
-        }
-
-        private void TargetSchemaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TargetTables.Clear();
-            if (SelectedTargetSchema != null)
+            // Populate type-list with possible tables. Type-list filling is provided by a Space function (not all types are possible because of cycles and maybe other constraints)
+            OutputTables.Clear();
+            if (SelectedOutputSchema != null)
             {
                 // Rules/constraints:
-                // - Generating columns cannot target a primitive type
+                // - Generating columns (returning tuples) cannot target a primitive type
                 //   - Import/export is always generating column so cannot target a primitive type
                 // - Can we have generating column cycles?
                 //   - Can we have import/export cycles?
 
                 // Add primitive tables
-                var primitiveTables = SelectedTargetSchema.SubTables.Where(x => x != SelectedTargetSchema.Root).ToList();
-                primitiveTables.ForEach(x => TargetTables.Add(x));
+                var primitiveTables = SelectedOutputSchema.SubTables.Where(x => x != SelectedOutputSchema.Root).ToList();
+                primitiveTables.ForEach(x => OutputTables.Add(x));
 
                 // Add non-primitive tables (only possible/meainingful)
-                List<DcTable> targetTables;
-                if (SelectedTargetSchema == Table.Schema) // Intra-schema link
+                List<DcTable> outputTables;
+                if (SelectedOutputSchema == Table.Schema) // Intra-schema link
                 {
-                    targetTables = MappingModel.GetPossibleGreaterSets(Table);
+                    outputTables = MappingModel.GetPossibleGreaterSets(Table);
                 }
                 else // Import-export link - all tables
                 {
-                    targetTables = SelectedTargetSchema.Root.SubTables;
+                    outputTables = SelectedOutputSchema.Root.SubTables;
                 }
-                targetTables.ForEach(x => TargetTables.Add(x));
+                outputTables.ForEach(x => OutputTables.Add(x));
             }
 
-            RefreshAll();
         }
 
-        private void TargetTableList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // This type-list will be populated automatically from within schema selection event.
+        public ObservableCollection<DcTable> OutputTables { get; set; }
+        public DcTable SelectedOutputTable { get; set; }
+        private void OutputTableList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ;
+        }
+
+        // It is called when preparing this dialog for editing/adding a column or when context changes (not during the process)
+        // Essentially, we do it when data context is set.
+        private void initViewModel()
+        {
+            // Populate possible schemas using all schemas from the space with some limitations. 
+            // Rule/constraints for possible schemas: 
+            // - If input schema (always non-null) is remote, then output schema is only Mashup
+            DcSpace space = mainVM.Space;
+            DcSchema schema = Table.Schema;
+            OutputSchemas.Clear();
+            if (!mainVM.IsInMashups(Table)) // Remote input table (only import is possible)
+            {
+                OutputSchemas.Add(mainVM.MashupTop);
+            }
+            else
+            {
+                List<DcSchema> allSchemas = space.GetSchemas();
+                allSchemas.ForEach(x => OutputSchemas.Add(x));
+            }
+
+            if (IsNew)
+            {
+                // Set default parameters: name, schema (e.g., if single), type, key
+                ColumnName = "New Column";
+                IsKey = false;
+                ColumnFormula = "";
+
+                // Set selections
+                SelectedOutputSchema = mainVM.MashupTop;
+
+                // Set enabled/disabled
+                //targetSchemaList.IsEnabled = true;
+                //targetTableList.IsEnabled = true;
+
+            }
+            else
+            {
+                // Set existing column parameters: name, schema, type, key
+                ColumnName = Column.Name;
+                IsKey = Column.IsKey;
+                ColumnFormula = Column.GetData().Formula;
+
+                // Set selections
+                SelectedOutputSchema = Column.Output.Schema;
+                SelectedOutputTable = Column.Output;
+
+                // Set enabled/disabled
+                //targetSchemaList.IsEnabled = false;
+                //targetTableList.IsEnabled = false;
+            }
+
+            FirePropertyNotifyChanged("");
+        }
+
+        public ColumnBox(MainWindow mainVM)
+        {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
+            this.mainVM = mainVM;
+
+            OutputSchemas = new ObservableCollection<DcSchema>();
+            OutputTables = new ObservableCollection<DcTable>();
+
+            InitializeComponent();
         }
 
         private readonly ICommand okCommand;
@@ -179,8 +232,8 @@ namespace Samm.Dialogs
         }
         private bool OkCommand_CanExecute(object state)
         {
-            if (SelectedTargetSchema == null) return false;
-            if (SelectedTargetTable == null) return false;
+            if (SelectedOutputSchema == null) return false;
+            if (SelectedOutputTable == null) return false;
 
             if (string.IsNullOrWhiteSpace(ColumnName)) return false;
 
@@ -188,6 +241,26 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
+            if (IsNew)
+            {
+                // Create a new column using parameters in the dialog
+                DcSpace space = mainVM.Space;
+                DcColumn column = space.CreateColumn(ColumnName, Table, SelectedOutputTable, IsKey);
+                column.GetData().Formula = ColumnFormula;
+                column.GetData().IsAppendData = true;
+
+                Column = column;
+            }
+            else
+            {
+                // Update the column using parameters in the dialog
+                Column.Name = ColumnName;
+                Column.GetData().Formula = ColumnFormula;
+                Column.Output = SelectedOutputTable;
+            }
+
+            ((Column)Column).NotifyPropertyChanged("");
+
             this.DialogResult = true;
         }
 

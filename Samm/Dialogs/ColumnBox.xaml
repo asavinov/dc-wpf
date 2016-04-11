@@ -25,23 +25,23 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Label  Grid.Column="0" Grid.Row="0" Content="Source Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="sourceTable" Grid.Column="1" Grid.Row="0" Text="{Binding Path=Table.Name}" IsReadOnly="True" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Column Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Name="columnName" Grid.Column="1" Grid.Row="1" Text="{Binding Path=ColumnName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="2" Content="Key/product:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="2" Content="Key:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <CheckBox Name="isKey" Grid.Column="1" Grid.Row="2" IsChecked="{Binding Path=IsKey}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" />
 
-        <Label  Grid.Column="0" Grid.Row="3" Content="Definition (formula):" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <Label  Grid.Column="0" Grid.Row="3" Content="Formula:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <TextBox Grid.Column="1" Grid.Row="3" Name="columnFormula" Text="{Binding Path=ColumnFormula}" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5"/>
 
-        <Label  Grid.Column="0" Grid.Row="4" Content="Target Schema:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="targetSchemaList" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=TargetSchemas}" SelectedItem="{Binding Path=SelectedTargetSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="TargetSchemaList_SelectionChanged"/>
+        <Label  Grid.Column="0" Grid.Row="4" Content="Output Schema:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="outputSchemaList" Grid.Column="1" Grid.Row="4" ItemsSource="{Binding Path=OutputSchemas}" SelectedItem="{Binding Path=SelectedOutputSchema}" ItemTemplate="{StaticResource SchemaListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" SelectionChanged="OutputSchemaList_SelectionChanged"/>
 
-        <Label  Grid.Column="0" Grid.Row="5" Content="Target Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ComboBox Name="targetTableList" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding Path=TargetTables}" SelectedItem="{Binding Path=SelectedTargetTable}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="TargetTableList_SelectionChanged"/>
+        <Label  Grid.Column="0" Grid.Row="5" Content="Output Table:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
+        <ComboBox Name="outputTableList" Grid.Column="1" Grid.Row="5" ItemsSource="{Binding Path=OutputTables}" SelectedItem="{Binding Path=SelectedOutputTable}" ItemTemplate="{StaticResource TableListItemTemplate}" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Top" SelectionChanged="OutputTableList_SelectionChanged"/>
 
         <StackPanel Grid.Column="1" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5" Width="75" Height="25" IsDefault="True" Command="{Binding OkCommand}" />

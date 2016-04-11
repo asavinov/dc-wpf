@@ -9,6 +9,7 @@
         Icon="Images\dc-32x32.png"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Closing="Window_Closing"
+        Loaded="Window_Loaded"
         >
 
     <Window.Resources>
