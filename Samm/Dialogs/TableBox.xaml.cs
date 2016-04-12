@@ -22,38 +22,86 @@ namespace Samm.Dialogs
     /// </summary>
     public partial class TableBox : Window, INotifyPropertyChanged
     {
-        bool IsNew { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void FirePropertyNotifyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
-        public DcSchema Schema { get; set; }
+        //
+        // Options defining the regime of the dialog
+        //
+        bool IsNew
+        {
+            get { return Table == null; }
+        }
 
-        public DcTable Table { get; set; }
+        //
+        // Context/parameters
+        //
+        private MainWindow mainVM; // Access to the main view model including Space
+
+        private DcSchema _schema;
+        public DcSchema Schema
+        {
+            get { return Table == null ? _schema : Table.Schema; }
+            set
+            {
+                _schema = value;
+
+                // Explicitly setting schema table means that the dialog is intended to add a new table
+                Table = null;
+            }
+        }
+
+        private DcTable _table;
+        public DcTable Table
+        {
+            get { return _table; }
+            set
+            {
+                _table = value;
+                if (_table != null) _schema = _table.Schema;
+
+                initViewModel();
+            }
+        }
+
+        //
+        // View model. Properties of the object shown in UI controls.
+        //
         public string TableName { get; set; }
 
         public string TableFormula { get; set; }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public TableBox(DcSchema schema, DcTable table)
+        // It is called when preparing this dialog for editing/adding a table or when context changes (not during the process)
+        // Essentially, we do it when data context is set.
+        private void initViewModel()
         {
-            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+            DcSpace space = mainVM.Space;
 
-            Schema = schema;
-            Table = table;
-
-            if (table == null)
+            if (IsNew)
             {
-                IsNew = true;
                 TableName = "New Table";
                 TableFormula = "";
             }
             else
             {
-                IsNew = false;
-                TableName = table.Name;
-                TableFormula = table.GetData().WhereFormula;
+                TableName = Table.Name;
+                TableFormula = Table.GetData().WhereFormula;
             }
 
-            Table = table;
+            FirePropertyNotifyChanged("");
+        }
+
+        public TableBox(MainWindow mainVM)
+        {
+            this.okCommand = new DelegateCommand(this.OkCommand_Executed, this.OkCommand_CanExecute);
+
+            this.mainVM = mainVM;
 
             InitializeComponent();
         }
@@ -71,6 +119,24 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
+            if(IsNew)
+            {
+                // Create a new table using parameters in the dialog
+                DcSpace space = mainVM.Space;
+
+                DcTable table = space.CreateTable(TableName, Schema.Root);
+                table.GetData().WhereFormula = TableFormula;
+
+                Table = table;
+            }
+            else
+            {
+                Table.Name = TableName;
+                Table.GetData().WhereFormula = TableFormula;
+            }
+
+            ((Com.Schema.Table)Table).NotifyPropertyChanged("");
+
             this.DialogResult = true;
         }
 

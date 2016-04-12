@@ -710,16 +710,15 @@ namespace Samm
             }
             else // Mashup
             {
-                TableBox dlg = new TableBox(SelectedSchema, null);
+                TableBox dlg = new TableBox(this);
                 dlg.Owner = this;
-                dlg.ShowDialog();
+                dlg.Schema = SelectedSchema;
+                Nullable<bool> dlgResult = dlg.ShowDialog(); // Open the dialog box modally
 
-                if (dlg.DialogResult == false) return; // Cancel
+                //if (dlg.DialogResult == false) return; // Cancel
+                if (!(dlg.DialogResult.HasValue && dlg.DialogResult.Value)) return; // Cancel
 
-                DcTable table = Space.CreateTable(dlg.TableName, SelectedSchema.Root);
-                table.GetData().WhereFormula = dlg.TableFormula;
-
-                SelectedTable = table;
+                SelectedTable = dlg.Table;
             }
 
             e.Handled = true;
@@ -763,14 +762,13 @@ namespace Samm
             }
             else // Mashup
             {
-                TableBox dlg = new TableBox(SelectedSchema, SelectedTable);
+                TableBox dlg = new TableBox(this);
                 dlg.Owner = this;
-                dlg.ShowDialog();
+                dlg.Table = SelectedTable;
+                Nullable<bool> dlgResult = dlg.ShowDialog(); // Open the dialog box modally
 
-                if (dlg.DialogResult == false) return; // Cancel
-
-                SelectedTable.Name = dlg.TableName;
-                SelectedTable.GetData().WhereFormula = dlg.TableFormula;
+                //if (dlg.DialogResult == false) return; // Cancel
+                if (!(dlg.DialogResult.HasValue && dlg.DialogResult.Value)) return; // Cancel
             }
 
             SelectedTable = SelectedTable;

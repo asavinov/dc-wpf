@@ -84,19 +84,6 @@ namespace Samm.Dialogs
         //
         private MainWindow mainVM; // Access to the main view model including Space
 
-        private DcColumn _column;
-        public DcColumn Column
-        {
-            get { return _column; }
-            set
-            {
-                _column = value;
-                if(_column != null) _table = Column.Input;
-
-                initViewModel();
-            }
-        }
-
         private DcTable _table;
         public DcTable Table
         {
@@ -105,13 +92,26 @@ namespace Samm.Dialogs
             {
                 _table = value;
 
-                // Explicityl setting (input) table means that the dialog is intended to add a new column
+                // Explicitly setting (input) table means that the dialog is intended to add a new column
                 Column = null;
             }
         }
 
+        private DcColumn _column;
+        public DcColumn Column
+        {
+            get { return _column; }
+            set
+            {
+                _column = value;
+                if(_column != null) _table = _column.Input;
+
+                initViewModel();
+            }
+        }
+
         //
-        // View model
+        // View model. Properties of the object shown in UI controls.
         //
 
         public string ColumnName { get; set; }
