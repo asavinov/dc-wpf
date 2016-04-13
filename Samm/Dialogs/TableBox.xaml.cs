@@ -119,11 +119,11 @@ namespace Samm.Dialogs
         }
         private void OkCommand_Executed(object state)
         {
-            if(IsNew)
+            DcSpace space = mainVM.Space;
+
+            if (IsNew)
             {
                 // Create a new table using parameters in the dialog
-                DcSpace space = mainVM.Space;
-
                 DcTable table = space.CreateTable(TableName, Schema.Root);
                 table.GetData().WhereFormula = TableFormula;
 

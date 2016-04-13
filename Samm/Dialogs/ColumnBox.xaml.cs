@@ -169,15 +169,8 @@ namespace Samm.Dialogs
             DcSpace space = mainVM.Space;
             DcSchema schema = Table.Schema;
             OutputSchemas.Clear();
-            if (!mainVM.IsInMashups(Table)) // Remote input table (only import is possible)
-            {
-                OutputSchemas.Add(mainVM.MashupTop);
-            }
-            else
-            {
-                List<DcSchema> allSchemas = space.GetSchemas();
-                allSchemas.ForEach(x => OutputSchemas.Add(x));
-            }
+            List<DcSchema> allSchemas = space.GetSchemas();
+            allSchemas.ForEach(x => OutputSchemas.Add(x));
 
             if (IsNew)
             {
@@ -236,6 +229,19 @@ namespace Samm.Dialogs
             if (SelectedOutputTable == null) return false;
 
             if (string.IsNullOrWhiteSpace(ColumnName)) return false;
+
+            // New (user-defined) remote columns can only point to mash up (no intra-remote columns)
+            if(!mainVM.IsInMashups(Table) && !mainVM.IsInMashups(SelectedOutputTable))
+            {
+                if(IsNew) // No intra-remote new columns
+                {
+                    return false;
+                }
+                else if (mainVM.IsInMashups(Column.Output)) // No convertion from import to intra-remote
+                {
+                    return false;
+                }
+            }
 
             return true;
         }

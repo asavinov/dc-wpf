@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
 
         <Label  Grid.Column="0" Grid.Row="0" Content="Table Name:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <TextBox Name="tableName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=TableName}" TextWrapping="NoWrap" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
+        <TextBox Name="tableName" Grid.Column="1" Grid.Row="0" Text="{Binding Path=TableName}" TextWrapping="NoWrap" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5" />
 
         <Label  Grid.Column="0" Grid.Row="1" Content="Source File:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
         <DockPanel Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="5">
@@ -44,7 +44,7 @@
         </StackPanel>
 
         <Label  Grid.Column="0" Grid.Row="3" Content="Columns:" HorizontalAlignment="Stretch" VerticalAlignment="Top" HorizontalContentAlignment="Right" Margin="5"/>
-        <ListView Name="tableColumns" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TableColumns}" ItemTemplate="{StaticResource ColumnListItemTemplate}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
+        <ListView Name="tableColumns" Grid.Column="1" Grid.Row="3" ItemsSource="{Binding Path=TableColumns}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" />
 
         <StackPanel Grid.Column="1" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
             <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" Margin="5" IsDefault="True" Command="{Binding OkCommand}" />

@@ -690,23 +690,14 @@ namespace Samm
             // For each schema/connection type, we use a specific dialog
             if (SelectedSchema is SchemaCsv)
             {
-                TableCsvBox dlg = new TableCsvBox(SelectedSchema, null);
+                TableCsvBox dlg = new TableCsvBox(this);
                 dlg.Owner = this;
+                dlg.Schema = SelectedSchema;
                 dlg.ShowDialog();
 
                 if (dlg.DialogResult == false) return; // Cancel
 
-                TableCsv table = (TableCsv)Space.CreateTable(dlg.TableName, SelectedSchema.Root);
-
-                table.FilePath = dlg.FilePath;
-
-                table.HasHeaderRecord = dlg.HasHeaderRecord;
-                table.Delimiter = dlg.Delimiter;
-                table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
-
-                var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
-
-                SelectedTable = table;
+                SelectedTable = dlg.Table;
             }
             else // Mashup
             {
@@ -742,23 +733,13 @@ namespace Samm
             // For each schema/connection type, we use a specific dialog
             if (SelectedSchema is SchemaCsv)
             {
-                TableCsvBox dlg = new TableCsvBox(SelectedSchema, SelectedTable);
+                TableCsvBox dlg = new TableCsvBox(this);
                 dlg.Owner = this;
-                dlg.ShowDialog();
+                dlg.Table = SelectedTable;
+                Nullable<bool> dlgResult = dlg.ShowDialog(); // Open the dialog box modally
 
-                if (dlg.DialogResult == false) return; // Cancel
-
-                TableCsv table = (TableCsv)SelectedTable;
-
-                table.FilePath = dlg.FilePath;
-
-                table.HasHeaderRecord = dlg.HasHeaderRecord;
-                table.Delimiter = dlg.Delimiter;
-                table.CultureInfo.NumberFormat.NumberDecimalSeparator = dlg.Decimal;
-
-
-                foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) Space.DeleteColumn(col);
-                var columns = ((SchemaCsv)SelectedSchema).LoadSchema(table);
+                //if (dlg.DialogResult == false) return; // Cancel
+                if (!(dlg.DialogResult.HasValue && dlg.DialogResult.Value)) return; // Cancel
             }
             else // Mashup
             {
