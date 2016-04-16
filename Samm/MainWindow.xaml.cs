@@ -757,6 +757,7 @@ namespace Samm
             e.Handled = true;
         }
 
+        /*
         private void RenameTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedTable != null) e.CanExecute = true;
@@ -772,6 +773,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
         }
+        */
 
         private void DeleteTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -938,6 +940,7 @@ namespace Samm
             SelectedColumn = column;
         }
 
+        /*
         private void RenameColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             if (SelectedColumn != null) e.CanExecute = true;
@@ -953,6 +956,7 @@ namespace Samm
 
             if (dlg.DialogResult == false) return; // Cancel
         }
+        */
 
         private void DeleteColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -965,6 +969,8 @@ namespace Samm
 
             try
             {
+                SelectedColumn.IsUpToDate = false; 
+                // TODO: In fact, we need to propagate error (invalid) because now all dependant columns cannot be evaluated at all
                 Operation_DeleteColumn(SelectedColumn);
             }
             catch (System.Exception ex)
@@ -992,8 +998,12 @@ namespace Samm
 
         private void UpdateColumnCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedColumn != null) e.CanExecute = true;
-            else e.CanExecute = false;
+            if (SelectedColumn == null) { e.CanExecute = false; return; }
+
+            // Cannot evaluate column which is up-to-date
+            if (SelectedColumn.IsUpToDate) { e.CanExecute = false; return; }
+
+            e.CanExecute = true;
         }
         private void UpdateColumnCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {

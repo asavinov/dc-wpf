@@ -60,9 +60,9 @@
         <RoutedUICommand x:Key="UpdateSchemaCommand" Text="Update data source" />
 
         <RoutedUICommand x:Key="AddTableCommand" Text="Add table" />
-        <RoutedUICommand x:Key="FilterTableCommand" Text="Filter table" />
+        <!--<RoutedUICommand x:Key="FilterTableCommand" Text="Filter table" />-->
         <RoutedUICommand x:Key="EditTableCommand" Text="Edit table" />
-        <RoutedUICommand x:Key="RenameTableCommand" Text="Rename table" />
+        <!--<RoutedUICommand x:Key="RenameTableCommand" Text="Rename table" />-->
         <RoutedUICommand x:Key="DeleteTableCommand" Text="Delete table" />
         <RoutedUICommand x:Key="UpdateTableCommand" Text="Update table" />
 
@@ -73,7 +73,7 @@
         <RoutedUICommand x:Key="AddColumnLinkCommand" Text="Add generation column" />
         <RoutedUICommand x:Key="AddAggregationCommand" Text="Add aggregated column" />
         <RoutedUICommand x:Key="EditColumnCommand" Text="Edit column" />
-        <RoutedUICommand x:Key="RenameColumnCommand" Text="Rename column" />
+        <!--<RoutedUICommand x:Key="RenameColumnCommand" Text="Rename column" />-->
         <RoutedUICommand x:Key="DeleteColumnCommand" Text="Delete column" />
         <RoutedUICommand x:Key="UpdateColumnCommand" Text="Update column" />
 
@@ -108,16 +108,16 @@
         -->
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
+        <!--<CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />-->
         <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
-        <CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />
+        <!--<CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />-->
         <CommandBinding Command="{StaticResource DeleteTableCommand}" CanExecute="DeleteTableCommand_CanExecute" Executed="DeleteTableCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateTableCommand}" CanExecute="UpdateTableCommand_CanExecute" Executed="UpdateTableCommand_Executed" />
-        <!--<CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />-->
 
         <CommandBinding Command="{StaticResource AddColumnCommand}" CanExecute="AddColumnCommand_CanExecute" Executed="AddColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource AddFreeCommand}" CanExecute="AddFreeCommand_CanExecute" Executed="AddFreeCommand_Executed" />
         <CommandBinding Command="{StaticResource EditColumnCommand}" CanExecute="EditColumnCommand_CanExecute" Executed="EditColumnCommand_Executed" />
-        <CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />
+        <!--<CommandBinding Command="{StaticResource RenameColumnCommand}" CanExecute="RenameColumnCommand_CanExecute" Executed="RenameColumnCommand_Executed" />-->
         <CommandBinding Command="{StaticResource DeleteColumnCommand}" CanExecute="DeleteColumnCommand_CanExecute" Executed="DeleteColumnCommand_Executed" />
         <CommandBinding Command="{StaticResource UpdateColumnCommand}" CanExecute="UpdateColumnCommand_CanExecute" Executed="UpdateColumnCommand_Executed" />
         <!--
@@ -332,15 +332,19 @@
                                 <Button ToolTip="Add table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
                                     <Image Source="Images\table_add2.png" />
                                 </Button>
+                                <!--
                                 <Button ToolTip="Edit filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
                                     <Image Source="Images\table_filter2.png" />
                                 </Button>
+                                -->
                                 <Button ToolTip="Edit table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditTableCommand}">
                                     <Image Source="Images\table_edit2.png" />
                                 </Button>
+                                <!--
                                 <Button ToolTip="Rename table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameTableCommand}" >
                                     <Image Source="Images\table_rename2.png" />
                                 </Button>
+                                -->
                                 <Button ToolTip="Delete table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteTableCommand}" >
                                     <Image Source="Images\table_delete2.png" />
                                 </Button>
@@ -421,9 +425,11 @@
                                 <Button ToolTip="Edit column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource EditColumnCommand}">
                                     <Image Source="Images\column_edit2.png" />
                                 </Button>
+                                <!--
                                 <Button ToolTip="Rename column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource RenameColumnCommand}">
                                     <Image Source="Images\column_rename2.png" />
                                 </Button>
+                                -->
                                 <Button ToolTip="Delete column" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource DeleteColumnCommand}">
                                     <Image Source="Images\column_delete2.png" />
                                 </Button>

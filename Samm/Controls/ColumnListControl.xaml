@@ -19,6 +19,8 @@
         <DataTemplate x:Key="ColumnListCellTemplate">
             <StackPanel Orientation="Horizontal" Margin="5" >
                 <Image x:Name="node_icon" Source="../Images/node_column.png" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
+                <TextBlock Text="{Binding Path=IsUpToDate}" FontSize="10" FontWeight="Bold" />
+                <TextBlock Text="---" />
                 <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" />
                 <TextBlock Text=" (" FontSize="12" />
                 <TextBlock Text="{Binding Path=Output.Name}" FontSize="12" />

@@ -263,6 +263,9 @@ namespace Samm.Dialogs
                 Column.Name = ColumnName;
                 Column.GetData().Formula = ColumnFormula;
                 Column.Output = SelectedOutputTable;
+
+                // TODO: Here we need a smarter way to determine the dirty flag. If only name changes then the dirty flag is not invalidated. 
+                Column.IsUpToDate = false;
             }
 
             ((Column)Column).NotifyPropertyChanged("");
