@@ -19,8 +19,7 @@
         <DataTemplate x:Key="ColumnListCellTemplate">
             <StackPanel Orientation="Horizontal" Margin="5" >
                 <Image x:Name="node_icon" Source="../Images/node_column.png" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
-                <TextBlock Text="{Binding Path=IsUpToDate}" FontSize="10" FontWeight="Bold" />
-                <TextBlock Text="---" />
+                <Image x:Name="node_status" Source="../Images/column_status_green.png" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
                 <TextBlock Text="{Binding Path=Name}" FontSize="12" FontWeight="Bold" />
                 <TextBlock Text=" (" FontSize="12" />
                 <TextBlock Text="{Binding Path=Output.Name}" FontSize="12" />
@@ -29,6 +28,15 @@
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Path=IsKey}" Value="true">
                     <Setter Property="Source" Value="../Images/node_column_key.png" TargetName="node_icon" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="{x:Static com:DcColumnStatus.Green}">
+                    <Setter Property="Source" Value="../Images/column_status_green.png" TargetName="node_status" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="{x:Static com:DcColumnStatus.Yellow}">
+                    <Setter Property="Source" Value="../Images/column_status_yellow.png" TargetName="node_status" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Status}" Value="{x:Static com:DcColumnStatus.Red}">
+                    <Setter Property="Source" Value="../Images/column_status_red.png" TargetName="node_status" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
