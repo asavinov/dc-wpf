@@ -261,13 +261,8 @@ namespace Samm.Dialogs
             {
                 // Update the column using parameters in the dialog
                 Column.Name = ColumnName;
-                Column.GetData().Formula = ColumnFormula;
                 Column.Output = SelectedOutputTable;
-
-                // Set dirty flag
-                Column.GetData().HasValidData = false;
-                Column.GetData().HasValidSchema = false;
-                Column.GetData().Translate();
+                Column.GetData().Formula = ColumnFormula;
             }
 
             ((Column)Column).NotifyPropertyChanged("");

@@ -969,8 +969,8 @@ namespace Samm
 
             try
             {
-                SelectedColumn.GetData().HasValidSchema = false;
-                SelectedColumn.GetData().HasValidData = false;
+                SelectedColumn.GetData().TranslateError = true;
+                SelectedColumn.GetData().EvaluateError = true;
                 // TODO: In fact, we need to propagate error (invalid) because now all dependant columns cannot be evaluated at all
                 Operation_DeleteColumn(SelectedColumn);
             }
@@ -1002,7 +1002,7 @@ namespace Samm
             if (SelectedColumn == null) { e.CanExecute = false; return; }
 
             // Cannot evaluate column which is up-to-date
-            if (!SelectedColumn.GetData().HasValidSchema) { e.CanExecute = false; return; }
+            if (SelectedColumn.GetData().TranslateError) { e.CanExecute = false; return; }
 
             e.CanExecute = true;
         }
