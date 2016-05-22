@@ -224,7 +224,7 @@
                     <TextBox Name="FormulaBarName" Text="Example Name" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" HorizontalAlignment="Stretch" Orientation="Vertical">
-                    <Label  Content="Formula (example):" HorizontalContentAlignment="Left" FontSize="12" FontWeight="Normal" Margin="5"/>
+                    <Label  Content="Formula:" HorizontalContentAlignment="Left" FontSize="12" FontWeight="Normal" Margin="5"/>
                     <TextBox Name="FormulaBarFormula" Text="Double [My Column] = [column 1] + [column 2]" TextWrapping="NoWrap" IsReadOnly="True" FontSize="14" FontWeight="SemiBold" Foreground="DarkBlue" Margin="5" />
                 </StackPanel>
             </Grid>

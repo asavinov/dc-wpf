@@ -969,9 +969,6 @@ namespace Samm
 
             try
             {
-                SelectedColumn.GetData().TranslateError = true;
-                SelectedColumn.GetData().EvaluateError = true;
-                // TODO: In fact, we need to propagate error (invalid) because now all dependant columns cannot be evaluated at all
                 Operation_DeleteColumn(SelectedColumn);
             }
             catch (System.Exception ex)
