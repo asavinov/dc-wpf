@@ -124,7 +124,7 @@ namespace Samm.Dialogs
             if (IsNew)
             {
                 // Create a new table using parameters in the dialog
-                DcTable table = space.CreateTable(TableName, Schema.Root);
+                DcTable table = space.CreateTable(DcSchemaKind.Dc, TableName, Schema.Root);
                 table.GetData().WhereFormula = TableFormula;
 
                 Table = table;

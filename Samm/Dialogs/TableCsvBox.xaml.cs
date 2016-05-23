@@ -244,7 +244,7 @@ namespace Samm.Dialogs
             if (IsNew)
             {
                 // Create a new table using parameters in the dialog
-                TableCsv table = (TableCsv)space.CreateTable(TableName, Schema.Root);
+                TableCsv table = (TableCsv)space.CreateTable(DcSchemaKind.Csv, TableName, Schema.Root);
 
                 table.GetData().WhereFormula = TableFormula;
 
@@ -254,7 +254,8 @@ namespace Samm.Dialogs
                 table.CultureInfo.NumberFormat.NumberDecimalSeparator = Decimal;
 
                 // Load (read-only) column descriptions from CSV to schema
-                var columns = ((SchemaCsv)Schema).LoadSchema(table);
+                var columns = table.LoadSchema();
+                //var columns = ((SchemaCsv)Schema).LoadSchema(table);
 
                 Table = table;
             }

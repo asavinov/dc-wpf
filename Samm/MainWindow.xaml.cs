@@ -301,7 +301,7 @@ namespace Samm
 
             DcColumn d1, d2, d3, d4;
 
-            DcTable departments = space.CreateTable("Departments", schema.Root);
+            DcTable departments = space.CreateTable(DcSchemaKind.Dc, "Departments", schema.Root);
 
             d1 = space.CreateColumn("name", departments, schema.GetPrimitiveType("String"), true);
             d2 = space.CreateColumn("location", departments, schema.GetPrimitiveType("String"), false);
@@ -314,14 +314,14 @@ namespace Samm
             writer.Append(new DcColumn[] { d1, d2 }, new object[] { "HR", "Walldorf" });
             writer.Close();
 
-            DcTable employees = space.CreateTable("Employees", schema.Root);
+            DcTable employees = space.CreateTable(DcSchemaKind.Dc, "Employees", schema.Root);
 
             d1 = space.CreateColumn("name", employees, schema.GetPrimitiveType("String"), true);
             d2 = space.CreateColumn("age", employees, schema.GetPrimitiveType("Double"), false);
             d3 = space.CreateColumn("salary", employees, schema.GetPrimitiveType("Double"), false);
             d4 = space.CreateColumn("dept", employees, departments, false);
 
-            DcTable managers = space.CreateTable("Managers", employees);
+            DcTable managers = space.CreateTable(DcSchemaKind.Dc, "Managers", employees);
 
             d1 = space.CreateColumn("title", managers, schema.GetPrimitiveType("String"), false);
             d2 = space.CreateColumn("is project manager", managers, schema.GetPrimitiveType("Boolean"), false);
@@ -586,11 +586,11 @@ namespace Samm
         {
         }
 
-        private void AddCsvSchemaCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void AddSchemaCsvCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
-        private void AddCsvSchemaCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void AddSchemaCsvCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             SchemaCsv csvSchema = (SchemaCsv)Space.CreateSchema("My Files", DcSchemaKind.Csv);
 
@@ -680,37 +680,40 @@ namespace Samm
 
         private void AddTableCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (SelectedSchema != null) e.CanExecute = true;
-            else e.CanExecute = false;
+            e.CanExecute = true;
         }
         private void AddTableCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (SelectedSchema == null) return;
 
-            // For each schema/connection type, we use a specific dialog
-            if (SelectedSchema is SchemaCsv)
-            {
-                TableCsvBox dlg = new TableCsvBox(this);
-                dlg.Owner = this;
-                dlg.Schema = SelectedSchema;
-                dlg.ShowDialog();
+            TableBox dlg = new TableBox(this);
+            dlg.Owner = this;
+            dlg.Schema = SelectedSchema;
+            Nullable<bool> dlgResult = dlg.ShowDialog(); // Open the dialog box modally
 
-                if (dlg.DialogResult == false) return; // Cancel
+            //if (dlg.DialogResult == false) return; // Cancel
+            if (!(dlg.DialogResult.HasValue && dlg.DialogResult.Value)) return; // Cancel
 
-                SelectedTable = dlg.Table;
-            }
-            else // Mashup
-            {
-                TableBox dlg = new TableBox(this);
-                dlg.Owner = this;
-                dlg.Schema = SelectedSchema;
-                Nullable<bool> dlgResult = dlg.ShowDialog(); // Open the dialog box modally
+            SelectedTable = dlg.Table;
+        }
 
-                //if (dlg.DialogResult == false) return; // Cancel
-                if (!(dlg.DialogResult.HasValue && dlg.DialogResult.Value)) return; // Cancel
+        private void AddTableCsvCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (SelectedSchema != null) e.CanExecute = true;
+            else e.CanExecute = false;
+        }
+        private void AddTableCsvCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (SelectedSchema == null) return;
 
-                SelectedTable = dlg.Table;
-            }
+            TableCsvBox dlg = new TableCsvBox(this);
+            dlg.Owner = this;
+            dlg.Schema = SelectedSchema;
+            dlg.ShowDialog();
+
+            if (dlg.DialogResult == false) return; // Cancel
+
+            SelectedTable = dlg.Table;
 
             e.Handled = true;
         }
@@ -730,8 +733,8 @@ namespace Samm
         {
             if (SelectedTable == null) return;
 
-            // For each schema/connection type, we use a specific dialog
-            if (SelectedSchema is SchemaCsv)
+            // For each table type, we use a specific dialog
+            if (SelectedTable is TableCsv)
             {
                 TableCsvBox dlg = new TableCsvBox(this);
                 dlg.Owner = this;

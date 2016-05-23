@@ -53,13 +53,14 @@
         -->
 
         <RoutedUICommand x:Key="AddMashupSchemaCommand" Text="Add mashup" />
-        <RoutedUICommand x:Key="AddCsvSchemaCommand" Text="Add CSV data source" />
+        <RoutedUICommand x:Key="AddSchemaCsvCommand" Text="Add CSV data source" />
         <RoutedUICommand x:Key="EditSchemaCommand" Text="Edit data source" />
         <RoutedUICommand x:Key="RenameSchemaCommand" Text="Rename data source" />
         <RoutedUICommand x:Key="DeleteSchemaCommand" Text="Delete data source" />
         <RoutedUICommand x:Key="UpdateSchemaCommand" Text="Update data source" />
 
         <RoutedUICommand x:Key="AddTableCommand" Text="Add table" />
+        <RoutedUICommand x:Key="AddTableCsvCommand" Text="Add CSV table" />
         <!--<RoutedUICommand x:Key="FilterTableCommand" Text="Filter table" />-->
         <RoutedUICommand x:Key="EditTableCommand" Text="Edit table" />
         <!--<RoutedUICommand x:Key="RenameTableCommand" Text="Rename table" />-->
@@ -92,7 +93,7 @@
         <CommandBinding Command="{StaticResource HelpCommand}" Executed="HelpCommand_Executed" />
 
         <CommandBinding Command="{StaticResource AddMashupSchemaCommand}" CanExecute="AddMashupSchemaCommand_CanExecute" Executed="AddMashupSchemaCommand_Executed" />
-        <CommandBinding Command="{StaticResource AddCsvSchemaCommand}" CanExecute="AddCsvSchemaCommand_CanExecute" Executed="AddCsvSchemaCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddSchemaCsvCommand}" CanExecute="AddSchemaCsvCommand_CanExecute" Executed="AddSchemaCsvCommand_Executed" />
         <CommandBinding Command="{StaticResource EditSchemaCommand}" CanExecute="EditSchemaCommand_CanExecute" Executed="EditSchemaCommand_Executed" />
         <CommandBinding Command="{StaticResource RenameSchemaCommand}" CanExecute="RenameSchemaCommand_CanExecute" Executed="RenameSchemaCommand_Executed" />
         <CommandBinding Command="{StaticResource DeleteSchemaCommand}" CanExecute="DeleteSchemaCommand_CanExecute" Executed="DeleteSchemaCommand_Executed" />
@@ -108,6 +109,7 @@
         -->
 
         <CommandBinding Command="{StaticResource AddTableCommand}" CanExecute="AddTableCommand_CanExecute" Executed="AddTableCommand_Executed" />
+        <CommandBinding Command="{StaticResource AddTableCsvCommand}" CanExecute="AddTableCsvCommand_CanExecute" Executed="AddTableCsvCommand_Executed" />
         <!--<CommandBinding Command="{StaticResource FilterTableCommand}" CanExecute="FilterTableCommand_CanExecute" Executed="FilterTableCommand_Executed" />-->
         <CommandBinding Command="{StaticResource EditTableCommand}" CanExecute="EditTableCommand_CanExecute" Executed="EditTableCommand_Executed" />
         <!--<CommandBinding Command="{StaticResource RenameTableCommand}" CanExecute="RenameTableCommand_CanExecute" Executed="RenameTableCommand_Executed" />-->
@@ -236,14 +238,12 @@
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter Grid.Column ="1" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
-                <GridSplitter Grid.Column ="3" Width ="5" ResizeDirection="Columns" VerticalAlignment="Stretch" HorizontalAlignment="Center" Background ="AliceBlue" />
 
                 <!-- Database panel -->
+                <!--
                 <Grid Grid.Column="0" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -267,7 +267,7 @@
                                                 <Image Source="Images\schema_add_mashup.png" />
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem ToolTip="CSV file data source" ToolBar.OverflowMode="Never" Command="{StaticResource AddCsvSchemaCommand}">
+                                        <MenuItem ToolTip="CSV file data source" ToolBar.OverflowMode="Never" Command="{StaticResource AddSchemaCsvCommand}">
                                             <MenuItem.Icon>
                                                 <Image Source="Images\schema_add_csv.png" />
                                             </MenuItem.Icon>
@@ -296,9 +296,10 @@
 
                     </DockPanel>
                 </Grid>
+                -->
 
                 <!-- Table panel -->
-                <Grid Grid.Column="2" >
+                <Grid Grid.Column="0" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -329,10 +330,29 @@
                                 </MenuItem>
                             </Menu>
                             -->
+                                <Menu ToolBar.OverflowMode="Never" >
+                                    <MenuItem ToolTip="Add table" >
+                                        <MenuItem.Icon>
+                                            <Image Source="Images\table_add2.png" />
+                                        </MenuItem.Icon>
+
+                                        <MenuItem ToolTip="Table" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
+                                            <MenuItem.Icon>
+                                                <Image Source="Images\schema_add_mashup.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem ToolTip="CSV table" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCsvCommand}">
+                                            <MenuItem.Icon>
+                                                <Image Source="Images\schema_add_csv.png" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+
+                                    </MenuItem>
+                                </Menu>
+                                <!--
                                 <Button ToolTip="Add table" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="Never" Command="{StaticResource AddTableCommand}" >
                                     <Image Source="Images\table_add2.png" />
                                 </Button>
-                                <!--
                                 <Button ToolTip="Edit filter" Style="{StaticResource ButtonEnabled}" ToolBar.OverflowMode="AsNeeded" Command="{StaticResource FilterTableCommand}" >
                                     <Image Source="Images\table_filter2.png" />
                                 </Button>
@@ -369,7 +389,7 @@
                 </Grid>
 
                 <!-- Column panel -->
-                <Grid Grid.Column="4" >
+                <Grid Grid.Column="2" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
