@@ -274,7 +274,8 @@ namespace Samm.Dialogs
                 foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) space.DeleteColumn(col);
 
                 // Load (read-only) column descriptions from CSV to schema
-                var columns = ((SchemaCsv)Schema).LoadSchema(table);
+                var columns = table.LoadSchema();
+                //var columns = ((SchemaCsv)Schema).LoadSchema(table);
             }
 
             ((Com.Schema.Table)Table).NotifyPropertyChanged("");
