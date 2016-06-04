@@ -254,7 +254,7 @@ namespace Samm.Dialogs
                 table.CultureInfo.NumberFormat.NumberDecimalSeparator = Decimal;
 
                 // Load (read-only) column descriptions from CSV to schema
-                var columns = table.LoadSchema();
+                //var columns = table.LoadSchema();
                 //var columns = ((SchemaCsv)Schema).LoadSchema(table);
 
                 Table = table;
@@ -274,7 +274,7 @@ namespace Samm.Dialogs
                 foreach (DcColumn col in table.Columns.ToArray()) if (!col.IsSuper) space.DeleteColumn(col);
 
                 // Load (read-only) column descriptions from CSV to schema
-                var columns = table.LoadSchema();
+                //var columns = table.LoadSchema();
                 //var columns = ((SchemaCsv)Schema).LoadSchema(table);
             }
 
