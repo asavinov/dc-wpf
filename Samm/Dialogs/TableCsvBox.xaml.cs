@@ -115,6 +115,11 @@ namespace Samm.Dialogs
             List<string> columnNames = connection.ReadColumns();
             connection.CloseReader();
 
+            TableColumns.Clear();
+            if (columnNames == null)
+            {
+                return;
+            }
             foreach (string column in columnNames)
             {
                 TableColumns.Add(column);
