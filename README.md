@@ -11,6 +11,18 @@
 
 *DataCommandr* is a self-service tool created with a single mission: radically simplifying and democratizing all kinds of operations with data. By making data manipulations easier for non-IT users, DataCommandr dramatically shortens the total time for data integration, transformation and analysis. Data in DataCommandr is represented as tables and columns which are two main objects of the application. A table is a collection of data records. A column represents a property (also referred to as an attribute or field). Each column takes values from some other table which is referred to as a type of this column. Every element in the mash up - table or column - has some definition in terms of already existing elements. And the task of the user is to create appropriate definitions for tables and columns. 
 
+## Features 
+
+DataCommander has the following distinguishing features: 
+
+* DataCommandr is based on the [Concept-Oriented Model](http://conceptoriented.org) (COM) which is a unified model aimed at generalizing existing data models and data modeling techniques. 
+
+* DataCommandr uses a column-oriented approach where the main unit of data is a column and every column has its own definition in terms of other columns. Data processing is also performed column-wise rather than table-wise in most other systems. 
+
+* DataCommandr can be viewed as an analogue of classical spreadsheets where columns are defined in terms of other columns (in this or other tables) rather than cells being defined in terms of other cells. It evaluates data in columns by using dependencies derived from column definitions. It is similar to the functional paradigm because the whole model is represented as a number of column and table definitions. 
+
+* DataCommandr on an in-memory data processing engine written in C#: http://bitbucket.org/conceptoriented/dce-csharp. The data processing engine has also a Java implementation: http://bitbucket.org/conceptoriented/dc-core
+
 ## Importing data
 
 Before data can be manipulated, it has to be imported into the system. DataCommandr provides connectors to several storage types. For example, in order to load data from a text file it is necessary to choose the corresponding command and then select the file. After that, select the column to be imported as well as other import parameters. After finishing import, a new table will be shown in the workspace. 
@@ -37,9 +49,9 @@ Project is an operation which creates a new table from all (unique) values produ
 ## Defining new columns
 
 Users of DataCommandr can add new columns to tables created the analytic mash-up. Each column has some definition and a column can collect data from other columns in the mash-up according to its definition. Depending on the definition the following columns can be created: 
-  * Calculate columns returning primitive values 
-  * Link columns returning records from other tables 
-  * Aggregate columns which aggregate data stored in other columns
+* **Calculate** columns returning primitive values 
+* **Link** columns returning records from other tables 
+* **Aggregate** columns which aggregate data stored in other columns
 
 ### Calculate columns
 
@@ -59,30 +71,18 @@ An aggregate column processes groups of records from another table by aggregatin
 
 ![](images/column_aggregate.png?raw=true "Aggregate column")
 
-## Features 
-
-DataCommander has the following distinguishing features: 
-
-* DataCommandr is based on the [Concept-Oriented Model](http://conceptoriented.org) (COM) which is a unified model aimed at generalizing existing data models and data modeling techniques. 
-
-* DataCommandr uses a column-oriented approach where the main unit of data is a column and every column has its own definition in terms of other columns. Data processing is also performed column-wise rather than table-wise in most other systems. 
-
-* DataCommandr can be viewed as an analogue of classical spreadsheets where columns are defined in terms of other columns (in this or other tables) rather than cells being defined in terms of other cells. It evaluates data in columns by using dependencies derived from column definitions. It is similar to the functional paradigm because the whole model is represented as a number of column and table definitions. 
-
-* DataCommandr on an in-memory data processing engine written in C#: http://bitbucket.org/conceptoriented/dce-csharp. The data processing engine has also a Java implementation: http://bitbucket.org/conceptoriented/dc-core
-
 ## More Information
 
 More information about DataCommandr and the underlying data model can be found here: 
 
 * More information information on all aspects of concept-oriented paradigm including the concept-oriented model and concept-oriented programming including publications can found here: 
-  * http://www.conceptoriented.org
-  * http://www.conceptoriented.com
+    * http://www.conceptoriented.org
+    * http://www.conceptoriented.com
 
 * Alexandr Savinov is an author of DataCommander Engine Java library as well as the underlying concept-oriented model (COM): 
-  * http://conceptoriented.org/savinov
-  * https://www.researchgate.net/profile/Alexandr_Savinov
+    * http://conceptoriented.org/savinov
+    * https://www.researchgate.net/profile/Alexandr_Savinov
 
 * Some papers about this approach: 
-  * A. Savinov. DataCommandr: Column-Oriented Data Integration, Transformation and Analysis. Proc. IoTBD 2016, 339-347. https://www.researchgate.net/publication/301764506_DataCommandr_Column-Oriented_Data_Integration_Transformation_and_Analysis
-  * A. Savinov. ConceptMix: Self-Service Analytical Data Integration based on the Concept-Oriented Model. A. Savinov. 3rd International Conference on Data Technologies and Applications (DATA 2014), 78-84. https://www.researchgate.net/publication/265301356_ConceptMix_Self-Service_Analytical_Data_Integration_based_on_the_Concept-Oriented_Model
+    * A. Savinov. DataCommandr: Column-Oriented Data Integration, Transformation and Analysis. Proc. IoTBD 2016, 339-347. https://www.researchgate.net/publication/301764506_DataCommandr_Column-Oriented_Data_Integration_Transformation_and_Analysis
+    * A. Savinov. ConceptMix: Self-Service Analytical Data Integration based on the Concept-Oriented Model. A. Savinov. 3rd International Conference on Data Technologies and Applications (DATA 2014), 78-84. https://www.researchgate.net/publication/265301356_ConceptMix_Self-Service_Analytical_Data_Integration_based_on_the_Concept-Oriented_Model
